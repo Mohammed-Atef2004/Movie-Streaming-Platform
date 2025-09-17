@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +14,10 @@ namespace DAL.Models
         public string? Description { get; private set; }
         public string? ImageUrl { get;  set; }
         public int ?ViewCount { get; private set; }
-        public int? DownloadCount { get; private set; }
+        public int DownloadCount { get; private set; }
+        [ForeignKey("Category")]
+        public int CategoryId { get; set; }
+        public Category? Categroy { get; set; }
         public void Create(string title, string? discription = null, string? imageUrl = null,string ?createor=null)
         {
             Title = title;

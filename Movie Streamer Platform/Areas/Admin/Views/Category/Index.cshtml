@@ -1,0 +1,29 @@
+﻿@using BLL.ViewModels
+@{
+	ViewBag.Title = "Category Management";
+	ViewBag.CardTitle = "View Categories";
+}
+@model IEnumerable<CategoryVM>
+<div>
+<a href="/Admin/Category/Create" class="btn btn-primary">Create</a>
+</div>
+<hr />
+<table class="table-hover" width="100%">
+	<tr>
+		<td>Name</td>
+		<td>Description</td>
+		<td>Actions</td>
+	</tr>
+	@foreach(var item in Model)
+	{
+		<tr>
+			<td>@item.Name</td>
+			<td>@item.Description</td>
+			<td>
+				<a href="/Admin/Category/Edit/@item.Id" class="btn btn-success">Edit</a>
+				<a href="/Admin/Category/Delete/@item.Id" class="btn btn-danger">Delete</a>
+
+			</td>
+		</tr>
+	}
+</table>

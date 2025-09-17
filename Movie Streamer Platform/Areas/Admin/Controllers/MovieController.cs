@@ -10,13 +10,9 @@ namespace Movie_Streamer_Platform.Areas.Admin.Controllers
     public class MovieController : Controller
     {
         private readonly IMovieService _movieService;
-        private readonly IMapper _mapper;
-        private readonly IWebHostEnvironment _webHostEnvironment;
         public MovieController(IMovieService movieService, IMapper mapper, IWebHostEnvironment webHostEnvironment)
         {
             _movieService = movieService;
-            _mapper = mapper;
-            _webHostEnvironment = webHostEnvironment;
         }
         public IActionResult GetAll()
         {

@@ -11,9 +11,10 @@ namespace BLL.Mapping
 {
     public class DomainProfile:Profile
     {
-    public DomainProfile()
+        public DomainProfile()
         {
             CreateMap<Movie, MovieVM>().ReverseMap();
+            CreateMap<Category, CategoryVM>().ReverseMap();
         }
     }
 }

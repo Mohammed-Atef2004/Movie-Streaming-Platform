@@ -19,9 +19,13 @@ namespace Movie_Streamer_Platform
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddAutoMapper(typeof(DomainProfile)); // Use this overload to avoid ambiguity
-            // Register other services and repositories here
+            // Register repositories 
             builder.Services.AddScoped<IMovieRepository,MovieRepository>();
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+
+            // Register your services
             builder.Services.AddScoped<IMovieService, MovieService>();
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
 
             var app = builder.Build();
 
