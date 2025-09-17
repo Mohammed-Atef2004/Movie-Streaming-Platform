@@ -1,3 +1,11 @@
+using BLL.Mapping;
+using BLL.Services.Abstraction;
+using BLL.Services.Implementation;
+using DAL.Database;
+using DAL.Repositories.Abstraction;
+using DAL.Repositories.Implementation;
+using Microsoft.EntityFrameworkCore;
+
 namespace Movie_Streamer_Platform
 {
     public class Program
@@ -8,6 +16,12 @@ namespace Movie_Streamer_Platform
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            builder.Services.AddAutoMapper(typeof(DomainProfile)); // Use this overload to avoid ambiguity
+            // Register other services and repositories here
+            builder.Services.AddScoped<IMovieRepository,MovieRepository>();
+            builder.Services.AddScoped<IMovieService, MovieService>();
 
             var app = builder.Build();
 
@@ -27,8 +41,9 @@ namespace Movie_Streamer_Platform
             app.UseAuthorization();
 
             app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                 name: "default",
+                 pattern: "{area=Admin}/{controller=Home}/{action=Index}/{id?}");
+           
 
             app.Run();
         }
