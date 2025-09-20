@@ -22,10 +22,12 @@ namespace Movie_Streamer_Platform
             // Register repositories 
             builder.Services.AddScoped<IMovieRepository,MovieRepository>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<ISeriesRepository, SeriesRepository>();
 
             // Register your services
             builder.Services.AddScoped<IMovieService, MovieService>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
+            builder.Services.AddScoped<ISeriesService, SeriesService>();
 
             var app = builder.Build();
 
