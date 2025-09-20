@@ -22,7 +22,7 @@ namespace DAL.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("DAL.Models.Movie", b =>
+            modelBuilder.Entity("DAL.Models.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -71,7 +71,7 @@ namespace DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("MovieId")
+                    b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("CreatedAt")
@@ -113,20 +113,20 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MovieId");
+                    b.HasIndex("CategoryId");
 
                     b.ToTable("Movies");
                 });
 
             modelBuilder.Entity("DAL.Models.Movie", b =>
                 {
-                    b.HasOne("DAL.Models.Movie", "Movie")
+                    b.HasOne("DAL.Models.Category", "Categroy")
                         .WithMany()
-                        .HasForeignKey("MovieId")
+                        .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Movie");
+                    b.Navigation("Categroy");
                 });
 #pragma warning restore 612, 618
         }

@@ -44,9 +44,14 @@ namespace Movie_Streamer_Platform
 
             app.UseAuthorization();
 
+            //app.UseStatusCodePagesWithRedirects("/404.html");
+            app.UseStatusCodePagesWithReExecute("/Error/{0}");
+
             app.MapControllerRoute(
                  name: "default",
-                 pattern: "{area=Admin}/{controller=Home}/{action=Index}/{id?}");
+                 //pattern: "{area=Admin}/{controller=Home}/{action=Index}/{id?}"
+                 pattern: "{controller=Home}/{action=Index}/{id?}"
+                 );
            
 
             app.Run();
