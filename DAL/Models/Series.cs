@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DAL.Models
 {
-    public class Movie: CommonData
+    public class Series: CommonData
     {
         public int Id { get; private set; }
         public string Title { get; private set; }
@@ -16,7 +16,7 @@ namespace DAL.Models
         public int ?ViewCount { get; private set; }
         public int DownloadCount { get; private set; }
         [ForeignKey("Category")]
-        public int? CategoryId { get; set; }
+        public int ?CategoryId { get; set; }
         public Category? Categroy { get; set; }
         public void Create(string title, string? discription = null, string? imageUrl = null,string ?createor=null)
         {

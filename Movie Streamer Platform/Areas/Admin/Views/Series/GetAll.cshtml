@@ -1,0 +1,48 @@
+﻿
+@{
+
+    ViewBag.PageTitle = "Series Management";
+    ViewBag.CardTitle = "View Series";
+
+}
+@using BLL.ViewModels
+@using DAL.Models
+@model IEnumerable<SeriesVM>
+<div>
+    <a class="btn btn-primary" href="/Admin/Series/Create">Create</a>
+</div>
+
+<br />
+
+<div class="container mt-4">
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-3 mb-4">
+                <div class="card shadow-sm h-100">
+                    <img src="~/Images/@item.ImageUrl" class="card-img-top" style="height:200px; object-fit:cover;" alt="@item.Title" />
+                    
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">@item.Title</h5>
+                        <p class="card-text text-muted">@item.Description</p>
+                        <p class="fw-bold">Price: $@item.Price</p>
+
+                        <div class="mt-auto d-flex justify-content-between">
+                            <a href="/Admin/Series/Edit/@item.Id" class="btn btn-success btn-sm">
+                                <i class="bi bi-pencil"></i> Edit
+                            </a>
+                            <a href="/Admin/Series/Delete/@item.Id" class="btn btn-danger btn-sm">
+                                <i class="bi bi-trash"></i> Delete
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="~/js/products.js"></script>
+}

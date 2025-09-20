@@ -15,6 +15,7 @@ namespace BLL.Mapping
         {
             CreateMap<Movie, MovieVM>().ReverseMap();
             CreateMap<Category, CategoryVM>().ReverseMap();
+            CreateMap<Series, SeriesVM>().ReverseMap();
         }
     }
 }
