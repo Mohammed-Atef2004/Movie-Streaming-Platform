@@ -13,6 +13,8 @@ namespace DAL.Models
         [Required]
         public string Name { get; private set; }
         public string? Description { get; private set; }
+        public ICollection<Movie> Movies { get; set; }
+
         public void Create(string name, string? description = null, string? creator = null)
         {
             Name = name;

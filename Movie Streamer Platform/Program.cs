@@ -1,4 +1,4 @@
-using BLL.Mapping;
+﻿using BLL.Mapping;
 using BLL.Services.Abstraction;
 using BLL.Services.Implementation;
 using DAL.Database;
@@ -40,21 +40,31 @@ namespace Movie_Streamer_Platform
             }
 
             app.UseHttpsRedirection();
+
+
             app.UseStaticFiles();
 
             app.UseRouting();
 
             app.UseAuthorization();
 
-            //app.UseStatusCodePagesWithRedirects("/404.html");
             app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
-            app.MapControllerRoute(
-                 name: "default",
-                 //pattern: "{area=Admin}/{controller=Home}/{action=Index}/{id?}"
-                 pattern: "{controller=Home}/{action=Index}/{id?}"
-                 );
-           
+
+            app.UseEndpoints(endpoints =>
+            {
+                // Route للأدمن
+                endpoints.MapAreaControllerRoute(
+                    name: "Admin_default",
+                    areaName: "Admin",
+                    pattern: "Admin/{controller=Home}/{action=Index}/{id?}");
+
+                // Route الأساسي
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+            });
+
 
             app.Run();
         }

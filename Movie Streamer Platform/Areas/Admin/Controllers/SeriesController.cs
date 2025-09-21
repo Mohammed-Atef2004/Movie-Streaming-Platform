@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Series_Streamer_Platform.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    //[Route("Admin/[controller]")]
+
     public class SeriesController : Controller
     {
         private readonly ISeriesService _seriesService;
@@ -14,7 +16,8 @@ namespace Series_Streamer_Platform.Areas.Admin.Controllers
         {
             _seriesService = seriesService;
         }
-        public IActionResult GetAll()
+
+        public IActionResult Index()
         {
             var series=_seriesService.GetAllSeries();
             return View(series);

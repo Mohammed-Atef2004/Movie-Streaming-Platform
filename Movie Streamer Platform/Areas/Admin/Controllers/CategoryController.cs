@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Movie_Streamer_Platform.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    //[Route("Admin/[controller]")]
+
     public class CategoryController : Controller
     {
         private readonly ICategoryService _categoryService;

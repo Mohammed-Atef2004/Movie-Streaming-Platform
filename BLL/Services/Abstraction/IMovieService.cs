@@ -15,5 +15,6 @@ namespace BLL.Services.Abstraction
         (bool, string) DeleteMovie(int id);
         MovieVM GetMovieById(int id);
         IEnumerable<MovieVM> GetAllMovies();
+        public IEnumerable<Movie> GetRecentMovies(int count);
     }
 }

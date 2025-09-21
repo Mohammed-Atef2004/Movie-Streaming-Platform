@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Movie_Streamer_Platform.Areas.Admin.Controllers
 {
     [Area("Admin")]
+
     public class MovieController : Controller
     {
         private readonly IMovieService _movieService;
@@ -14,7 +15,9 @@ namespace Movie_Streamer_Platform.Areas.Admin.Controllers
         {
             _movieService = movieService;
         }
-        public IActionResult GetAll()
+
+        //[HttpGet("1")]
+        public IActionResult Index()
         {
             var movies=_movieService.GetAllMovies();
             return View(movies);

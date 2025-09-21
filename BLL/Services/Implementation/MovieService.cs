@@ -64,6 +64,14 @@ namespace BLL.Services.Implementation
             return _mapper.Map<MovieVM>(movie);
         }
 
+        public IEnumerable<Movie> GetRecentMovies(int count)
+        {
+            return _movieRepository.GetAll(includeword : "Category")
+                                   .OrderByDescending(m => m.CreatedAt) 
+                                   .Take(count)
+                                   .ToList();
+        }
+
         (bool, string) IMovieService.UpdateMovie(MovieVM movieVM, int Id)
         {
             var movie = _movieRepository.GetFirstOrDefault(x => x.Id == Id);

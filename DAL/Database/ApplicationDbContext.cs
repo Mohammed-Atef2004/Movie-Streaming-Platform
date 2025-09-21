@@ -13,6 +13,7 @@ namespace DAL.Database
         public DbSet<Movie>Movies{ get; set; }
         public DbSet<Category>Categories{ get; set; }
         public DbSet<Series>Series{ get; set; } 
+        public DbSet<Episode> Episodes{ get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options):base(options)
         {
         }
