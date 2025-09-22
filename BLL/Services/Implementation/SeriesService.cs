@@ -35,7 +35,7 @@ namespace BLL.Services.Implementation
 
         public (bool, string) DeleteSeries(int id)
         {
-            var series = _seriesRepository.GetFirstOrDefault(x => x.Id == id);
+            var series = _seriesRepository.GetFirstOrDefault(x => x.Id == id, includeword: "Category");
             if (series == null)
             {
                 return (false, "Series Not Found");
@@ -54,19 +54,19 @@ namespace BLL.Services.Implementation
 
         public IEnumerable<SeriesVM> GetAllSeries()
         {
-            var series = _seriesRepository.GetAll();
+            var series = _seriesRepository.GetAll(includeword: "Category");
             return _mapper.Map<IEnumerable<SeriesVM>>(series);
         }
 
         public SeriesVM GetSeriesById(int id)
         {
-            var series = _seriesRepository.GetFirstOrDefault(x => x.Id == id);
+            var series = _seriesRepository.GetFirstOrDefault(x => x.Id == id, includeword: "Category");
             return _mapper.Map<SeriesVM>(series);
         }
 
         (bool, string) ISeriesService.UpdateSeries(SeriesVM seriesVM, int Id)
         {
-            var series = _seriesRepository.GetFirstOrDefault(x => x.Id == Id);
+            var series = _seriesRepository.GetFirstOrDefault(x => x.Id == Id, includeword: "Category");
             if (series == null)
             {
                 return (false, "Series Not Found");

@@ -35,7 +35,7 @@ namespace BLL.Services.Implementation
 
         public (bool, string) DeleteMovie(int id)
         {
-            var movie = _movieRepository.GetFirstOrDefault(x => x.Id == id);
+            var movie = _movieRepository.GetFirstOrDefault(x => x.Id == id, includeword: "Category");
             if (movie == null)
             {
                 return (false, "Movie Not Found");
@@ -54,7 +54,7 @@ namespace BLL.Services.Implementation
 
         public IEnumerable<MovieVM> GetAllMovies()
         {
-            var movies = _movieRepository.GetAll();
+            var movies = _movieRepository.GetAll(includeword:"Category");
             return _mapper.Map<IEnumerable<MovieVM>>(movies);
         }
 
@@ -74,7 +74,7 @@ namespace BLL.Services.Implementation
 
         (bool, string) IMovieService.UpdateMovie(MovieVM movieVM, int Id)
         {
-            var movie = _movieRepository.GetFirstOrDefault(x => x.Id == Id);
+            var movie = _movieRepository.GetFirstOrDefault(x => x.Id == Id,includeword:"Category");
             if (movie == null)
             {
                 return (false, "Movie Not Found");

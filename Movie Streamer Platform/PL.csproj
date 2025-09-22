@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\movie_review_htmls.zip" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.9">
@@ -23,6 +27,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\Images\" />
+    <Folder Include="wwwroot\template\sass\pages\" />
   </ItemGroup>
 
 </Project>

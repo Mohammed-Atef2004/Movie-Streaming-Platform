@@ -1,48 +1,98 @@
-﻿
-@{
-
+﻿@{
     ViewBag.PageTitle = "Series Management";
     ViewBag.CardTitle = "View Series";
-
 }
 @using BLL.ViewModels
 @using DAL.Models
 @model IEnumerable<SeriesVM>
-<div>
-    <a class="btn btn-primary" href="/Admin/Series/Create">Create</a>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="fw-bold">@ViewBag.CardTitle</h2>
+    <a class="btn btn-primary" href="/Admin/Series/Create">
+        <i class="bi bi-plus-circle"></i> Add New Series
+    </a>
 </div>
 
-<br />
-
-<div class="container mt-4">
-    <div class="row">
+<div class="container-fluid">
+    <div class="row g-4">
         @foreach (var item in Model)
         {
-            <div class="col-md-3 mb-4">
-                <div class="card shadow-sm h-100">
-                    <img src="~/Images/@item.ImageUrl" class="card-img-top" style="height:200px; object-fit:cover;" alt="@item.Title" />
-                    
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">@item.Title</h5>
-                        <p class="card-text text-muted">@item.Description</p>
-                        <p class="fw-bold">Price: $@item.Price</p>
+            <div class="col-md-3 col-sm-6">
+                <div class="card movie-card h-100 border-0 shadow-lg rounded-3 overflow-hidden">
+
+                    <!-- Series Poster -->
+                    <div class="position-relative">
+                        <img src="~/Images/@item.ImageUrl"
+                             class="card-img-top movie-poster"
+                             alt="@item.Title" />
+                        <div class="movie-overlay d-flex align-items-center justify-content-center">
+                            <span class="badge bg-dark bg-opacity-75 text-white px-3 py-2">
+                                @(item.Category != null ? item.Category.Name : "No Category")
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="card-body d-flex flex-column p-3">
+                        <h5 class="card-title fw-bold text-truncate">@item.Title</h5>
+                        <p class="card-text text-muted movie-desc">@item.Description</p>
+                        <p class="fw-bold text-success mb-2">💲@item.Price</p>
 
                         <div class="mt-auto d-flex justify-content-between">
-                            <a href="/Admin/Series/Edit/@item.Id" class="btn btn-success btn-sm">
-                                <i class="bi bi-pencil"></i> Edit
+                            <a href="/Admin/Series/Edit/@item.Id" class="btn btn-outline-success btn-sm">
+                                <i class="bi bi-pencil-square"></i>
                             </a>
-                            <a href="/Admin/Series/Delete/@item.Id" class="btn btn-danger btn-sm">
-                                <i class="bi bi-trash"></i> Delete
+                            <a href="/Admin/Series/Delete/@item.Id" class="btn btn-outline-danger btn-sm">
+                                <i class="bi bi-trash"></i>
                             </a>
                         </div>
                     </div>
+
                 </div>
             </div>
         }
     </div>
 </div>
 
-
 @section Scripts {
-    <script src="~/js/products.js"></script>
+    <script>
+        // hover animation for series cards
+        document.querySelectorAll(".movie-card").forEach(card => {
+            card.addEventListener("mouseover", () => {
+                card.classList.add("shadow-xl");
+            });
+            card.addEventListener("mouseout", () => {
+                card.classList.remove("shadow-xl");
+            });
+        });
+    </script>
 }
+
+<style>
+    .movie-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .movie-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+    .movie-poster {
+        height: 220px;
+        object-fit: cover;
+    }
+
+    .movie-overlay {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+    }
+
+    .movie-desc {
+        display: -webkit-box;
+        -webkit-line-clamp: 3; /* يعرض 3 سطور بس */
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+</style>

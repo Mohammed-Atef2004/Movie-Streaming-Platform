@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
 using BLL.Services.Abstraction;
+using BLL.Services.Implementation;
 using BLL.ViewModels;
+using DAL.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Series_Streamer_Platform.Areas.Admin.Controllers
 {
@@ -12,9 +15,12 @@ namespace Series_Streamer_Platform.Areas.Admin.Controllers
     public class SeriesController : Controller
     {
         private readonly ISeriesService _seriesService;
-        public SeriesController(ISeriesService seriesService)
+        private readonly ICategoryService _categoryService;
+
+        public SeriesController(ISeriesService seriesService, ICategoryService categoryService)
         {
             _seriesService = seriesService;
+            _categoryService = categoryService;
         }
 
         public IActionResult Index()
@@ -25,7 +31,13 @@ namespace Series_Streamer_Platform.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            return View();
+            SeriesVM seriesVM = new SeriesVM();
+            seriesVM.CategoryList = _categoryService.GetAllCategories().Select(i => new SelectListItem
+            {
+                Text = i.Name,
+                Value = i.Id.ToString()
+            });
+            return View(seriesVM);
         }
         [HttpPost]
         public IActionResult Create(SeriesVM seriesVM,IFormFile file)
@@ -59,6 +71,11 @@ namespace Series_Streamer_Platform.Areas.Admin.Controllers
             var series=_seriesService.GetSeriesById(Id);
             if (series != null)
             {
+                series.CategoryList = _categoryService.GetAllCategories().Select(i => new SelectListItem
+                {
+                    Text = i.Name,
+                    Value = i.Id.ToString()
+                });
                 return View(series);
             }
             return NotFound();
@@ -68,22 +85,33 @@ namespace Series_Streamer_Platform.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                seriesVM.Image = file;
-                var (isSuccess, message) = _seriesService.UpdateSeries(seriesVM, seriesVM.Id);
-                if (isSuccess)
+                if (file != null)
                 {
-                    ViewBag.Success = message;
-                    return RedirectToAction("GetAll");
-                }
-                else
-                {
-                    ViewBag.Error = message;
-                    return View(seriesVM);
+                    seriesVM.Image = file;
                 }
             }
+
+            var (isSuccess, message) = _seriesService.UpdateSeries(seriesVM, seriesVM.Id);
+            if (isSuccess)
+            {
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                ViewBag.Error = message;
+            }
+
+
+            seriesVM.CategoryList = _categoryService.GetAllCategories().Select(i => new SelectListItem
+            {
+                Text = i.Name,
+                Value = i.Id.ToString(),
+                Selected = i.Id == seriesVM.CategoryId
+            });
+
             return View(seriesVM);
         }
-       
+
     }
   
 }

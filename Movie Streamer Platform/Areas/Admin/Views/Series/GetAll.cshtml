@@ -26,6 +26,14 @@
                         <h5 class="card-title">@item.Title</h5>
                         <p class="card-text text-muted">@item.Description</p>
                         <p class="fw-bold">Price: $@item.Price</p>
+                        @if (item.Category != null)
+                        {
+                            <p>Category: @item.Category.Name</p>
+                        }
+                        else
+                        {
+                            <p>No Category</p>
+                        }
 
                         <div class="mt-auto d-flex justify-content-between">
                             <a href="/Admin/Series/Edit/@item.Id" class="btn btn-success btn-sm">

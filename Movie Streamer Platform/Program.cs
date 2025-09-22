@@ -53,16 +53,21 @@ namespace Movie_Streamer_Platform
 
             app.UseEndpoints(endpoints =>
             {
-                // Route للأدمن
                 endpoints.MapAreaControllerRoute(
                     name: "Admin_default",
                     areaName: "Admin",
                     pattern: "Admin/{controller=Home}/{action=Index}/{id?}");
 
                 // Route الأساسي
+                endpoints.MapAreaControllerRoute(
+                    name: "default",
+                    areaName: "Customer",
+                    pattern: "Customer/{controller=Home}/{action=Index}/{id?}");
+
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+
             });
 
 
