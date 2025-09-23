@@ -32,6 +32,10 @@ namespace BLL.ViewModels
         public int? CategoryId { get; set; }
         public Category? Category { get; set; }
 
-
+        public double? Rating { get; set; }
+        public int? Views { get; set; }
+        public int? Downloads { get; set; }
+        public string? TrailerUrl;
+        public DateTime? ReleaseDate;
     }
 }

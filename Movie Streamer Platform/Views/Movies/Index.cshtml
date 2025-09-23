@@ -1,0 +1,111 @@
+﻿    @{
+        ViewBag.PageTitle = "Movies";
+        ViewBag.CardTitle = "Browse Movies";
+        var isAdmin = User.IsInRole("Admin");
+    }
+@using BLL.ViewModels
+@model IEnumerable<MovieVM>
+
+<section id="hero-movies" class="hero-section hero d-flex align-items-center position-relative">
+    <div class="hero-overlay position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7));"></div>
+    <div class="video-background position-absolute top-0 start-0 w-100 h-100 overflow-hidden">
+        <iframe
+            src="https://www.youtube.com/embed/TJZVs2uguH0?autoplay=1&mute=1&loop=1&playlist=TJZVs2uguH0&controls=0&showinfo=0&rel=0&iv_load_policy=3"
+            frameborder="0"
+            allow="autoplay; encrypted-media"
+            allowfullscreen
+            class="youtube-video position-absolute"
+        ></iframe>
+    </div>
+
+    <div class="container position-relative text-center text-white z-1" data-aos="fade-up" data-aos-delay="100">
+        <h1 class="hero-title display-3 fw-bold mb-3">Browse Movies</h1>
+        <p class="hero-subtitle lead">Discover trending and classic movies, add them to your list, or start watching now.</p>
+    </div>
+</section>
+
+
+
+<section id="movies" class="movies-section section">
+    <section id="movies-filters">
+    <div class="container" data-aos="fade-up" data-aos-delay="100">
+        <form method="get" asp-action="Index" class="filter-form d-flex align-items-center gap-3">
+
+            <!-- Search -->
+            <div class="input-group flex-grow-1" style="max-width: 280px;">
+                <span class="input-group-text">
+                    <i class="fas fa-search"></i>
+                </span>
+                <input type="text" 
+                       name="search" 
+                       class="form-control filter-input" 
+                       placeholder="Search movies..." 
+                       value="@Context.Request.Query["search"]" />
+            </div>
+
+            <!-- Sort -->
+            <div class="input-group" style="max-width: 200px;">
+                <span class="input-group-text">
+                    <i class="fas fa-sort"></i>
+                </span>
+                <select name="sortBy" class="form-select filter-select">
+                    <option value="">Sort By</option>
+                    <option value="views" selected="@(Context.Request.Query["sortBy"]=="views")">Most Viewed</option>
+                    <option value="rating" selected="@(Context.Request.Query["sortBy"]=="rating")">Top Rated</option>
+                    <option value="downloads" selected="@(Context.Request.Query["sortBy"]=="downloads")">Most Downloaded</option>
+                </select>
+            </div>
+
+            <!-- Button -->
+            <button type="submit" class="btn btn-filter">
+                <i class="fas fa-filter"></i> Apply
+            </button>
+        </form>
+    </div>
+</section>
+    <div class="container" data-aos="fade-up" data-aos-delay="100">
+        <div class="row g-4">
+                @foreach (var item in Model)
+                {
+                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                        <a asp-controller="Movies" asp-action="Details" asp-route-id="@item.Id" class="movie-card-link">
+                            <div class="movie-card">
+                                <div class="movie-img-wrapper">
+                                    <img src="~/Images/@item.ImageUrl"
+                                         class="movie-poster"
+                                         alt="@item.Title"
+                                         onerror="this.onerror=null; this.src='/Images/placeholder.png';" />
+                                    <div class="movie-overlay">
+                                        <span class="movie-category-badge">
+                                            @(item.Category != null ? item.Category.Name : "No Category")
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="movie-content">
+                                    <h4 class="movie-title">@item.Title</h4>
+
+                                    <p class="movie-desc">@(string.IsNullOrEmpty(item.Description) ? "No description available" : (item.Description.Length > 100 ? item.Description.Substring(0, 100) + "..." : item.Description))</p>
+
+                                    <div class="movie-rating">
+                                        ⭐⭐⭐⭐⭐ <span>(@item.Rating.ToString())</span>
+                                    </div>
+
+                                    <div class="movie-meta">
+                                        <span class="movie-price">💲@item.Price</span>
+                                    </div>
+
+                                    <div class="movie-actions">
+                                        <button class="btn btn-bookmark">Bookmark</button>
+                                        <button class="btn btn-watch">Watch Now</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+        </div>
+    </div>
+</section>
+
+<link rel="stylesheet" href="~/css/movies.css" />
