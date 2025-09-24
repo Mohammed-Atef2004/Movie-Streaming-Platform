@@ -14,6 +14,7 @@ namespace DAL.Database
         public DbSet<Category>Categories{ get; set; }
         public DbSet<Series>Series{ get; set; } 
         public DbSet<Episode> Episodes{ get; set; }
+        public DbSet<Bookmark> Bookmark { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options):base(options)
         {
         }
