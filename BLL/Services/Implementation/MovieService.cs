@@ -22,8 +22,11 @@ namespace BLL.Services.Implementation
         }
         public (bool, string) CreateMovie(MovieVM movieVM)
         {
-            var result = Helpers.Load.UploadFile("Images", movieVM.Image);
-            movieVM.ImageUrl = result;
+            if (movieVM.Image != null)
+            {
+                var result = Helpers.Load.UploadFile("Images", movieVM.Image);
+                movieVM.ImageUrl = result;
+            }
 
             var movie = _mapper.Map<Movie>(movieVM);
             if(_movieRepository.Add(movie))

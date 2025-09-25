@@ -1,56 +1,143 @@
 ﻿@model BLL.ViewModels.RegisterUserVM
 
 @{
-    ViewData["Title"] = "Register User";
-    Layout = "~/Views/Shared/_Layout.cshtml"; 
+    ViewData["Title"] = "Register";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-lg border-0 rounded-3">
-                <div class="card-header bg-primary text-white text-center">
-                    <h3 class="mb-0">Create Account</h3>
+<style>
+    body {
+        background: #000;
+        color: #fff;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .login-container {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .login-card {
+        background: #111;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0px 5px 25px rgba(255, 255, 255, 0.15);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        animation: fadeInUp 1s ease;
+    }
+
+    .login-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0px 10px 40px rgba(255, 255, 255, 0.25);
+    }
+
+    .login-header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .login-header h3 {
+        color: #fff;
+        font-weight: 600;
+    }
+
+    .form-floating label {
+        color: #bbb;
+    }
+
+    .form-control {
+        background: #222;
+        border: none;
+        color: #fff;
+        border-radius: 10px;
+    }
+
+    .form-control:focus {
+        background: #333;
+        color: #fff;
+        box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-login {
+        background: linear-gradient(45deg, #ff416c, #ff4b2b);
+        border: none;
+        border-radius: 30px;
+        padding: 0.75rem;
+        color: #fff;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-login:hover {
+        background: linear-gradient(45deg, #ff4b2b, #ff416c);
+        transform: scale(1.05);
+        box-shadow: 0px 5px 20px rgba(255, 75, 43, 0.5);
+    }
+
+    .card-footer {
+        background: transparent;
+        border-top: none;
+        color: #aaa;
+    }
+
+    .card-footer a {
+        color: #ff416c;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .card-footer a:hover {
+        color: #ff4b2b;
+    }
+</style>
+
+<div class="container login-container">
+    <div class="col-md-5">
+        <div class="login-card">
+            <div class="login-header">
+                <h3>Create Account</h3>
+                <p class="text-muted">Register to get started</p>
+            </div>
+
+            <form asp-action="Register" method="post">
+                <div class="form-floating mb-3">
+                    <input asp-for="UserName" class="form-control" placeholder="Enter username" />
+                    <label asp-for="UserName"></label>
+                    <span asp-validation-for="UserName" class="text-danger"></span>
                 </div>
-                <div class="card-body p-4">
-                    <form asp-action="Register" method="post">
-                        <div class="form-floating mb-3">
-                            <input asp-for="UserName" class="form-control" placeholder="Enter username" />
-                            <label asp-for="UserName"></label>
-                            <span asp-validation-for="UserName" class="text-danger"></span>
-                        </div>
 
-                        <div class="form-floating mb-3">
-                            <input asp-for="Email" class="form-control" placeholder="Enter email" />
-                            <label asp-for="Email"></label>
-                            <span asp-validation-for="Email" class="text-danger"></span>
-                        </div>
-
-                        <div class="form-floating mb-3">
-                            <input asp-for="Password" type="password" class="form-control" placeholder="Enter password" />
-                            <label asp-for="Password"></label>
-                            <span asp-validation-for="Password" class="text-danger"></span>
-                        </div>
-
-                        <div class="form-floating mb-3">
-                            <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Confirm password" />
-                            <label asp-for="ConfirmPassword"></label>
-                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary w-100 py-2 rounded-pill shadow-sm">
-                            Register
-                        </button>
-                    </form>
+                <div class="form-floating mb-3">
+                    <input asp-for="Email" type="email" class="form-control" placeholder="Enter email" />
+                    <label asp-for="Email"></label>
+                    <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
-                <div class="card-footer text-center text-muted small">
-                    Already have an account? <a asp-controller="Account" asp-action="Login">Login here</a>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Password" type="password" class="form-control" placeholder="Enter password" />
+                    <label asp-for="Password"></label>
+                    <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Confirm password" />
+                    <label asp-for="ConfirmPassword"></label>
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-login w-100">
+                    Register
+                </button>
+            </form>
+
+            <div class="card-footer text-center small mt-3">
+                Already have an account? <a asp-controller="Account" asp-action="Login">Login here</a>
             </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+        <partial name="_ValidationScriptsPartial" />
 }

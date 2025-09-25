@@ -27,6 +27,8 @@
   </ItemGroup>
 
   <ItemGroup>
+	<Folder Include="Areas\Customer\Views\Shared\" />
+	<Folder Include="wwwroot\Images\" />
     <Folder Include="wwwroot\template\sass\pages\" />
   </ItemGroup>
 
