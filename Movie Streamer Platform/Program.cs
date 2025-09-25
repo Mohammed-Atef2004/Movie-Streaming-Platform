@@ -28,6 +28,7 @@ namespace Movie_Streamer_Platform
             builder.Services.AddScoped<IMovieService, MovieService>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<ISeriesService, SeriesService>();
+            builder.Services.AddScoped<IBookmarkService, BookmarkService>();
 
             var app = builder.Build();
 
