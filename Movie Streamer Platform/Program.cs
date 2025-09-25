@@ -122,7 +122,7 @@ namespace Movie_Streamer_Platform
                     pattern: "Customer/{controller=Home}/{action=Index}/{id?}");
 
                 endpoints.MapControllerRoute(
-                    name: "default",
+                    name: "Guest",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
 
             });

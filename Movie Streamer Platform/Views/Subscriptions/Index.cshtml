@@ -1,0 +1,178 @@
+﻿@{
+    ViewBag.PageTitle = "Subscription Plans";
+}
+
+<!-- Hero Section -->
+<section class="plans-hero section">
+    <div class="container text-center text-white animate-fade">
+        <h1 class="plans-title">Choose Your Plan</h1>
+        <p class="plans-subtitle">Unlock unlimited access to movies, series, and exclusive content.</p>
+    </div>
+</section>
+
+<!-- Plans Section -->
+<section class="plans-section section">
+    <div class="container">
+        <div class="row g-4 justify-content-center">
+
+            <!-- Basic Plan -->
+            <div class="col-lg-4 col-md-6 animate-up">
+                <div class="plan-card">
+                    <h3 class="plan-name">Basic</h3>
+                    <p class="plan-price">$5<span>/month</span></p>
+                    <ul class="plan-features">
+                        <li>✔ Access to 500+ movies</li>
+                        <li>✔ Watch in SD</li>
+                        <li>✔ 1 Device</li>
+                        <li>✘ No offline downloads</li>
+                    </ul>
+                    <a href="/Subscription/Subscribe?plan=Basic" class="btn plan-btn">Subscribe</a>
+                </div>
+            </div>
+
+            <!-- Standard Plan -->
+            <div class="col-lg-4 col-md-6 animate-up delay-1">
+                <div class="plan-card highlight">
+                    <h3 class="plan-name">Standard</h3>
+                    <p class="plan-price">$10<span>/month</span></p>
+                    <ul class="plan-features">
+                        <li>✔ Access to 2000+ movies & series</li>
+                        <li>✔ HD Streaming</li>
+                        <li>✔ 3 Devices</li>
+                        <li>✔ Offline downloads</li>
+                    </ul>
+                    <a href="/Subscription/Subscribe?plan=Standard" class="btn plan-btn">Subscribe</a>
+                </div>
+            </div>
+
+            <!-- Premium Plan -->
+            <div class="col-lg-4 col-md-6 animate-up delay-2">
+                <div class="plan-card">
+                    <h3 class="plan-name">Premium</h3>
+                    <p class="plan-price">$15<span>/month</span></p>
+                    <ul class="plan-features">
+                        <li>✔ Unlimited access to all content</li>
+                        <li>✔ 4K Ultra HD + HDR</li>
+                        <li>✔ 5 Devices</li>
+                        <li>✔ Offline downloads</li>
+                        <li>✔ Priority support</li>
+                    </ul>
+                    <a href="/Subscription/Subscribe?plan=Premium" class="btn plan-btn">Subscribe</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    body {
+        background-color: #060606; 
+    }
+
+    /* Hero Section */
+    .plans-hero {
+        background: linear-gradient(to right, rgba(20, 20, 20, 0.95), rgba(40, 40, 40, 0.9));
+        padding: 80px 20px;
+        text-align: center;
+        border-radius: 12px;
+        margin-bottom: 40px;
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    .plans-title {
+        font-size: 42px;
+        font-weight: 800;
+        margin-bottom: 10px;
+        color: #fff;
+    }
+
+    .plans-subtitle {
+        font-size: 18px;
+        color: #aaa;
+    }
+
+    /* Plan Cards */
+    .plan-card {
+        background: #111;
+        border-radius: 16px;
+        padding: 30px 20px;
+        text-align: center;
+        transition: transform 0.4s ease, box-shadow 0.4s ease;
+        box-shadow: 0 5px 25px rgba(255, 255, 255, 0.05);
+        height: 100%;
+        color: #eee;
+    }
+
+    .plan-card:hover {
+        transform: translateY(-12px) scale(1.05);
+        box-shadow: 0 12px 35px rgba(220, 53, 69, 0.4);
+    }
+
+    .highlight {
+        border: 2px solid var(--accent-color, --accent-color);
+        transform: scale(1.05);
+    }
+
+    .plan-name {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: #fff;
+    }
+
+    .plan-price {
+        font-size: 32px;
+        font-weight: 800;
+        margin-bottom: 20px;
+        color: var(--accent-color, --accent-color);
+    }
+
+    .plan-price span {
+        font-size: 14px;
+        color: #bbb;
+    }
+
+    .plan-features {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 25px 0;
+        text-align: left;
+    }
+
+    .plan-features li {
+        margin-bottom: 10px;
+        font-size: 15px;
+        color: #ccc;
+    }
+
+    .plan-btn {
+        background-color: var(--accent-color, --accent-color);
+        color: #fff;
+        padding: 10px 25px;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .plan-btn:hover {
+        background-color: #fff;
+        color: var(--accent-color, --accent-color);
+        transform: scale(1.1);
+    }
+
+
+
+    .animate-fade {
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    .animate-up {
+        opacity: 0;
+        transform: translateY(40px);
+        animation: fadeIn 1s forwards;
+    }
+
+    .delay-1 { animation-delay: 0.3s; }
+    .delay-2 { animation-delay: 0.6s; }
+</style>

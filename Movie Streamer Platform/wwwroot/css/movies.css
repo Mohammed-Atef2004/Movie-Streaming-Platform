@@ -1,0 +1,322 @@
+﻿/* Hero Section */
+.hero-section {
+    position: relative;
+    height: 400px;
+    background: url('/Images/hero-bg.jpg') center/cover no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-overlay {
+    background: rgba(0, 0, 0, 0.6);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.hero-title {
+    font-size: 48px;
+    font-weight: 800;
+    margin-bottom: 15px;
+}
+
+.hero-subtitle {
+    font-size: 18px;
+    max-width: 700px;
+    margin: auto;
+    line-height: 1.6;
+}
+
+/* Movie Card */
+.movie-card-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.movie-card {
+    background: var(--surface-color);
+    border-radius: 12px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.05);
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+    .movie-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+    }
+
+.movie-img-wrapper {
+    position: relative;
+    overflow: hidden;
+    height: 250px;
+}
+
+.movie-poster {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.movie-card:hover .movie-poster {
+    transform: scale(1.1);
+}
+
+.movie-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+}
+
+.movie-category-badge {
+    display: inline-block;
+    background-color: var(--accent-color);
+    color: var(--contrast-color);
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+}
+
+.movie-content {
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.movie-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--heading-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.movie-desc {
+    font-size: 14px;
+    color: color-mix(in srgb, var(--default-color), transparent 20%);
+    line-height: 1.4;
+    margin-bottom: 10px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.movie-rating {
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffcc00;
+    margin-bottom: 10px;
+}
+
+.movie-meta {
+    margin-top: auto;
+    margin-bottom: 10px;
+}
+
+.movie-price {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--accent-color);
+}
+
+.movie-actions {
+    display: flex;
+    gap: 10px;
+}
+
+    .movie-actions .btn {
+        flex: 1;
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+    }
+
+.btn-bookmark {
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+    .btn-bookmark:hover {
+        background-color: #e0e0e0;
+    }
+
+.btn-watch {
+    background-color: var(--accent-color);
+    color: var(--contrast-color);
+}
+
+    .btn-watch:hover {
+        background-color: color-mix(in srgb, var(--accent-color), black 20%);
+    }
+
+/*--------------------------------------------------------------
+    # Movie Hero Section
+    --------------------------------------------------------------*/
+.hero-section.hero {
+    min-height: 60vh; /* This makes the hero section shorter */
+    padding: 180px 0 80px 0;
+}
+
+/* Ensure the hero content is above the video */
+.hero-section .container {
+    z-index: 2;
+}
+
+/* Full-screen video styling */
+.video-background iframe.youtube-video {
+    top: 50%;
+    left: 50%;
+    width: 100vw;
+    height: 56.25vw;
+    min-width: 100%;
+    min-height: 100%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+/* Overlay to improve readability of text on top of the video */
+.hero-overlay {
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1;
+}
+
+/* Styling for the text */
+.hero-title {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 800;
+    color: var(--contrast-color);
+}
+
+.hero-subtitle {
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    color: var(--contrast-color);
+    opacity: 0.9;
+}
+
+/* Filter & Sort Section */
+.movies-filters-section {
+    background: var(--surface-color); /* نفس خلفية الموفيز */
+    border-radius: 12px;
+    margin-bottom: 30px;
+    padding: 20px 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+}
+
+.filter-input,
+.filter-select {
+    background-color: #1e1e1e;
+    border: 1px solid #333;
+    color: #fff;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 14px;
+}
+
+    .filter-input::placeholder {
+        color: #aaa;
+    }
+
+    .filter-input:focus,
+    .filter-select:focus {
+        outline: none;
+        border-color: var(--accent-color);
+        box-shadow: 0 0 8px rgba(255, 193, 7, 0.4);
+    }
+
+.btn-filter {
+    background-color: var(--accent-color);
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    color: var(--contrast-color);
+    padding: 12px;
+    transition: all 0.3s ease;
+}
+
+    .btn-filter:hover {
+        background-color: color-mix(in srgb, var(--accent-color), black 20%);
+        transform: translateY(-2px);
+    }
+
+.movies-filters-bar {
+    background: rgba(0, 0, 0, 0.3); /* شفاف */
+    backdrop-filter: blur(6px);
+    border-top: 1px solid #444;
+    border-bottom: 1px solid #444;
+    padding: 12px 0;
+    margin-bottom: 20px;
+}
+
+.filter-form {
+    justify-content: flex-end; /* عشان تترص يمين */
+    background: rgba(0, 0, 0, 0.4); /* شفافية خفيفة */
+    backdrop-filter: blur(8px);
+    border: 1px solid #444; /* outlined */
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+}
+
+.filter-input,
+.filter-select {
+    background: transparent;
+    border: 1px solid #555;
+    color: #fff;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+    .filter-input::placeholder {
+        color: #bbb;
+    }
+
+.input-group-text {
+    background: transparent;
+    border: 1px solid #555;
+    border-right: none;
+    color: #fff;
+}
+
+.input-group .form-control,
+.input-group .form-select {
+    border-left: none;
+}
+
+.btn-filter {
+    background: transparent;
+    border: 1px solid var(--accent-color);
+    border-radius: 8px;
+    color: var(--accent-color);
+    font-weight: 600;
+    padding: 6px 16px;
+    transition: all 0.3s ease;
+}
+
+    .btn-filter:hover {
+        background: var(--accent-color);
+        color: var(--contrast-color);
+        transform: translateY(-2px);
+    }
+
