@@ -3,6 +3,7 @@ using BLL.Services.Abstraction;
 using BLL.Services.Implementation;
 using BLL.ViewModels;
 using DAL.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -11,6 +12,7 @@ namespace Series_Streamer_Platform.Areas.Admin.Controllers
 {
     [Area("Admin")]
     //[Route("Admin/[controller]")]
+    [Authorize(Roles = "Admin")]
 
     public class SeriesController : Controller
     {

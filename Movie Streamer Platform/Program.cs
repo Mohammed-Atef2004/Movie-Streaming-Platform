@@ -2,8 +2,11 @@
 using BLL.Services.Abstraction;
 using BLL.Services.Implementation;
 using DAL.Database;
+using DAL.Models;
 using DAL.Repositories.Abstraction;
 using DAL.Repositories.Implementation;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Movie_Streamer_Platform
@@ -29,7 +32,55 @@ namespace Movie_Streamer_Platform
             builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<ISeriesService, SeriesService>();
 
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+           .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
+            options =>
+            {
+                options.LoginPath = new PathString("/Account/Login");
+                options.AccessDeniedPath = new PathString("/Account/AccessDenied");
+            });
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
+
+
             var app = builder.Build();
+            // Seeding Roles & Admin User
+            using (var scope = app.Services.CreateScope())
+            {
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+                string[] roles = { "Admin", "User" };
+
+                foreach (var role in roles)
+                {
+                    if (!roleManager.RoleExistsAsync(role).GetAwaiter().GetResult())
+                    {
+                        roleManager.CreateAsync(new IdentityRole(role)).GetAwaiter().GetResult();
+                    }
+                }
+
+                string adminEmail = "admin@gmail.com";
+                string adminPassword = "Admin@123";
+
+                var adminUser = userManager.FindByEmailAsync(adminEmail).GetAwaiter().GetResult();
+                if (adminUser == null)
+                {
+                    adminUser = new ApplicationUser
+                    {
+                        UserName = adminEmail,
+                        Email = adminEmail,
+                        EmailConfirmed = true
+                    };
+
+                    var result = userManager.CreateAsync(adminUser, adminPassword).GetAwaiter().GetResult();
+                    if (result.Succeeded)
+                    {
+                        userManager.AddToRoleAsync(adminUser, "Admin").GetAwaiter().GetResult();
+                    }
+                }
+            }
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -46,6 +97,8 @@ namespace Movie_Streamer_Platform
 
             app.UseRouting();
 
+            app.UseAuthentication();
+
             app.UseAuthorization();
 
             app.UseStatusCodePagesWithReExecute("/Error/{0}");
@@ -57,6 +110,10 @@ namespace Movie_Streamer_Platform
                     name: "Admin_default",
                     areaName: "Admin",
                     pattern: "Admin/{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapAreaControllerRoute(
+                   name: "Identity",
+                   areaName: "Admin",
+                   pattern: "Identity/{controller=Home}/{action=Index}/{id?}");
 
                 // Route الأساسي
                 endpoints.MapAreaControllerRoute(
