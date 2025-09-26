@@ -5,6 +5,54 @@
     ViewBag.CardTitle = "Edit Movie";
 }
 
+<style>
+    /* Admin Dark Theme Overrides for Form */
+    .card.shadow-lg {
+        background-color: var(--admin-dark-surface);
+        color: var(--admin-text-color);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .card-header.bg-primary {
+        background-color: var(--admin-dark-surface) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .card-header.bg-primary h4 {
+        color: var(--admin-link-color);
+    }
+
+    .form-control,
+    .form-select {
+        background-color: #333 !important;
+        border: 1px solid #555 !important;
+        color: var(--admin-text-color) !important;
+    }
+
+    .form-control::placeholder {
+        color: #888 !important;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: var(--admin-active-color) !important;
+        box-shadow: 0 0 0 0.25rem rgba(227, 0, 0, 0.25) !important;
+    }
+
+    .form-label, .text-muted {
+        color: var(--admin-text-color) !important;
+    }
+
+    .btn-outline-secondary {
+        border-color: #555 !important;
+        color: var(--admin-text-color) !important;
+    }
+
+    .btn-outline-secondary:hover {
+        background-color: #555 !important;
+        color: #fff !important;
+    }
+</style>
+
 <div class="row justify-content-center">
     <div class="col-md-8">
         <div class="card shadow-lg border-0 rounded-3">
@@ -18,39 +66,35 @@
                     <input type="hidden" asp-for="Id" />
                     <input type="hidden" asp-for="ImageUrl" />
 
-                    <!-- Title -->
                     <div class="mb-3">
                         <label asp-for="Title" class="form-label fw-bold"></label>
                         <input asp-for="Title" class="form-control" placeholder="Enter movie title..." />
                         <span asp-validation-for="Title" class="text-danger"></span>
                     </div>
 
-                    <!-- Description -->
                     <div class="mb-3">
                         <label asp-for="Description" class="form-label fw-bold"></label>
                         <textarea asp-for="Description" class="form-control" rows="3" placeholder="Enter movie description..."></textarea>
                         <span asp-validation-for="Description" class="text-danger"></span>
                     </div>
 
-                    <!-- Price -->
                     <div class="mb-3">
                         <label asp-for="Price" class="form-label fw-bold"></label>
                         <input asp-for="Price" class="form-control" placeholder="Enter price..." />
                         <span asp-validation-for="Price" class="text-danger"></span>
                     </div>
 
-                    <!-- Image -->
                     <div class="mb-4 text-center">
                         <label class="form-label fw-bold d-block">Poster</label>
                         <img id="ImagePreview"
                              src="~/Images/@Model.ImageUrl"
                              class="img-fluid rounded shadow mb-2 border"
                              style="max-height:300px; object-fit:contain;"
-                             alt="@Model.Title" />
+                             alt="@Model.Title"
+                             onerror="this.onerror=null;this.src='/images/poster-placeholder.jpg';" />
                         <input type="file" name="file" id="imgfile" class="form-control mt-2" />
                     </div>
 
-                    <!-- Category -->
                     <div class="mb-4">
                         <label class="form-label fw-bold">Category</label>
                         <select asp-for="CategoryId" class="form-select" asp-items="Model.CategoryList">
@@ -58,10 +102,9 @@
                         </select>
                     </div>
 
-                    <!-- Buttons -->
                     <div class="d-flex justify-content-between">
                         <a asp-action="Index" class="btn btn-outline-secondary">⬅ Back to List</a>
-                        <input type="submit" value="💾 Save Changes" class="btn btn-success" />
+                        <input type="submit" value="💾 Save Changes" class="btn btn-danger" />
                     </div>
                 </form>
             </div>
@@ -70,19 +113,16 @@
 </div>
 
 @section Scripts {
-    <script>
-        document.getElementById("imgfile").addEventListener("change", function (event) {
-            var input = event.target;
-
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-
-                reader.onload = function (e) {
-                    document.getElementById("ImagePreview").setAttribute("src", e.target.result);
+        <script>
+            document.getElementById("imgfile").addEventListener("change", function (event) {
+                var input = event.target;
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        document.getElementById("ImagePreview").setAttribute("src", e.target.result);
+                    }
+                    reader.readAsDataURL(input.files[0]);
                 }
-
-                reader.readAsDataURL(input.files[0]);
-            }
-        });
-    </script>
+            });
+        </script>
 }

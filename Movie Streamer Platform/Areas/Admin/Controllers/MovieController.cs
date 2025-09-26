@@ -2,6 +2,7 @@
 using BLL.Services.Abstraction;
 using BLL.Services.Implementation;
 using BLL.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace Movie_Streamer_Platform.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
 
     public class MovieController : Controller
     {
@@ -61,7 +63,7 @@ namespace Movie_Streamer_Platform.Areas.Admin.Controllers
         public IActionResult Delete(int Id)
         {
             _movieService.DeleteMovie(Id);
-            return RedirectToAction("GetAll");
+            return RedirectToAction("Index");
         }
         [HttpGet]
         public IActionResult Edit(int Id)

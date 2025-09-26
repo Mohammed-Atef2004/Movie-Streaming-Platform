@@ -6,77 +6,26 @@
 @using DAL.Models
 @model IEnumerable<SeriesVM>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="fw-bold">@ViewBag.CardTitle</h2>
-    <a class="btn btn-primary" href="/Admin/Series/Create">
-        <i class="bi bi-plus-circle"></i> Add New Series
-    </a>
-</div>
-
-<div class="container-fluid">
-    <div class="row g-4">
-        @foreach (var item in Model)
-        {
-            <div class="col-md-3 col-sm-6">
-                <div class="card movie-card h-100 border-0 shadow-lg rounded-3 overflow-hidden">
-
-                    <!-- Series Poster -->
-                    <div class="position-relative">
-                        <img src="~/Images/@item.ImageUrl"
-                             class="card-img-top movie-poster"
-                             alt="@item.Title" />
-                        <div class="movie-overlay d-flex align-items-center justify-content-center">
-                            <span class="badge bg-dark bg-opacity-75 text-white px-3 py-2">
-                                @(item.Category != null ? item.Category.Name : "No Category")
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Card Body -->
-                    <div class="card-body d-flex flex-column p-3">
-                        <h5 class="card-title fw-bold text-truncate">@item.Title</h5>
-                        <p class="card-text text-muted movie-desc">@item.Description</p>
-                        <p class="fw-bold text-success mb-2">💲@item.Price</p>
-
-                        <div class="mt-auto d-flex justify-content-between">
-                            <a href="/Admin/Series/Edit/@item.Id" class="btn btn-outline-success btn-sm">
-                                <i class="bi bi-pencil-square"></i>
-                            </a>
-                            <a href="/Admin/Series/Delete/@item.Id" class="btn btn-outline-danger btn-sm">
-                                <i class="bi bi-trash"></i>
-                            </a>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        }
-    </div>
-</div>
-
-@section Scripts {
-    <script>
-        // hover animation for series cards
-        document.querySelectorAll(".movie-card").forEach(card => {
-            card.addEventListener("mouseover", () => {
-                card.classList.add("shadow-xl");
-            });
-            card.addEventListener("mouseout", () => {
-                card.classList.remove("shadow-xl");
-            });
-        });
-    </script>
-}
-
 <style>
+    /* Admin Dark Theme Overrides for Series Cards */
     .movie-card {
+        background-color: var(--admin-dark-surface);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-        .movie-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-        }
+    .movie-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .movie-card .card-title {
+        color: var(--admin-text-color);
+    }
+
+    .movie-card .card-text.movie-desc {
+        color: rgba(255, 255, 255, 0.7);
+    }
 
     .movie-poster {
         height: 220px;
@@ -91,8 +40,97 @@
 
     .movie-desc {
         display: -webkit-box;
-        -webkit-line-clamp: 3; /* يعرض 3 سطور بس */
+        -webkit-line-clamp: 3;
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
+
+    .btn-primary {
+        background-color: var(--admin-active-color) !important;
+        border-color: var(--admin-active-color) !important;
+        color: #fff !important;
+    }
+
+    .btn-primary:hover {
+        background-color: #bb2d3b !important;
+        border-color: #bb2d3b !important;
+    }
+
+    .btn-outline-success {
+        border-color: #555 !important;
+        color: var(--admin-text-color) !important;
+    }
+
+    .btn-outline-success:hover {
+        background-color: #198754 !important;
+        border-color: #198754 !important;
+        color: #fff !important;
+    }
+
+    .btn-outline-danger {
+        border-color: #555 !important;
+        color: var(--admin-text-color) !important;
+    }
+
+    .btn-outline-danger:hover {
+        background-color: var(--admin-active-color) !important;
+        border-color: var(--admin-active-color) !important;
+        color: #fff !important;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: .25rem;
+    }
 </style>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="fw-bold text-white">@ViewBag.CardTitle</h2>
+    <a class="btn btn-primary" href="/Admin/Series/Create">
+        <div>
+            <i class="bi bi-plus-circle"></i> Add New Series
+        </div>
+    </a>
+</div>
+
+<div class="container-fluid">
+    <div class="row g-4">
+        @foreach (var item in Model)
+        {
+                <div class="col-md-3 col-sm-6">
+                    <div class="card movie-card h-100 border-0 shadow-lg rounded-3 overflow-hidden">
+
+                        <div class="position-relative">
+                            <img src="~/Images/@item.ImageUrl"
+                                 class="card-img-top movie-poster"
+                                 alt="@item.Title"
+                                 onerror="this.onerror=null;this.src='/images/poster-placeholder.jpg';" />
+                            <div class="movie-overlay d-flex align-items-center justify-content-center">
+                                <span class="badge bg-dark bg-opacity-75 text-white px-3 py-2">
+                                @(item.Category != null ? item.Category.Name : "No Category")
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="card-body d-flex flex-column p-3">
+                            <h5 class="card-title fw-bold text-truncate">@item.Title</h5>
+                            <p class="card-text text-muted movie-desc">@item.Description</p>
+                            <p class="fw-bold text-success mb-2">💲@item.Price</p>
+
+                            <div class="mt-auto d-flex justify-content-between">
+                                <a href="/Admin/Series/Edit/@item.Id" class="btn btn-outline-success">
+                                        <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a href="/Admin/Series/Delete/@item.Id" class="btn btn-outline-danger">
+                                        <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+        }
+    </div>
+</div>

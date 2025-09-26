@@ -19,9 +19,9 @@
           <div class="hero-content text-white">
             <h1>Unlimited Movies & Series</h1>
             <p>Watch anywhere. Cancel anytime. Join millions of users enjoying blockbusters, originals, and timeless classics.</p>
-            <div class="cta-buttons mt-3">
-              <a asp-controller="Subscription" asp-action="Index" class="btn btn-primary me-2">Subscribe Now</a>
-              <a href="/Customer/Home/Movies" class="btn btn-outline-light">Browse Library</a>
+            <div class="cta-buttons mt-4">
+                <a asp-controller="Subscriptions" asp-action="Index" class="btn btn-primary me-2">Subscribe Now</a>
+                <a href="/Movies" class="btn btn-outline-light">Browse Library</a>
             </div>
           </div>
         </div>
@@ -92,3 +92,104 @@
 
 </section>
 <!-- /Hero Section -->
+
+
+
+
+          @using Microsoft.AspNetCore.Identity
+@using DAL.Models
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<style>
+    /* === Hero Section Styling === */
+
+
+
+    .cta-buttons .btn {
+        border-radius: 30px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .cta-buttons .btn-primary {
+        background: linear-gradient(45deg, #ff416c, #ff4b2b);
+        border: none;
+    }
+
+    .cta-buttons .btn-primary:hover {
+        transform: scale(1.05);
+        box-shadow: 0px 5px 20px rgba(255, 75, 43, 0.6);
+    }
+
+    .cta-buttons .btn-outline-light {
+        border: 2px solid #fff;
+        color: #fff;
+    }
+
+    .cta-buttons .btn-outline-light:hover {
+        background: #fff;
+        color: #000;
+        transform: scale(1.05);
+    }
+
+
+    /* Stats Card */
+    .stats-card {
+        background: rgba(20, 20, 20, 0.9);
+        border-radius: 20px;
+        animation: fadeIn 2s ease;
+    }
+
+    .stats-card h3 {
+        font-weight: 600;
+    }
+
+    /* Welcome Section */
+    .welcome-section {
+        background: #111;
+        padding: 3rem 0;
+        text-align: center;
+        color: #fff;
+    }
+
+    .welcome-section h2 {
+        font-weight: 700;
+        font-size: 2rem;
+        background: linear-gradient(90deg, #ff416c, #ff4b2b);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .welcome-section p {
+        color: #bbb;
+    }
+</style>
+
+
+
+
+
+<!-- Welcome Section (لو مستخدم مسجل دخول) -->
+@if (SignInManager.IsSignedIn(User))
+{
+            <section class="welcome-section">
+                <div class="container">
+                    <h2>Welcome, @UserManager.GetUserName(User) </h2>
+                    <p>We’re glad to have you back! Start exploring the latest movies & series curated just for you.</p>
+                    <div class="cta-buttons mt-4">
+                        @* <a asp-controller="Subscriptions" asp-action="Index" class="btn btn-primary me-2">Subscribe Now</a> *@
+                        <a href="/Movies" class="btn btn-outline-light">Continue Watching</a>
+                    </div>
+                </div>
+            </section>
+}
+
+<link rel="stylesheet" href="~/css/movies.css" />
+
+

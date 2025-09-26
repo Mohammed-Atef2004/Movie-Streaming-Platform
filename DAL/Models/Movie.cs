@@ -19,6 +19,8 @@ namespace DAL.Models
         
         public int? CategoryId { get; set; }
         public Category? Category { get; set; }
+
+
         public void Create(string title, string? discription = null, string? imageUrl = null,string ?createor=null)
         {
             Title = title;
@@ -37,5 +39,12 @@ namespace DAL.Models
             UpdatedAt = DateTime.UtcNow;
             UpdatedBy = updater;
         }
+
+        public double? Rating { get; set; }
+        public int? Views { get; set; }
+        public int? Downloads { get; set; }
+        public string? TrailerUrl;
+        public DateTime? ReleaseDate;
+        public bool IsActive { get; set; }
     }
 }

@@ -1,13 +1,14 @@
 ﻿using BLL.Services.Abstraction;
 using BLL.ViewModels;
 using DAL.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Movie_Streamer_Platform.Areas.Admin.Controllers
 {
     [Area("Admin")]
     //[Route("Admin/[controller]")]
-
+    [Authorize(Roles = "Admin")]
     public class CategoryController : Controller
     {
         private readonly ICategoryService _categoryService;
