@@ -1,80 +1,95 @@
 ﻿@{
     ViewData["Title"] = "Dashboard";
+    var userCount = ViewBag.UserCount as int?;
+    var paymentCount = ViewBag.PaymentCount as int?;
 }
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLp3eYhW9o9R1fGqG2+8E11HhL01dF1J5mGz1J98q9y2f6n9JvN6/a8W/0o8jW1R+0h9Gg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
+    <link rel="stylesheet" href="~/admin_template/assets/css/bootstrap.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/admin_template/assets/vendors/bootstrap-icons/bootstrap-icons.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/admin_template/assets/vendors/perfect-scrollbar/perfect-scrollbar.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/admin_template/assets/css/app.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/admin_template/assets/css/bold.css" asp-append-version="true" />
+</head>
 <div class="page-heading mb-4">
     <h3 class="fw-bold">Welcome Back, Admin!</h3>
     <p class="text-muted">Here’s a quick overview of your Movie Streaming Platform.</p>
 </div>
 
 <div class="row g-4">
-    <!-- Movies Card -->
     <div class="col-xl-3 col-md-6">
-        <div class="card shadow-sm border-0 bg-primary text-white">
+        <div class="card shadow-sm border-0  text-white">
             <div class="card-body d-flex justify-content-between align-items-center">
                 <div>
                     <h6 class="text-uppercase fw-bold">Movies</h6>
                     <h2 class="fw-bold">@ViewBag.MovieCount</h2>
                     <small>Total movies in the platform</small>
                 </div>
+                <div>
                 <i class="bi bi-film fs-1 opacity-75"></i>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Series Card -->
     <div class="col-xl-3 col-md-6">
-        <div class="card shadow-sm border-0 bg-success text-white">
+        <div class="card shadow-sm border-0 /*bg-success*/ text-white">
             <div class="card-body d-flex justify-content-between align-items-center">
                 <div>
                     <h6 class="text-uppercase fw-bold">Series</h6>
                     <h2 class="fw-bold">@ViewBag.SeriesCount</h2>
                     <small>Total series in the platform</small>
                 </div>
-                <i class="bi bi-collection-play fs-1 opacity-75"></i>
+                <div>
+                    <i class="bi bi-collection-play fs-1 opacity-75"></i>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Users Card -->
     <div class="col-xl-3 col-md-6">
-        <div class="card shadow-sm border-0 bg-warning text-dark">
+        <div class="card shadow-sm border-0 /*bg-success*/ text-white">
             <div class="card-body d-flex justify-content-between align-items-center">
                 <div>
-                    <h6 class="text-uppercase fw-bold">Users</h6>
-                    <h2 class="fw-bold">@ViewBag.UserCount</h2>
-                    <small>Total registered users</small>
+                    <h6 class="text-uppercase fw-bold">Series</h6>
+                        <h2 class="fw-bold">@(userCount.HasValue ? userCount.Value.ToString("N0") : "0")</h2>
+                    <small>Total registered users in the platform</small>
                 </div>
-                <i class="bi bi-people fs-1 opacity-75"></i>
+                <div>
+                     <i class="bi bi-people fs-1 opacity-75"></i>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Payments Card -->
+
+
     <div class="col-xl-3 col-md-6">
-        <div class="card shadow-sm border-0 bg-danger text-white">
+        <div class="card shadow-sm border-0 /*bg-danger*/ text-white">
             <div class="card-body d-flex justify-content-between align-items-center">
                 <div>
                     <h6 class="text-uppercase fw-bold">Payments</h6>
-                    <h2 class="fw-bold">@ViewBag.PaymentCount</h2>
+                    <h2 class="fw-bold">@(paymentCount.HasValue ? paymentCount.Value.ToString("N0") : "0")</h2>
                     <small>Total successful transactions</small>
                 </div>
-                <i class="bi bi-credit-card fs-1 opacity-75"></i>
+                <div>
+                    <i class="bi bi-credit-card fs-1 opacity-75"></i>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Recent Movies Table -->
 <div class="row mt-5">
     <div class="col-12">
         <div class="card shadow-sm border-0">
-            <div class="card-header bg-light">
-                <h5 class="mb-0 fw-bold">Recent Movie Additions</h5>
+            <div class="card-header bg-secondary">
+                <h5 class="mb-0 fw-bold text-white">Recent Movie Additions</h5>
             </div>
             <div class="card-body p-0">
                 <table class="table table-hover mb-0">
-                    <thead class="table-light">
+                    <thead class="table-dark">
                         <tr>
                             <th>Title</th>
                             <th>Category</th>
@@ -83,18 +98,21 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var movie in ViewBag.RecentMovies)
+                        @if(ViewBag!=null)
                         {
+                            @foreach (var movie in ViewBag.RecentMovies)
+                            {
                                 <tr>
-                                    <td class="fw-bold">@movie.Title</td>
+                                    <td class="fw-bold"><a asp-area="Admin" asp-controller="Movie" asp-action="Details" asp-route-id="@movie.Id">@movie.Title</a></td>
                                     <td>@movie.Category.Name</td>
-                                    @* <td>@movie.ReleaseDate.ToString("MMM dd, yyyy")</td> *@
-                                    @* <td> *@
-                                    @*     @* <span class="badge @(movie.IsActive ? "bg-success" : "bg-secondary")">  
-                                    @*     @* @(movie.IsActive ? "Active" : "Inactive") 
-                                    @*     </span> *@
-                                    @* </td> *@
+                                    @* <td>@movie.ReleaseDate?.ToString("MMM dd, yyyy")</td> *@
+                                    <td>
+                                        @* <span class="badge @(movie.IsActive ? "bg-success" : "bg-secondary")">
+                                            @(movie.IsActive ? "Active" : "Inactive")
+                                        </span> *@
+                                    </td>
                                 </tr>
+                            }
                         }
                     </tbody>
                 </table>

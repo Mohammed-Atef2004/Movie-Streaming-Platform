@@ -10,7 +10,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Admin Dashboard</title>
 
-    <!-- Bootstrap & Template CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLp3eYhW9o9R1fGqG2+8E11HhL01dF1J5mGz1J98q9y2f6n9JvN6/a8W/0o8jW1R+0h9Gg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
     <link rel="stylesheet" href="~/admin_template/assets/css/bootstrap.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/admin_template/assets/vendors/bootstrap-icons/bootstrap-icons.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/admin_template/assets/vendors/perfect-scrollbar/perfect-scrollbar.css" asp-append-version="true" />
@@ -20,57 +21,53 @@
     @RenderSection("Styles", required: false)
 </head>
 <body>
+    @{
+        var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    }
+
     <div id="app">
-        <!-- Sidebar -->
         <div id="sidebar" class="active">
             <div class="sidebar-wrapper active">
                 <div class="sidebar-header">
-                    <a asp-controller="Home" asp-action="Index" class="logo d-flex align-items-center text-white">
-                      <i class="bi bi-play-circle-fill fs-3 me-2 text-danger"></i>
-                         <span class="sitename fw-bold">Streamify</span>
-                      </a>
-        <span class="ms-2 fw-bold">Movie Admin</span>
+                    <a asp-controller="Home" asp-action="Index" class="align-items-center justify-content-center text-white p-3">
+                        <i class="bi bi-play-circle-fill fs-3 me-2 text-danger"></i>
+                        <span class="fw-bold">Streamify</span>
+                    </a>
                 </div>
                 <div class="sidebar-menu">
                     <ul class="menu">
-                        <li class="sidebar-item">
-    <a asp-area="Admin" asp-controller="Movie" asp-action="Index" class="sidebar-link">
-        <i class="bi bi-film"></i><span>Movies</span>
-    </a>
-        </li>
-
-        <li class="sidebar-item">
-            <a asp-area="Admin" asp-controller="Series" asp-action="Index" class="sidebar-link">
-                <i class="bi bi-collection-play"></i><span>Series</span>
-            </a>
-        </li>
-
-        <li class="sidebar-item">
-            <a asp-area="Admin" asp-controller="Category" asp-action="Index" class="sidebar-link">
-                <i class="bi bi-tags"></i><span>Categories</span>
-            </a>
-        </li>
-
-        <li class="sidebar-item">
-            <a asp-area="Admin" asp-controller="User" asp-action="Index" class="sidebar-link">
-                <i class="bi bi-people"></i><span>Users</span>
-            </a>
-        </li>
-
-        <li class="sidebar-item">
-            <a asp-area="Admin" asp-controller="Payment" asp-action="Index" class="sidebar-link">
-                <i class="bi bi-credit-card"></i><span>Payments</span>
-            </a>
-        </li>
-
+                        <li class="sidebar-title">Admin Dashboard</li>
+                        <li class="sidebar-item @(currentController == "Movie" ? "active" : "")">
+                            <a asp-area="Admin" asp-controller="Movie" asp-action="Index" class="sidebar-link">
+                                <i class="bi bi-film"></i><span>Movies</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item @(currentController == "Series" ? "active" : "")">
+                            <a asp-area="Admin" asp-controller="Series" asp-action="Index" class="sidebar-link">
+                                <i class="bi bi-collection-play"></i><span>Series</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item @(currentController == "Category" ? "active" : "")">
+                            <a asp-area="Admin" asp-controller="Category" asp-action="Index" class="sidebar-link">
+                                <i class="bi bi-tags"></i><span>Categories</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item @(currentController == "User" ? "active" : "")">
+                            <a asp-area="Admin" asp-controller="User" asp-action="Index" class="sidebar-link">
+                                <i class="bi bi-people"></i><span>Users</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item @(currentController == "Payment" ? "active" : "")">
+                            <a asp-area="Admin" asp-controller="Payment" asp-action="Index" class="sidebar-link">
+                                <i class="bi bi-credit-card"></i><span>Payments</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
         </div>
 
-        <!-- Main Content -->
         <div id="main">
-            <!-- Topbar -->
             <header class="mb-3">
                 <nav class="navbar navbar-expand navbar-light">
                     <div class="container-fluid">
@@ -81,13 +78,16 @@
                         <div class="ms-auto d-flex align-items-center">
                             <div class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <img src="~/admin_template/assets/images/avatar.png" class="rounded-circle" style="height:35px;" />
-                                    <span class="ms-2">Admin</span>
+                                    <img src="https://i.pravatar.cc/36?u=@User.Identity.Name" class="rounded-circle me-2" alt="Profile" style="width: 36px; height: 36px;">
+                                    <span class="ms-2">@User.Identity.Name</span>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li><a class="dropdown-item" href="#">Profile</a></li>
-                                    <li><a class="dropdown-item" href="#">Settings</a></li>
-                                    <li><a class="dropdown-item text-danger" href="/Account/Logout">Logout</a></li>
+                                    <li>
+                                        <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" class="dropdown-item p-0">
+                                            <button type="submit" class="btn btn-link text-danger w-100 text-start">Logout</button>
+                                        </form>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -95,14 +95,12 @@
                 </nav>
             </header>
 
-            <!-- Content Body -->
             <div class="page-content">
                 <div class="container-fluid">
                     @RenderBody()
                 </div>
             </div>
 
-            <!-- Footer -->
             <footer class="mt-4">
                 <div class="footer clearfix mb-0 text-muted text-center">
                     <p>© @DateTime.Now.Year Movie Streaming Platform Admin Panel</p>
@@ -111,7 +109,6 @@
         </div>
     </div>
 
-    <!-- Scripts -->
     <script src="~/admin_template/assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js"></script>
     <script src="~/admin_template/assets/js/bootstrap.bundle.min.js"></script>
     <script src="~/admin_template/assets/js/main.js"></script>

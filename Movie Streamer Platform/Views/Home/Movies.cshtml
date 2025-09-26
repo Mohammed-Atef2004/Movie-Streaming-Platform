@@ -1,0 +1,172 @@
+﻿@{
+    ViewBag.PageTitle = "User Home";
+}
+@using BLL.ViewModels
+@using DAL.Models
+@model IEnumerable<MovieVM>
+
+<div class="container py-5">
+
+
+    <!-- Welcome Section -->
+    <div class="text-center mb-5" data-aos="fade-up">
+        <h2 class="fw-bold text-white">
+            👋 Welcome, @User?.Identity?.Name
+        </h2>
+        <p class="text-muted">
+            Discover your personalized recommendations and explore the latest movies!
+        </p>
+        @foreach (var item in Model)
+        {
+                    <!-- Movie Poster -->
+                    <div class="position-relative">
+                        <img src="~/Images/@item.ImageUrl"
+                             class="card-img-top movie-poster"
+                             alt="@item.Title" />
+                        <div class="movie-overlay d-flex align-items-center justify-content-center">
+                            <span class="badge bg-dark bg-opacity-75 text-white px-3 py-2">
+                                @if (item.Category != null)
+                                {
+                                    @item.Category.Name
+                                }
+                                else
+                                {
+                                    @:No Category
+                                }
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- Card Body -->
+                    <div class="card-body d-flex flex-column p-3">
+                        <h5 class="card-title fw-bold text-truncate">@item.Title</h5>
+                        <p class="card-text text-muted movie-desc">@item.Description</p>
+                        @* <p class="fw-bold text-success mb-2">💲@item.Price</p> *@
+
+                        <div class="mt-auto d-flex justify-content-between">
+                            <a href="/Customer/Home/Movie/@item.Id" class="btn btn-outline-success btn-sm"></a>
+                             
+                          
+                        </div>
+                    </div>
+            
+        }
+    </div>
+
+    <!-- Recommendations -->
+    <div class="mb-5" data-aos="fade-up" data-aos-delay="100">
+        <h3 class="fw-bold text-warning mb-4">🔥 Recommended for You</h3>
+        <div class="row g-4">
+            @foreach (var item in Model.Take(4)) // يعرض أول 4 كـ Recomm
+            {
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card movie-card border-0 shadow-lg rounded-3 overflow-hidden">
+                            <img src="~/Images/@item.ImageUrl"
+                                 class="card-img-top movie-poster"
+                                 alt="@item.Title"
+                                 onerror="this.src='/Images/placeholder.jpg';" />
+
+                            <div class="card-body p-3">
+                                <h6 class="fw-bold text-truncate">@item.Title</h6>
+                                <small class="text-muted">@item.Category?.Name ?? "No Category"</small>
+                            </div>
+                        </div>
+                    </div>
+            }
+        </div>
+    </div>
+
+    <!-- All Movies -->
+    <div class="mb-3" data-aos="fade-up" data-aos-delay="200">
+        <h3 class="fw-bold text-white mb-4">🎬 All Movies</h3>
+        <div class="row g-4">
+            @foreach (var item in Model)
+            {
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card movie-card h-100 border-0 shadow-lg rounded-3 overflow-hidden">
+
+                            <!-- Poster -->
+                            <div class="position-relative">
+                                <img src="~/Images/@item.ImageUrl"
+                                     class="card-img-top movie-poster"
+                                     alt="@item.Title"
+                                     onerror="this.src='/Images/placeholder.jpg';" />
+
+                                <div class="movie-overlay d-flex align-items-center justify-content-center">
+                                    <span class="badge bg-dark bg-opacity-75 text-white px-3 py-2">
+                                    @item.Category?.Name ?? "No Category"
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Card Body -->
+                            <div class="card-body d-flex flex-column p-3">
+                                <h5 class="card-title fw-bold text-truncate">@item.Title</h5>
+                                <p class="card-text text-muted movie-desc">@item.Description</p>
+                                @* <p class="fw-bold text-success mb-2">💲@item.Price</p> *@
+
+                                <div class="mt-auto d-flex justify-content-between">
+                                    <a href="/Customer/Home/Movie/@item.Id" class="btn btn-outline-warning btn-sm">
+                                        <i class="bi bi-play-circle"></i> Watch Now
+                                    </a>
+                                    <button class="btn btn-outline-light btn-sm">
+                                        <i class="bi bi-plus-circle"></i> My List
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            }
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+        <script>
+            // hover animation
+            document.querySelectorAll(".movie-card").forEach(card => {
+                card.addEventListener("mouseover", () => {
+                    card.classList.add("shadow-xl");
+                });
+                card.addEventListener("mouseout", () => {
+                    card.classList.remove("shadow-xl");
+                });
+            });
+        </script>
+}
+
+<style>
+    body {
+        background-color: #000; /* خلفية سوداء */
+        color: #fff;
+    }
+
+    .movie-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+    }
+
+    .movie-card:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    }
+
+    .movie-poster {
+        height: 220px;
+        object-fit: cover;
+    }
+
+    .movie-overlay {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+    }
+
+    .movie-desc {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+</style>

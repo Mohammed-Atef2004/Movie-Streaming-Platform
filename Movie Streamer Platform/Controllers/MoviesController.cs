@@ -1,5 +1,7 @@
 ﻿using BLL.Services.Abstraction;
 using Microsoft.AspNetCore.Mvc;
+using BLL.ViewModels;
+using BLL.Services;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Movie_Streamer_Platform.Controllers
@@ -8,11 +10,14 @@ namespace Movie_Streamer_Platform.Controllers
     {
         private readonly IMovieService _movieService;
         private readonly ICategoryService _categoryService;
+
         public MoviesController(IMovieService movieService, ICategoryService categoryService)
         {
             _movieService = movieService;
             _categoryService = categoryService;
         }
+
+
         public IActionResult Index()
         {
             var movies = _movieService.GetAllMovies();

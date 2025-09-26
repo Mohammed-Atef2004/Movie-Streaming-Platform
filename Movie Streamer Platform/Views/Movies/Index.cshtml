@@ -68,7 +68,7 @@
                 @foreach (var item in Model)
                 {
                     <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
-                        <a asp-controller="Movies" asp-action="Details" asp-route-id="@item.Id" class="movie-card-link">
+                        <a asp-area="" asp-controller="Movies" asp-action="Details" asp-route-id="@item.Id" class="movie-card-link">
                             <div class="movie-card">
                                 <div class="movie-img-wrapper">
                                     <img src="~/Images/@item.ImageUrl"
@@ -87,12 +87,12 @@
 
                                     <p class="movie-desc">@(string.IsNullOrEmpty(item.Description) ? "No description available" : (item.Description.Length > 100 ? item.Description.Substring(0, 100) + "..." : item.Description))</p>
 
-                                    <div class="movie-rating">
+                                    @* <div class="movie-rating">
                                         ⭐⭐⭐⭐⭐ <span>(@item.Rating.ToString())</span>
-                                    </div>
+                                    </div> *@
 
                                     <div class="movie-meta">
-                                        <span class="movie-price">💲@item.Price</span>
+                                        @* <span class="movie-price">💲@item.Price</span> *@
                                     </div>
 
                                     <div class="movie-actions">

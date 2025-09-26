@@ -21,7 +21,7 @@ namespace DAL.Repositories.Implementation
             var MoviewFromDb = _context.Movies.FirstOrDefault(u => u.Id == movie.Id);
             if(MoviewFromDb != null)
             {
-                MoviewFromDb.Update(movie.Title, movie.Description, movie.ImageUrl, movie.UpdatedBy);
+                MoviewFromDb.Update(movie.Title, movie.Description,movie.IsFree, movie.ImageUrl, movie.UpdatedBy);
                 _context.Movies.Update(MoviewFromDb);
 
                 if (_context.SaveChanges() > 0)

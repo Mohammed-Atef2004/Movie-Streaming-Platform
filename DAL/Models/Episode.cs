@@ -17,6 +17,7 @@ namespace DAL.Models
         public int DownloadCount { get; private set; }
 
         [ForeignKey("Series")]
+
         public int SeriesId { get; set; }
         public Series? Series { get; set; }
 
