@@ -55,7 +55,7 @@ namespace Movie_Streamer_Platform.Areas.Customer.Controllers
         }
         public IActionResult MoviesSortedByViews()
         {
-            var movies = _movieService.GetAllMovies().OrderByDescending(m => m.ViewCount);
+            var movies = _movieService.GetAllMovies().OrderByDescending(m => m.Views);
             if (movies == null)
             {
                 return NotFound();
@@ -73,7 +73,7 @@ namespace Movie_Streamer_Platform.Areas.Customer.Controllers
         }
         public IActionResult MoviesSortedByDownloads()
         {
-            var movies = _movieService.GetAllMovies().OrderByDescending(m => m.DownloadCount);
+            var movies = _movieService.GetAllMovies().OrderByDescending(m => m.Downloads);
             if (movies == null)
             {
                 return NotFound();
