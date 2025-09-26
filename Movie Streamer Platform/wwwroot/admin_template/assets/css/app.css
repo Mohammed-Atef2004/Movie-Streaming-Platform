@@ -945,7 +945,7 @@
             font-size: 1rem;
             list-style: none;
             font-weight: 600;
-            color: #25396f
+            color: #e30000
         }
 
         .sidebar-wrapper .menu .sidebar-link {
@@ -957,7 +957,7 @@
             border-radius: .5rem;
             transition: all .5s;
             text-decoration: none;
-            color: #25396f
+            color: #e30000
         }
 
             .sidebar-wrapper .menu .sidebar-link i, .sidebar-wrapper .menu .sidebar-link svg {
@@ -1028,7 +1028,7 @@
             .sidebar-wrapper .menu .submenu .submenu-item a {
                 padding: .7rem 2rem;
                 display: block;
-                color: #25396f;
+                color: #e30000;
                 font-size: .85rem;
                 font-weight: 600;
                 letter-spacing: .5px;
@@ -1399,9 +1399,9 @@
     margin: 0 0 2rem
 }
 
-    .page-heading h3 {
-        font-weight: 700
-    }
+.page-heading h3 {
+    font-weight: 700
+}
 
 .page-title-headings {
     display: flex;

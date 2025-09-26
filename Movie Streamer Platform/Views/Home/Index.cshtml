@@ -182,7 +182,10 @@
                 <div class="container">
                     <h2>Welcome, @UserManager.GetUserName(User) </h2>
                     <p>We’re glad to have you back! Start exploring the latest movies & series curated just for you.</p>
-                        <a href="/Customer/Home/Movies" class="btn btn-primary me-2">Continue Watching</a>
+                    <div class="cta-buttons mt-4">
+                        @* <a asp-controller="Subscriptions" asp-action="Index" class="btn btn-primary me-2">Subscribe Now</a> *@
+                        <a href="/Movies" class="btn btn-outline-light">Continue Watching</a>
+                    </div>
                 </div>
             </section>
 }

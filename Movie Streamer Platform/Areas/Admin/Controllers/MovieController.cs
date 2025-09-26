@@ -63,7 +63,7 @@ namespace Movie_Streamer_Platform.Areas.Admin.Controllers
         public IActionResult Delete(int Id)
         {
             _movieService.DeleteMovie(Id);
-            return RedirectToAction("GetAll");
+            return RedirectToAction("Index");
         }
         [HttpGet]
         public IActionResult Edit(int Id)

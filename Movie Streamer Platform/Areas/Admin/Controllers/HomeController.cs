@@ -12,10 +12,10 @@ namespace Movie_Streamer_Platform.Areas.Admin.Controllers
     {
         private readonly IMovieService _movieService;
         private readonly ISeriesService _seriesService;
-        //private readonly IUserService _userService;
+        //private readonly IUserMangerService _userService;
         //private readonly IPaymentService _paymentService;
 
-        public HomeController(IMovieService movieService, ISeriesService seriesService)
+        public HomeController(IMovieService movieService, ISeriesService seriesService )
         {
             _movieService = movieService;
             _seriesService = seriesService;

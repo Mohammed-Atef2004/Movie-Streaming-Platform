@@ -45,5 +45,6 @@ namespace DAL.Models
         public int? Downloads { get; set; }
         public string? TrailerUrl;
         public DateTime? ReleaseDate;
+        public bool IsActive { get; set; }
     }
 }
