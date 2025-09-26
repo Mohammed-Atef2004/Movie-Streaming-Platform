@@ -50,12 +50,21 @@ namespace Series_Streamer_Platform.Areas.Admin.Controllers
                 var (isSuccess, message) = _seriesService.CreateSeries(seriesVM);
                 if (isSuccess)
                 {
-                    ViewBag.Success = message;
-                    return RedirectToAction("GetAll");
+                    seriesVM.CategoryList = _categoryService.GetAllCategories().Select(i => new SelectListItem
+                    {
+                        Text = i.Name,
+                        Value = i.Id.ToString()
+                    });
+                    return RedirectToAction("Index");
                 }
                 else
                 {
-                    ViewBag.Error = message;
+                    seriesVM.CategoryList = _categoryService.GetAllCategories().Select(i => new SelectListItem
+                    {
+                        Text = i.Name,
+                        Value = i.Id.ToString()
+                    });
+                    ModelState.AddModelError("", message);
                     return View(seriesVM);
                 }
             }
@@ -65,7 +74,7 @@ namespace Series_Streamer_Platform.Areas.Admin.Controllers
         public IActionResult Delete(int Id)
         {
             _seriesService.DeleteSeries(Id);
-            return RedirectToAction("GetAll");
+            return RedirectToAction("Index");
         }
         [HttpGet]
         public IActionResult Edit(int Id)

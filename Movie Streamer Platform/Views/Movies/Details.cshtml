@@ -7,12 +7,12 @@
 			? "/images/poster-placeholder.jpg"
 			: $"/images/{Model.ImageUrl}";
 	var trailerId = "dQw4w9WgXcQ";
-	if (!string.IsNullOrEmpty(Model?.TrailerUrl))
-	{
-		var uri = new Uri(Model.TrailerUrl);
-		var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
-		trailerId = query["v"];
-	}
+	// if (!string.IsNullOrEmpty(Model?.TrailerUrl))
+	// {
+	// 	var uri = new Uri(Model.TrailerUrl);
+	// 	var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+	// 	trailerId = query["v"];
+	// }
 }
 
 <style>
@@ -101,7 +101,7 @@
 		<p class="hero-subtitle">@Model?.Category?.Name</p>
 		<div class="rating-badge mt-3">
 			<i class="fas fa-star text-warning"></i>
-			<span>@Model?.Rating?.ToString("F1")</span>
+			@* <span>@Model?.Rating?.ToString("F1")</span> *@
 		</div>
 	</div>
 </section>
@@ -116,9 +116,9 @@
 					<span class="badge bg-secondary me-2">
 						<i class="fas fa-tags me-1"></i> @(Model?.Category?.Name ?? "N/A")
 					</span>
-					<span class="badge bg-secondary me-2">
+					@* <span class="badge bg-secondary me-2">
 						<i class="fas fa-calendar-alt me-1"></i> @(Model?.ReleaseDate?.Year ?? 0)
-					</span>
+					</span> *@
 				</div>
 				<h4 class="mb-2">Description</h4>
 				<p class="movie-desc">@(Model?.Description ?? "No description available for this movie.")</p>

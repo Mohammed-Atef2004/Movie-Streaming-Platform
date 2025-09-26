@@ -114,7 +114,6 @@ namespace Movie_Streamer_Platform
 
             app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapAreaControllerRoute(
@@ -137,6 +136,8 @@ namespace Movie_Streamer_Platform
                     pattern: "{controller=Home}/{action=Index}/{id?}");
 
             });
+
+
 
 
             app.Run();

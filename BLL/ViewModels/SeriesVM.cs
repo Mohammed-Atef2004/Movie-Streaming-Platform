@@ -25,11 +25,11 @@ namespace BLL.ViewModels
         public string? ImageUrl { get; set; }
         public int? ViewCount { get; set; }
         public int? DownloadCount { get;  set; }
-        public double Price { get; set; } = 0;
+        public bool? IsFree { get; set; } = true;
         [ForeignKey("Category")]
         public int? CategoryId { get; set; }
         public Category? Category { get; set; }
-        public IEnumerable<SelectListItem> CategoryList { get; set; }
+        public IEnumerable<SelectListItem>? CategoryList { get; set; }
 
     }
 }
