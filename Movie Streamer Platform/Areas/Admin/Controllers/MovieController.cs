@@ -80,7 +80,7 @@ namespace Movie_Streamer_Platform.Areas.Admin.Controllers
                 movie.CategoryList = _categoryService.GetAllCategories().Select(i => new SelectListItem
                 {
                     Text = i.Name,
-                    Value = i.Id.ToString()
+                    Value = i.Id.ToString(),
                 });
                 return View(movie);
             }

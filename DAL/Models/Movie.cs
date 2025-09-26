@@ -43,6 +43,16 @@ namespace DAL.Models
             UpdatedBy = updater;
             IsFree = IsFree;
         }
+        public void Update(string title, string? discription = null,  bool? isFree = true, string? imageUrl = null, string? updater = null , int? categoryId = null)
+        {
+            Title = title;
+            Description = discription;
+            CategoryId = categoryId;
+            ImageUrl = imageUrl;
+            UpdatedAt = DateTime.UtcNow;
+            UpdatedBy = updater;
+            IsFree = IsFree;
+        }
 
         //public double? Rating { get; set; }
         //public string? TrailerUrl;
