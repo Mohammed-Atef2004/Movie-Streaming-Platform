@@ -37,5 +37,7 @@ namespace BLL.ViewModels
         public int? Downloads { get; set; }
         public string? TrailerUrl;
         public DateTime? ReleaseDate;
+
+        public string DisplayImageUrl => string.IsNullOrEmpty(ImageUrl) ? "placeholder.png" : ImageUrl;
     }
 }

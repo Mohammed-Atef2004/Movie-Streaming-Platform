@@ -12,17 +12,21 @@ namespace DAL.Models
         public int Id { get; private set; }
        
         [ForeignKey("User")]
-        public int UserId { get; private set; }
+        public string UserId { get; private set; }
         public User? User { get; private set; }
         [ForeignKey("Movie")]
         public int MovieId { get; private set; }
         public Movie? Movie { get; private set; }
-        public void Create(int userId, int movieId, string? creator = null)
+        public static Bookmark Create(string userId, int movieId, string? creator = null)
         {
-            UserId = userId;
-            MovieId = movieId;
-            CreatedAt = DateTime.UtcNow;
-            CreatedBy = creator;
+            return new Bookmark
+            {
+                UserId = userId,
+                MovieId = movieId,
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = creator
+            };
+
         }
         public void Update(int movieId, string? updateby = null)
         {

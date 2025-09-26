@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -47,6 +48,47 @@ namespace DAL.Repositories.Implementation
             Remove(existing);
             _context.SaveChanges();
             return true;
+        }
+
+
+        public void RemoveRange(IEnumerable<Bookmark> entities)
+        {
+            _context.RemoveRange(entities);
+        }
+
+        public async Task<Bookmark?> FindSingleAsync(Expression<Func<Bookmark, bool>> filter)
+        {
+            return await _context.Bookmark.FirstOrDefaultAsync(filter);
+        }
+
+        //public async Task<IEnumerable<Bookmark>> GetAllAsync(Expression<Func<Bookmark, bool>>? filter = null, string? includeProperties = null)
+        //{
+        //    IQueryable<Bookmark> query = _context;
+
+        //    if (filter != null)
+        //    {
+        //        query = query.Where(filter);
+        //    }
+
+        //    if (!string.IsNullOrEmpty(includeProperties))
+        //    {
+        //        foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+        //        {
+        //            query = query.Include(includeProp.Trim());
+        //        }
+        //    }
+
+        //    return await query.ToListAsync();
+        //}
+
+        public async Task SaveAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
+
+        public Task<IEnumerable<Bookmark>> GetAllAsync(Expression<Func<Bookmark, bool>>? filter = null, string? includeProperties = null)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -33,9 +33,9 @@
 :root {
     --nav-color: rgba(255, 255, 255, 0.75); /* The default color of the main navmenu links */
     --nav-hover-color: #dc3545; /* Applied to main navmenu links when they are hovered over or active */
-    --nav-mobile-background-color: #ffffff; /* Used as the background color for mobile navigation menu */
-    --nav-dropdown-background-color: #ffffff; /* Used as the background color for dropdown items that appear when hovering over primary navigation items */
-    --nav-dropdown-color: #212529; /* Used for navigation links of the dropdown items in the navigation menu. */
+    --nav-mobile-background-color: #3b3535; /* Used as the background color for mobile navigation menu */
+    --nav-dropdown-background-color: #060606; /* Used as the background color for dropdown items that appear when hovering over primary navigation items */
+    --nav-dropdown-color: #ffffff; /* Used for navigation links of the dropdown items in the navigation menu. */
     --nav-dropdown-hover-color: #dc3545; /* Similar to --nav-hover-color, this color is applied to dropdown navigation links when they are hovered over. */
 }
 
@@ -53,11 +53,60 @@
     --surface-color: #252525;
     --contrast-color: #ffffff;
 }
+/* Dark Mode Navmenu Styling */
+.dark-mode .navmenu .dropdown ul {
+    box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.4);
+}
 
 /* Smooth scroll */
 :root {
     scroll-behavior: smooth;
 }
+/* Custom styles to override Bootstrap for dark mode dropdowns */
+.dropdown-menu .dropdown-item:hover,
+.dropdown-menu .dropdown-item:focus {
+    background-color: #1a1919 !important;
+    border-radius: 10px;
+    /*    color: var(--default-color) !important;*/
+}
+
+/* Ensure the divider is also dark */
+.dropdown-menu .dropdown-divider {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+.dropdown-menu {
+    border-radius: 10px;
+}
+
+/* === Hero Section Styling === */
+
+.cta-buttons .btn {
+    border-radius: 30px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.cta-buttons .btn-primary {
+    background: linear-gradient(45deg, #ff416c, #ff4b2b);
+    border: none;
+}
+
+    .cta-buttons .btn-primary:hover {
+        transform: scale(1.05);
+        box-shadow: 0px 5px 20px rgba(255, 75, 43, 0.6);
+    }
+
+.cta-buttons .btn-outline-light {
+    border: 2px solid #fff;
+    color: #fff;
+}
+
+    .cta-buttons .btn-outline-light:hover {
+        background: #fff;
+        color: #000;
+        transform: scale(1.05);
+    }
 
 /*--------------------------------------------------------------
 # General Styling & Shared Classes
@@ -74,10 +123,10 @@ a {
     transition: 0.3s;
 }
 
-    a:hover {
-        color: color-mix(in srgb, var(--accent-color), transparent 25%);
-        text-decoration: none;
-    }
+a:hover {
+    color: color-mix(in srgb, var(--accent-color), transparent 25%);
+    text-decoration: none;
+}
 
 h1,
 h2,

@@ -6,15 +6,18 @@
 	var posterUrl = string.IsNullOrEmpty(Model?.ImageUrl)
 			? "/images/poster-placeholder.jpg"
 			: $"/images/{Model.ImageUrl}";
-	var trailerId = "dQw4w9WgXcQ";
+	var trailerId = "zSWdZVtXT7E";
 	if (!string.IsNullOrEmpty(Model?.TrailerUrl))
 	{
 		var uri = new Uri(Model.TrailerUrl);
 		var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
 		trailerId = query["v"];
 	}
+	bool isBookmarked = ViewBag.IsBookmarked ?? false;
+
 }
 
+https://www.youtube.com/watch?v=_aXZkOR3zIw
 <style>
 	/* Page-specific styles */
 	.hero-section {
@@ -143,16 +146,31 @@
 					 onerror="this.onerror=null;this.src='/images/poster-placeholder.jpg';" />
 
 				<div class="movie-actions d-flex flex-column gap-3 mt-4">
-					<a href="#" class="btn btn-watch w-100 py-3">
-						<i class="fas fa-play me-2"></i> Watch Now
-					</a>
-					<a href="#" class="btn btn-download w-100 py-3">
-						<i class="fas fa-download me-2"></i> Download
-					</a>
-					<a href="#" class="btn btn-bookmark w-100 py-3">
-						<i class="fas fa-bookmark me-2"></i> Bookmark
-					</a>
-				</div>
+
+						@if (User.Identity.IsAuthenticated)
+						{
+							<form id="bookmarkForm" asp-area="Customer" asp-controller="Bookmark" asp-action="ToggleBookmark" method="post">
+								<input type="hidden" name="movieId" value="@Model.Id" />
+								<button type="submit" class="btn btn-bookmark w-100 py-3 @(isBookmarked ? "btn-bookmark-active" : "")">
+									<i class="fas fa-bookmark me-2"></i> @(isBookmarked ? "Remove Bookmark" : "Bookmark")
+								</button>
+							</form>
+
+							<a href="#" class="btn btn-watch w-100 py-3">
+								<i class="fas fa-play me-2"></i> Watch Now
+							</a>
+							<a href="#" class="btn btn-download w-100 py-3">
+								<i class="fas fa-download me-2"></i> Download
+							</a>
+						}
+						else
+						{
+							<a href="/Account/Login" class="btn btn-watch w-100 py-3">
+								<i class="fas fa-play me-2"></i> Login to Watch
+							</a>
+						}
+
+</div>
 			</div>
 		</div>
 	</div>
@@ -160,3 +178,54 @@
 		</section>
 
 <link rel="stylesheet" href="~/css/movies.css" />
+@section Scripts {
+		<script>
+			document.addEventListener('DOMContentLoaded', function () {
+				// Function to handle AJAX form submission
+				function handleFormSubmit(event) {
+					event.preventDefault();
+
+					const form = event.target;
+					const url = form.action;
+					const formData = new FormData(form);
+
+					fetch(url, {
+						method: 'POST',
+						body: formData
+					})
+					.then(response => response.json())
+					.then(data => {
+						if (data.success) {
+							if (form.id === 'bookmarkForm') {
+								const button = form.querySelector('button');
+								button.classList.toggle('btn-bookmark-active', data.isBookmarked);
+								// You can add a toast notification or a success message here
+							}
+							// Handle success for other forms if needed
+							console.log(data.message);
+						} else {
+							// Handle failure
+							console.error(data.message);
+						}
+					})
+					.catch(error => console.error('Error:', error));
+				}
+
+				// Attach event listeners to the forms
+				const watchForm = document.getElementById('watchForm');
+				if (watchForm) {
+					watchForm.addEventListener('submit', handleFormSubmit);
+				}
+
+				const downloadForm = document.getElementById('downloadForm');
+				if (downloadForm) {
+					downloadForm.addEventListener('submit', handleFormSubmit);
+				}
+
+				const bookmarkForm = document.getElementById('bookmarkForm');
+				if (bookmarkForm) {
+					bookmarkForm.addEventListener('submit', handleFormSubmit);
+				}
+			});
+		</script>
+}

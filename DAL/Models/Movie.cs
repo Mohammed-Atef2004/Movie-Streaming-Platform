@@ -13,12 +13,14 @@ namespace DAL.Models
         public string? Title { get; private set; }
         public string? Description { get; private set; }
         public string? ImageUrl { get;  set; }
-        public int ?ViewCount { get; private set; }
-        public int DownloadCount { get; private set; }
+        public int? ViewCount { get; private set; } = 0;
+        public int? DownloadCount { get; private set; } = 0;
         [ForeignKey("Category")]
         
         public int? CategoryId { get; set; }
         public Category? Category { get; set; }
+
+
         public void Create(string title, string? discription = null, string? imageUrl = null,string ?createor=null)
         {
             Title = title;
@@ -37,5 +39,12 @@ namespace DAL.Models
             UpdatedAt = DateTime.UtcNow;
             UpdatedBy = updater;
         }
+
+        public double? Rating { get; set; }
+
+        public string? TrailerUrl;
+
+        public DateTime? ReleaseDate;
+        public bool? IsActive { get; set; } = true;
     }
 }

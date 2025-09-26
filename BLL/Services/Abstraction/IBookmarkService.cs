@@ -12,6 +12,8 @@ namespace BLL.Services.Abstraction
     {
         (bool, string) AddBookmark(BookmarkVM bookmarkVM);
         (bool, string) RemoveBookmark(BookmarkVM bookmarkVM);
-        IEnumerable<Bookmark> GetUserBookmarks(int userId);
+        IEnumerable<BookmarkVM> GetUserBookmarks(string userId);
+        (bool success, string message) ToggleBookmark(string userId, int movieId);
+        public Task<(bool success, string message)> ToggleBookmarkAsync(string userId, int movieId);
     }
 }
