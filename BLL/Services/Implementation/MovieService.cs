@@ -95,7 +95,7 @@ namespace BLL.Services.Implementation
             }
 
             // Update other properties
-            movie.Update(movieVM.Title,movieVM.Description, imageUrl: movie.ImageUrl,categoryId:movieVM.CategoryId);
+            movie.Update(movieVM.Title,movieVM.Description,movieVM.Views,movieVM.Downloads,movieVM.CategoryId, imageUrl: movieVM.ImageUrl);
          
             if (_movieRepository.Update(movie))
             {

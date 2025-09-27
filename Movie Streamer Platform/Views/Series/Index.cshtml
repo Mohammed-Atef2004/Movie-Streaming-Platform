@@ -34,12 +34,13 @@
 <!-- Filters -->
 <section id="series-filters">
     <div class="container" data-aos="fade-up" data-aos-delay="100">
+        @* تم تغيير flex-grow-1 في الفورم لتمكين زر الريسيت من الظهور بجوار Apply *@
         <form method="get" asp-action="Index" class="filter-form d-flex align-items-center gap-3">
 
             <!-- Search -->
-            <div class="input-group flex-grow-1" style="max-width: 280px;">
-                <span class="input-group-text">
-                    <i class="fas fa-search"></i>
+            <div class="input-group flex-grow-1" style="max-width: 350px;">
+                <span class="input-group-text filter-input-text">
+                    <i class="bi bi-search"></i>
                 </span>
                 <input type="text"
                        name="search"
@@ -50,28 +51,40 @@
 
             <!-- Sort -->
             <div class="input-group" style="max-width: 200px;">
-                <span class="input-group-text">
-                    <i class="fas fa-sort"></i>
+                <span class="input-group-text filter-input-text">
+                    <i class="bi bi-sort-down"></i>
                 </span>
-                <select name="sortBy" class="form-select filter-select">
+                <select name="sortBy" class="form-select filter-select filter-input text-capitalize" style="background-color: #1e1e1e; color: #fff; border: 1px solid #555;">
                     <option value="">Sort By</option>
                     <option value="views" selected="@(Context.Request.Query["sortBy"]=="views")">Most Viewed</option>
                     <option value="rating" selected="@(Context.Request.Query["sortBy"]=="rating")">Top Rated</option>
                     <option value="downloads" selected="@(Context.Request.Query["sortBy"]=="downloads")">Most Downloaded</option>
+                    <option value="name_desc" selected="@(Context.Request.Query["sortBy"] == "name_desc")">Name</option>
                 </select>
             </div>
 
-            <!-- Button -->
-            <button type="submit" class="btn btn-filter">
-                <i class="fas fa-filter"></i> Apply
+            <!-- Button: Apply Filter -->
+            <button type="submit" class="btn me-2 btn-watch">
+                <i class="bi bi-filter"></i> Apply
             </button>
+            
+            <!-- Button: Reset Filter (NEW) -->
+            @if (Context.Request.Query["search"].Count > 0 || Context.Request.Query["sortBy"].Count > 0)
+            {
+                <a asp-action="Index" class="btn btn-secondary btn-reset">
+                        <i class="bi bi-arrow-clockwise"></i> Reset
+                </a>
+            }
+
         </form>
     </div>
 </section>
     <div class="container" data-aos="fade-up" data-aos-delay="100">
-        <div class="row g-4">
-            @foreach (var item in Model)
-            {
+        @if (Model != null && Model.Any())
+        {
+            <div class="row g-4">
+                @foreach (var item in Model)
+                {
                     <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                         <a asp-controller="Series" asp-action="Details" asp-route-id="@item.Id" class="movie-card-link">
                             <div class="movie-card">
@@ -92,10 +105,10 @@
 
                                     <p class="movie-desc">
                                     @(string.IsNullOrEmpty(item.Description)
-                                            ? "No description available"
-                                            : (item.Description.Length > 100
-                                                ? item.Description.Substring(0, 100) + "..."
-                                                : item.Description))
+                                                ? "No description available"
+                                                : (item.Description.Length > 100
+                                                    ? item.Description.Substring(0, 100) + "..."
+                                                    : item.Description))
                                     </p>
 
                                     <div class="movie-rating">
@@ -107,16 +120,83 @@
                                     </div> *@
 
                                     <div class="movie-actions">
-                                        <button class="btn btn-bookmark">🔖 Bookmark</button>
-                                        <button class="btn btn-watch">▶ Watch Now</button>
+                                        <button class="btn btn-bookmark">Bookmark</button>
+                                        <button class="btn btn-watch">Watch Now</button>
                                     </div>
                                 </div>
                             </div>
                         </a>
                     </div>
-            }
-        </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-warning text-center mt-5" role="alert">
+                <h4 class="alert-heading">No Series Found!</h4>
+                <p>We couldn't find any series matching your current search or filters.</p>
+                <hr>
+                <a asp-action="Index" class="btn btn-warning">Reset Filters</a>
+            </div>
+        }
     </div>
 </section>
 
 <link rel="stylesheet" href="~/css/movies.css" />
+
+<style>
+    /* Styling to match the dark theme */
+    .filter-form {
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        background-color: #141414; /* Dark background for filter bar */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    .filter-input-text {
+        background-color: #333;
+        border-color: #555;
+        color: #fff;
+    }
+
+    .filter-input, .filter-select {
+        background-color: #333 !important; /* لون خلفية داكن للـ input */
+        color: #fff !important; /* لون نص أبيض */
+        border: 1px solid #555 !important;
+    }
+
+    /* Style the dropdown menu that appears (options) */
+    .filter-select option {
+        background-color: #333; /* خلفية داكنة للخيار */
+        color: #fff; /* نص أبيض للخيار */
+    }
+
+    .btn-filter {
+        background-color: #ffc107; /* Warning color for Apply */
+        border-color: #ffc107;
+        color: #000;
+        font-weight: bold;
+        transition: background-color 0.2s;
+    }
+
+    .btn-filter:hover {
+        background-color: #e0a800;
+        border-color: #e0a800;
+        color: #000;
+    }
+    
+    .btn-reset {
+        background-color: #6c757d; /* Secondary color for Reset */
+        border-color: #6c757d;
+        color: #fff;
+        font-weight: bold;
+        transition: background-color 0.2s;
+    }
+
+    .btn-reset:hover {
+        background-color: #5a6268;
+        border-color: #5a6268;
+        color: #fff;
+    }
+</style>

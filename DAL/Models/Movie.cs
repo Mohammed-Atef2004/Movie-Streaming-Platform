@@ -13,8 +13,8 @@ namespace DAL.Models
         public string? Title { get; private set; }
         public string? Description { get; private set; }
         public string? ImageUrl { get;  set; }
-        public int? Views { get; private set; }
-        public int? Downloads { get; private set; }
+        public int? Views { get; private set; } = 0;
+        public int? Downloads { get; private set; } = 0;
         public bool? IsFree { get; set; } = true;
         [ForeignKey("Category")]
         
@@ -34,7 +34,7 @@ namespace DAL.Models
             CreatedBy = createor;
             IsFree = isFree;
         }
-        public void Update( string title, string? discription = null, bool? isFree = true, string? imageUrl = null,string ?updater=null)
+        public void Update( string title, string? discription,int? views,int? dowloads,int? categoryId, bool? isFree = true, string? imageUrl = null,string ?updater=null)
         {
             Title = title;
             Description = discription;
@@ -42,21 +42,12 @@ namespace DAL.Models
             UpdatedAt = DateTime.UtcNow;
             UpdatedBy = updater;
             IsFree = IsFree;
-        }
-        public void Update(string title, string? discription = null,  bool? isFree = true, string? imageUrl = null, string? updater = null , int? categoryId = null)
-        {
-            Title = title;
-            Description = discription;
             CategoryId = categoryId;
-            ImageUrl = imageUrl;
-            UpdatedAt = DateTime.UtcNow;
-            UpdatedBy = updater;
-            IsFree = IsFree;
+            Views = views == null ? 1 : views;
+            Downloads = dowloads == null ? 1 : dowloads;
         }
+      
 
-        //public double? Rating { get; set; }
-        //public string? TrailerUrl;
-        //public DateTime? ReleaseDate;
-        //public bool IsActive { get; set; }
+     
     }
 }

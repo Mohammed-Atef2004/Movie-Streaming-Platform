@@ -1,8 +1,8 @@
-﻿    @{
-        ViewBag.PageTitle = "Movies";
-        ViewBag.CardTitle = "Browse Movies";
-        var isAdmin = User.IsInRole("Admin");
-    }
+﻿@{
+    ViewBag.PageTitle = "Movies";
+    ViewBag.CardTitle = "Browse Movies";
+    var isAdmin = User.IsInRole("Admin");
+}
 @using BLL.ViewModels
 @model IEnumerable<MovieVM>
 
@@ -24,88 +24,157 @@
     </div>
 </section>
 
-
-
 <section id="movies" class="movies-section section">
     <section id="movies-filters">
+        <div class="container" data-aos="fade-up" data-aos-delay="100">
+            <form method="get" asp-action="Index" class="filter-form d-flex align-items-center gap-3">
+
+                <div class="input-group flex-grow-1" style="max-width: 350px;">
+                    <span class="input-group-text">
+                        <i class="fas fa-search"></i>
+                    </span>
+                    <input type="text"
+                           name="search"
+                           class="form-control filter-input"
+                           placeholder="Search movies..."
+                           value="@Context.Request.Query["search"]" />
+                </div>
+
+                <div class="input-group" style="max-width: 200px;">
+                    <span class="input-group-text">
+                        <i class="bi bi-sort-down"></i>
+                    </span>
+                    <select name="sortBy" class="form-select filter-select" style="background-color: #1e1e1e; color: #fff; border: 1px solid #555;">
+                        <option value="">Sort By</option>
+                        <option value="views" selected="@(Context.Request.Query["sortBy"]=="views")">Most Viewed</option>
+                        <option value="rating" selected="@(Context.Request.Query["sortBy"]=="rating")">Top Rated</option>
+                        <option value="downloads" selected="@(Context.Request.Query["sortBy"]=="downloads")">Most Downloaded</option>
+                        <option value="name_desc" selected="@(Context.Request.Query["sortBy"] == "name_desc")">Name ↓</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-watch me-2">
+                    <i class="bi bi-filter"></i> Apply
+                </button>
+
+                @if (!string.IsNullOrEmpty(Context.Request.Query["search"]) || !string.IsNullOrEmpty(Context.Request.Query["sortBy"]))
+                {
+                        <a asp-action="Index" class="btn btn-secondary btn-reset">
+                                <i class="bi bi-arrow-clockwise"></i> Reset
+                        </a>
+                }
+            </form>
+        </div>
+    </section>
+
     <div class="container" data-aos="fade-up" data-aos-delay="100">
-        <form method="get" asp-action="Index" class="filter-form d-flex align-items-center gap-3">
-
-            <!-- Search -->
-            <div class="input-group flex-grow-1" style="max-width: 280px;">
-                <span class="input-group-text">
-                    <i class="fas fa-search"></i>
-                </span>
-                <input type="text" 
-                       name="search" 
-                       class="form-control filter-input" 
-                       placeholder="Search movies..." 
-                       value="@Context.Request.Query["search"]" />
-            </div>
-
-            <!-- Sort -->
-            <div class="input-group" style="max-width: 200px;">
-                <span class="input-group-text">
-                    <i class="fas fa-sort"></i>
-                </span>
-                <select name="sortBy" class="form-select filter-select">
-                    <option value="">Sort By</option>
-                    <option value="views" selected="@(Context.Request.Query["sortBy"]=="views")">Most Viewed</option>
-                    <option value="rating" selected="@(Context.Request.Query["sortBy"]=="rating")">Top Rated</option>
-                    <option value="downloads" selected="@(Context.Request.Query["sortBy"]=="downloads")">Most Downloaded</option>
-                </select>
-            </div>
-
-            <!-- Button -->
-            <button type="submit" class="btn btn-filter">
-                <i class="fas fa-filter"></i> Apply
-            </button>
-        </form>
-    </div>
-</section>
-    <div class="container" data-aos="fade-up" data-aos-delay="100">
-        <div class="row g-4">
+        @if (Model != null && Model.Any())
+        {
+                <div class="row g-4">
                 @foreach (var item in Model)
                 {
-                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
-                        <a asp-area="" asp-controller="Movies" asp-action="Details" asp-route-id="@item.Id" class="movie-card-link">
-                            <div class="movie-card">
-                                <div class="movie-img-wrapper">
-                                    <img src="~/Images/@item.ImageUrl"
-                                         class="movie-poster"
-                                         alt="@item.Title"
-                                         onerror="this.onerror=null; this.src='/Images/placeholder.png';" />
-                                    <div class="movie-overlay">
-                                        <span class="movie-category-badge">
+                            <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                                <a asp-area="" asp-controller="Movies" asp-action="Details" asp-route-id="@item.Id" class="movie-card-link">
+                                    <div class="movie-card">
+                                        <div class="movie-img-wrapper">
+                                            <img src="~/Images/@item.ImageUrl"
+                                                 class="movie-poster"
+                                                 alt="@item.Title"
+                                                 onerror="this.onerror=null; this.src='/Images/placeholder.png';" />
+                                            <div class="movie-overlay">
+                                                <span class="movie-category-badge">
                                             @(item.Category != null ? item.Category.Name : "No Category")
-                                        </span>
-                                    </div>
-                                </div>
+                                                </span>
+                                            </div>
+                                        </div>
 
-                                <div class="movie-content">
-                                    <h4 class="movie-title">@item.Title</h4>
+                                        <div class="movie-content">
+                                            <h4 class="movie-title">@item.Title</h4>
+                                            <p class="movie-desc">@(string.IsNullOrEmpty(item.Description) ? "No description available" : (item.Description.Length > 100 ? item.Description.Substring(0, 100) + "..." : item.Description))</p>
 
-                                    <p class="movie-desc">@(string.IsNullOrEmpty(item.Description) ? "No description available" : (item.Description.Length > 100 ? item.Description.Substring(0, 100) + "..." : item.Description))</p>
+                                    @* Add a check for Rating since it's a nullable double *@
+                                    @* @if (item.Rating.HasValue) *@
+                                    @* { *@
+                                    @*                 <div class="movie-rating"> *@
+                                    @*                     <span>⭐@item.Rating</span> *@
+                                    @*                 </div> *@
+                                    @* } *@
 
-                                    @* <div class="movie-rating">
-                                        ⭐⭐⭐⭐⭐ <span>(@item.Rating.ToString())</span>
-                                    </div> *@
-
-                                    <div class="movie-meta">
+                                            <div class="movie-meta">
                                         @* <span class="movie-price">💲@item.Price</span> *@
-                                    </div>
+                                            </div>
 
-                                    <div class="movie-actions">
-                                        <button class="btn btn-bookmark">Bookmark</button>
-                                        <button class="btn btn-watch">Watch Now</button>
+                                            <div class="movie-actions">
+                                                <button class="btn btn-bookmark">Bookmark</button>
+                                                <button class="btn btn-watch">Watch Now</button>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
+                                </a>
                             </div>
-                        </a>
-                    </div>
                 }
-        </div>
+                </div>
+        }
+        else
+        {
+                <div class="alert alert-warning text-center mt-5" role="alert">
+                    <h4 class="alert-heading">No Movies Found!</h4>
+                    <p>We couldn't find any movies matching your current search or filters.</p>
+                    <hr>
+                    <a asp-action="Index" class="btn btn-warning">Reset Filters</a>
+                </div>
+        }
     </div>
 </section>
 
 <link rel="stylesheet" href="~/css/movies.css" />
+
+<style>
+    .filter-form {
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        background-color: #141414;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    .input-group-text, .form-control, .form-select {
+        background-color: #1e1e1e !important;
+        color: #fff !important;
+        border: 1px solid #555 !important;
+    }
+
+    .form-select option {
+        background-color: #1e1e1e;
+        color: #fff;
+    }
+
+    .btn-filter, .btn-reset {
+        font-weight: bold;
+        transition: background-color 0.2s;
+        border-radius: 0.25rem;
+        padding: 0.5rem 1rem;
+    }
+
+    .btn-filter {
+        background-color: #ffc107;
+        border-color: #ffc107;
+        color: #000;
+    }
+
+    .btn-filter:hover {
+        background-color: #e0a800;
+        border-color: #e0a800;
+    }
+
+    .btn-reset {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        color: #fff;
+    }
+
+    .btn-reset:hover {
+        background-color: #5a6268;
+        border-color: #5a6268;
+    }
+</style>
