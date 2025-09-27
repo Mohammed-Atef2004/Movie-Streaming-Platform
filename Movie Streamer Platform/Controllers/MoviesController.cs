@@ -1,7 +1,8 @@
-﻿using BLL.Services.Abstraction;
-using Microsoft.AspNetCore.Mvc;
+﻿using BLL.Services;
+using BLL.Services.Abstraction;
+using BLL.Services.Implementation;
 using BLL.ViewModels;
-using BLL.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Movie_Streamer_Platform.Controllers
@@ -32,6 +33,7 @@ namespace Movie_Streamer_Platform.Controllers
             }
             return View(movie);
         }
+      
 
     }
 }
