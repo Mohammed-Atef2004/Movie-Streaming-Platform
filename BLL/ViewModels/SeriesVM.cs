@@ -26,6 +26,8 @@ namespace BLL.ViewModels
         public int? ViewCount { get; set; }
         public int? DownloadCount { get;  set; }
         public bool? IsFree { get; set; } = true;
+        public List<Episode> Episodes { get; set; }
+
         [ForeignKey("Category")]
         public int? CategoryId { get; set; }
         public Category? Category { get; set; }

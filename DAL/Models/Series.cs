@@ -15,12 +15,13 @@ namespace DAL.Models
         public string? ImageUrl { get;  set; }
         public int ?ViewCount { get; private set; }
         public bool? IsFree { get; set; } = true;
-
+        public List<Episode> Episodes { get; set; }
         public int DownloadCount { get; private set; }
         [ForeignKey("Category")]
         public int ?CategoryId { get; set; }
         public Category? Category { get; set; }
-        public void Create(string title, string? discription = null,bool? isFree=true ,string? imageUrl = null,string ?createor=null)
+
+        public void Create(string title, List<Episode> episodes, string? discription = null, bool? isFree = true, string? imageUrl = null, string? createor = null)
         {
             Title = title;
             Description = discription;
@@ -30,8 +31,9 @@ namespace DAL.Models
             CreatedAt = DateTime.UtcNow;
             CreatedBy = createor;
             IsFree = isFree;
+            Episodes = episodes;
         }
-        public void Update( string title, string? discription = null, bool? isFree = true, string? imageUrl = null,string ?updater=null)
+        public void Update(string title, List<Episode> episodes, string? discription = null, bool? isFree = true, string? imageUrl = null, string? updater = null)
         {
             Title = title;
             Description = discription;
@@ -39,6 +41,7 @@ namespace DAL.Models
             UpdatedAt = DateTime.UtcNow;
             UpdatedBy = updater;
             IsFree = isFree;
+            Episodes = episodes;
         }
     }
 }
