@@ -14,11 +14,13 @@ namespace DAL.Models
         public string? Description { get; private set; }
         public string? ImageUrl { get;  set; }
         public int ?ViewCount { get; private set; }
+        public bool? IsFree { get; set; } = true;
+
         public int DownloadCount { get; private set; }
         [ForeignKey("Category")]
         public int ?CategoryId { get; set; }
         public Category? Category { get; set; }
-        public void Create(string title, string? discription = null, string? imageUrl = null,string ?createor=null)
+        public void Create(string title, string? discription = null,bool? isFree=true ,string? imageUrl = null,string ?createor=null)
         {
             Title = title;
             Description = discription;
@@ -27,14 +29,16 @@ namespace DAL.Models
             DownloadCount = 0;
             CreatedAt = DateTime.UtcNow;
             CreatedBy = createor;
+            IsFree = isFree;
         }
-        public void Update( string title, string? discription = null, string? imageUrl = null,string ?updater=null)
+        public void Update( string title, string? discription = null, bool? isFree = true, string? imageUrl = null,string ?updater=null)
         {
             Title = title;
             Description = discription;
             ImageUrl = imageUrl;
             UpdatedAt = DateTime.UtcNow;
             UpdatedBy = updater;
+            IsFree = isFree;
         }
     }
 }

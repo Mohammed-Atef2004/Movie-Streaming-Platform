@@ -9,20 +9,20 @@ using System.Threading.Tasks;
 
 namespace DAL.Repositories.Implementation
 {
-    public class SeriesRepository:GenericRepository<Series>, ISeriesRepository
+    public class EpisodeRepository:GenericRepository<Episode>, IEpisodeRepository
     {
         private readonly ApplicationDbContext _context;
-        public SeriesRepository(ApplicationDbContext context):base(context)
+        public EpisodeRepository(ApplicationDbContext context):base(context)
         {
             _context= context;
         }
-        public bool Update(Series series)
+        public bool Update(Episode episode)
         { 
-            var SerieswFromDb = _context.Series.FirstOrDefault(u => u.Id == series.Id);
-            if(SerieswFromDb != null)
+            var EpisodewFromDb = _context.Episodes.FirstOrDefault(u => u.Id == episode.Id);
+            if(EpisodewFromDb != null)
             {
-                SerieswFromDb.Update(series.Title, series.Description,series.IsFree, series.ImageUrl);
-                _context.Series.Update(SerieswFromDb);
+                EpisodewFromDb.Update(episode.Title, episode.Description,episode.UpdatedBy);
+                _context.Episodes.Update(EpisodewFromDb);
 
                 if (_context.SaveChanges() > 0)
                 {

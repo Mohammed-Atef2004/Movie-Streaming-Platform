@@ -74,15 +74,6 @@ namespace Movie_Streamer_Platform.Controllers
             }
             return View(loginUserVMl);
         }
-
-        [HttpGet]
-        public async Task<IActionResult> Profile()
-        {
-            var user = await _userManger.GetUserAsync(User);
-            return View(user);
-        }
-
-
         [HttpPost]
         public async Task<IActionResult> Logout()
         {

@@ -57,6 +57,28 @@ namespace Movie_Streamer_Platform
 
 
 
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+           .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
+            options =>
+            {
+                options.LoginPath = new PathString("/Account/Login");
+                options.AccessDeniedPath = new PathString("/Account/AccessDenied");
+            });
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
+
+            //builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+            //.AddEntityFrameworkStores<ApplicationDbContext>()
+            //.AddDefaultTokenProviders();
+            //builder.Services.ConfigureApplicationCookie(options =>
+            //{
+            //    options.LoginPath = "/Account/Login";
+            //    options.AccessDeniedPath = "/Account/AccessDenied";
+            //});
+
+
+
             var app = builder.Build();
             // Seeding Roles & Admin User
             using (var scope = app.Services.CreateScope())
@@ -117,7 +139,6 @@ namespace Movie_Streamer_Platform
 
             app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapAreaControllerRoute(
@@ -140,6 +161,8 @@ namespace Movie_Streamer_Platform
                     pattern: "{controller=Home}/{action=Index}/{id?}");
 
             });
+
+
 
 
             app.Run();

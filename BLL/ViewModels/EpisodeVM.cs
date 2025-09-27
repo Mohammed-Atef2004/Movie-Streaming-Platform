@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace BLL.ViewModels
 {
-    public class MovieVM
+    public class EpisodeVM
     {
         public int Id { get; set; }
         [Required]
@@ -20,16 +20,22 @@ namespace BLL.ViewModels
         public string Title { get; set; }
         [Required]
         public string? Description { get; set; }
-        public int? Views { get; set; }
-        public int? Downloads { get; set; }
+        [ValidateNever]
+
         public IFormFile? Image { get; set; }
         public string? ImageUrl { get; set; }
+        public int? ViewCount { get; set; }
+        public int? DownloadCount { get;  set; }
         public bool? IsFree { get; set; } = true;
-        public IEnumerable<SelectListItem> ?CategoryList { get; set; }
-        [ForeignKey("Category")]
-        public int? CategoryId { get; set; }
-        public Category? Category { get; set; }
+        public IEnumerable<SelectListItem> SeriesList { get; set; }
+        [ForeignKey("Series")]
+        public int? SeriesId { get; set; }
+        public Series? Sereies { get; set; }
 
-        public string DisplayImageUrl => string.IsNullOrEmpty(ImageUrl) ? "placeholder.png" : ImageUrl;
+        public double? Rating { get; set; }
+        public int? Views { get; set; }
+        public int? Downloads { get; set; }
+        public string? TrailerUrl;
+        public DateTime? ReleaseDate;
     }
 }

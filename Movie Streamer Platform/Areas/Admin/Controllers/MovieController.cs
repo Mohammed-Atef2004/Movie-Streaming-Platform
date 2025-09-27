@@ -2,10 +2,12 @@
 using BLL.Services.Abstraction;
 using BLL.Services.Implementation;
 using BLL.ViewModels;
+using DAL.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Win32;
 
 namespace Movie_Streamer_Platform.Areas.Admin.Controllers
 {
@@ -48,12 +50,16 @@ namespace Movie_Streamer_Platform.Areas.Admin.Controllers
                 var (isSuccess, message) = _movieService.CreateMovie(movieVM);
                 if (isSuccess)
                 {
-                    ViewBag.Success = message;
-                    return RedirectToAction("GetAll");
+                    return RedirectToAction("Index");
                 }
                 else
                 {
-                    ViewBag.Error = message;
+                    movieVM.CategoryList = _categoryService.GetAllCategories().Select(i => new SelectListItem
+                    {
+                        Text = i.Name,
+                        Value = i.Id.ToString()
+                    });
+                    ModelState.AddModelError("", message);
                     return View(movieVM);
                 }
             }
@@ -74,7 +80,7 @@ namespace Movie_Streamer_Platform.Areas.Admin.Controllers
                 movie.CategoryList = _categoryService.GetAllCategories().Select(i => new SelectListItem
                 {
                     Text = i.Name,
-                    Value = i.Id.ToString()
+                    Value = i.Id.ToString(),
                 });
                 return View(movie);
             }
