@@ -55,7 +55,7 @@ namespace Movie_Streamer_Platform.Controllers
             {
                 return NotFound("No Series Exist");
             }
-            series.ViewCount = +1;
+            series.ViewCount = series.ViewCount + 1;
             _seriesService.UpdateSeries(series, series.Id);
             return View(series);
         }
