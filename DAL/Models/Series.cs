@@ -13,10 +13,10 @@ namespace DAL.Models
         public string Title { get; private set; }
         public string? Description { get; private set; }
         public string? ImageUrl { get;  set; }
-        public int ?ViewCount { get; private set; }
+        public int? ViewCount { get; private set; } = 0;
         public bool? IsFree { get; set; } = true;
 
-        public int? DownloadCount { get; private set; }
+        public int? DownloadCount { get; private set; } = 0;
         [ForeignKey("Category")]
         public int ?CategoryId { get; set; }
         public Category? Category { get; set; }
@@ -39,8 +39,8 @@ namespace DAL.Models
             UpdatedAt = DateTime.UtcNow;
             UpdatedBy = updater;
             IsFree = isFree;
-            ViewCount = viewcount;
-            DownloadCount = downloadcount;
+            ViewCount = viewcount ==null ?0:viewcount;
+            DownloadCount = downloadcount == null ? 0 : downloadcount;
         }
     }
 }
