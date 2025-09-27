@@ -33,7 +33,37 @@ namespace Movie_Streamer_Platform.Controllers
             }
             return View(movie);
         }
-      
+        public IActionResult View(int Id)
+        {
+            var movie=_movieService.GetMovieById(Id);
+            if (movie == null)
+            {
+                return NotFound();
+            }
+            movie.Views = movie.Views + 1;
+            _movieService.UpdateMovie(movie, movie.Id);
+            return View(movie);
+        }
+        public IActionResult Download(int id)
+        {
+            var movie = _movieService.GetMovieById(id);
+            if (movie == null || string.IsNullOrEmpty(movie.ImageUrl))
+            {
+                return NotFound("No File Exist");
+            }
 
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Images", movie.ImageUrl);
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound();
+            }
+            var fileBytes = System.IO.File.ReadAllBytes(filePath);
+            var fileName = Path.GetFileName(filePath);
+            movie.Downloads = movie.Downloads + 1;
+            _movieService.UpdateMovie(movie, movie.Id);
+            return File(fileBytes, "application/octet-stream", fileName);
+
+        }
     }
+
 }

@@ -39,8 +39,8 @@ namespace DAL.Models
             UpdatedAt = DateTime.UtcNow;
             UpdatedBy = updater;
             IsFree = isFree;
-            ViewCount = viewcount ==null ?0:viewcount;
-            DownloadCount = downloadcount == null ? 0 : downloadcount;
+            ViewCount = viewcount ==null ?1:viewcount;
+            DownloadCount = downloadcount == null ? 1 : downloadcount;
         }
     }
 }
