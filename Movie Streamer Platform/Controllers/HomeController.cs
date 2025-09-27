@@ -15,6 +15,7 @@ namespace Movie_Streamer_Platform.Controllers
 
         public IActionResult Index()
         {
+
             return View();
         }
 

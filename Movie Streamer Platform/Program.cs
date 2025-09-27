@@ -46,27 +46,6 @@ namespace Movie_Streamer_Platform
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
-            //builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-            //.AddEntityFrameworkStores<ApplicationDbContext>()
-            //.AddDefaultTokenProviders();
-            //builder.Services.ConfigureApplicationCookie(options =>
-            //{
-            //    options.LoginPath = "/Account/Login";
-            //    options.AccessDeniedPath = "/Account/AccessDenied";
-            //});
-
-
-
-            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-           .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
-            options =>
-            {
-                options.LoginPath = new PathString("/Account/Login");
-                options.AccessDeniedPath = new PathString("/Account/AccessDenied");
-            });
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-            .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddDefaultTokenProviders();
 
             //builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
             //.AddEntityFrameworkStores<ApplicationDbContext>()

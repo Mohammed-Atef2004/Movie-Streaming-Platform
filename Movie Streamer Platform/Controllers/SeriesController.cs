@@ -19,5 +19,15 @@ namespace Movie_Streamer_Platform.Controllers
             var series = _seriesService.GetAllSeries();
             return View(series);
         }
+
+        public IActionResult Details(int id)
+        {
+            var movie = _seriesService.GetSeriesById(id); // service layer
+            if (movie == null)
+            {
+                return NotFound();
+            }
+            return View(movie);
+        }
     }
 }

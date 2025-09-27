@@ -22,7 +22,7 @@ namespace Movie_Streamer_Platform.Areas.User.controller
             _userManager = userManager;
 
         }
-        public IActionResult Bookmarks(string userId)
+        public IActionResult Index(string userId)
         {
 
             var bookmarks = bookmarkService.GetUserBookmarks(userId);
@@ -42,14 +42,14 @@ namespace Movie_Streamer_Platform.Areas.User.controller
             TempData[success ? "SuccessMessage" : "ErrorMessage"] = message;
 
          
-            return RedirectToAction(nameof(Bookmarks), new { userId = bookmarkVM.UserId });
+            return RedirectToAction(nameof(Index), new { userId = bookmarkVM.UserId });
         }
         [HttpPost]
         public IActionResult AddBookmark(BookmarkVM bookmarkVM)
         {
             var (success, message) = bookmarkService.AddBookmark(bookmarkVM);
             TempData[success ? "SuccessMessage" : "ErrorMessage"] = message;
-            return RedirectToAction(nameof(Bookmarks), new { userId = bookmarkVM.UserId });
+            return RedirectToAction(nameof(Index), new { userId = bookmarkVM.UserId });
         }
 
         [HttpPost]
