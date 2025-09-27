@@ -19,10 +19,36 @@ namespace Movie_Streamer_Platform.Controllers
         }
 
 
-        public IActionResult Index()
+        public IActionResult Index(string search, string sortBy)
         {
             var movies = _movieService.GetAllMovies();
-            return View(movies);
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                movies = movies
+                    .Where(m => m.Title.Contains(search, StringComparison.OrdinalIgnoreCase));
+            }
+
+            switch (sortBy)
+            {
+                case "name_desc":
+                    movies = movies.OrderByDescending(m => m.Title);
+                    break;
+                case "views":
+                    movies = movies.OrderByDescending(m => m.Views);
+                    break;
+                case "downloads":
+                    movies = movies.OrderByDescending(m => m.Downloads);
+                    break;
+                case "rating":
+                    //movies = movies.OrderByDescending(m => m.Rating);
+                    break;
+                default:
+                    movies = movies.OrderBy(m => m.Title); // Default sort
+                    break;
+            }
+
+            return View(movies.ToList());
         }
         public IActionResult Details(int id)
         {
