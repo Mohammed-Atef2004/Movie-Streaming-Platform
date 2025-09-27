@@ -18,20 +18,22 @@ namespace DAL.Models
 
         public int? DownloadCount { get; private set; } = 0;
         [ForeignKey("Category")]
-        public int ?CategoryId { get; set; }
-        public Category? Category { get; set; }
-        public void Create(string title, string? discription = null,bool? isFree=true ,string? imageUrl = null,string ?createor=null)
+        public int CategoryId { get; set; }
+        public Category Category { get; set; }
+        public void Create(string title, int viewCount, int downloadCount,int CategoryId, string? discription = null,bool? isFree=true ,string? imageUrl = null,string ?createor=null)
         {
             Title = title;
             Description = discription;
             ImageUrl = imageUrl;
-            ViewCount = 0;
-            DownloadCount = 0;
+            ViewCount = viewCount;
+            DownloadCount = downloadCount;
             CreatedAt = DateTime.UtcNow;
             CreatedBy = createor;
             IsFree = isFree;
+            this.CategoryId = CategoryId;
         }
         public void Update( string title,int ?viewcount,int ?downloadcount, string? discription = null, bool? isFree = true, string? imageUrl = null,string ?updater=null)
+
         {
             Title = title;
             Description = discription;

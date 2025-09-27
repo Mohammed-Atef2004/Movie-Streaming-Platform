@@ -22,6 +22,7 @@ namespace DAL.Repositories.Implementation
             if(SerieswFromDb != null)
             {
                 SerieswFromDb.Update(series.Title,series.ViewCount,series.DownloadCount, series.Description,series.IsFree, series.ImageUrl);
+
                 _context.Series.Update(SerieswFromDb);
 
                 if (_context.SaveChanges() > 0)

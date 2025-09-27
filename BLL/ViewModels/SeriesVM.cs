@@ -23,12 +23,12 @@ namespace BLL.ViewModels
         [ValidateNever]
         public IFormFile? Image { get; set; }
         public string? ImageUrl { get; set; }
-        public int? ViewCount { get; set; }
-        public int? DownloadCount { get;  set; }
+        public int ViewCount { get; set; }
+        public int DownloadCount { get; set; } 
         public bool? IsFree { get; set; } = true;
         [ForeignKey("Category")]
-        public int? CategoryId { get; set; }
-        public Category? Category { get; set; }
+        public int CategoryId { get; set; }
+        public Category Category { get; set; }
         public IEnumerable<SelectListItem>? CategoryList { get; set; }
 
     }
