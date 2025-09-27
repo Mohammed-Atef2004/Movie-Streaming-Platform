@@ -43,7 +43,7 @@ namespace BLL.Helpers
         {
             try
             {
-                var directory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Images", FolderName, fileName);
+                var directory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/", FolderName, fileName);
 
                 if (File.Exists(directory))
                 {

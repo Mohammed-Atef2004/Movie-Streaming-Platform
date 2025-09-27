@@ -20,15 +20,15 @@ namespace BLL.ViewModels
         public string Title { get; set; }
         [Required]
         public string? Description { get; set; }
-        public int? Views { get; set; }
-        public int? Downloads { get; set; }
-        public IFormFile? Image { get; set; }
+        public int Views { get; set; } = 0;
+        public int Downloads { get; set; } = 0;
+        public IFormFile? Image { get; set; } 
         public string? ImageUrl { get; set; }
         public bool? IsFree { get; set; } = true;
         public IEnumerable<SelectListItem> ?CategoryList { get; set; }
         [ForeignKey("Category")]
-        public int? CategoryId { get; set; }
-        public Category? Category { get; set; }
+        public int CategoryId { get; set; }
+        public Category Category { get; set; }
 
         public string DisplayImageUrl => string.IsNullOrEmpty(ImageUrl) ? "placeholder.png" : ImageUrl;
     }

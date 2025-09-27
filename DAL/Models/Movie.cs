@@ -13,17 +13,17 @@ namespace DAL.Models
         public string? Title { get; private set; }
         public string? Description { get; private set; }
         public string? ImageUrl { get;  set; }
-        public int? Views { get; private set; }
-        public int? Downloads { get; private set; }
+        public int Views { get; private set; }
+        public int Downloads { get; private set; }
         public bool? IsFree { get; set; } = true;
         [ForeignKey("Category")]
         
-        public int? CategoryId { get; set; }
-        public Category? Category { get; set; }
+        public int CategoryId { get; set; }
+        public Category Category { get; set; }
 
 
       
-        public void Create(string title, string? discription = null, bool? isFree = true, string? imageUrl = null,string ?createor=null)
+        public void Create(string title,int CategoryId, string? discription = null, bool? isFree = true, string? imageUrl = null,string ?createor=null)
         {
             Title = title;
             Description = discription;
@@ -33,8 +33,9 @@ namespace DAL.Models
             CreatedAt = DateTime.UtcNow;
             CreatedBy = createor;
             IsFree = isFree;
+            this.CategoryId = CategoryId;
         }
-        public void Update( string title, string? discription = null, bool? isFree = true, string? imageUrl = null,string ?updater=null)
+        public void Update( string title, int viewCount, int downloadCount, int CategoryId , string? discription = null, bool? isFree = true, string? imageUrl = null,string ?updater=null)
         {
             Title = title;
             Description = discription;
@@ -42,17 +43,11 @@ namespace DAL.Models
             UpdatedAt = DateTime.UtcNow;
             UpdatedBy = updater;
             IsFree = IsFree;
+            Views = viewCount;
+            Downloads = downloadCount;
+            this.CategoryId = CategoryId;
         }
-        public void Update(string title, string? discription = null,  bool? isFree = true, string? imageUrl = null, string? updater = null , int? categoryId = null)
-        {
-            Title = title;
-            Description = discription;
-            CategoryId = categoryId;
-            ImageUrl = imageUrl;
-            UpdatedAt = DateTime.UtcNow;
-            UpdatedBy = updater;
-            IsFree = IsFree;
-        }
+      
 
         //public double? Rating { get; set; }
         //public string? TrailerUrl;

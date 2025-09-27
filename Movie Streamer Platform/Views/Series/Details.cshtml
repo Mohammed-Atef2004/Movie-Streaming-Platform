@@ -1,0 +1,162 @@
+﻿@using BLL.ViewModels
+@model SeriesVM
+
+@{
+	ViewBag.PageTitle = $"{Model?.Title} - Details";
+	var posterUrl = string.IsNullOrEmpty(Model?.ImageUrl)
+			? "/images/poster-placeholder.jpg"
+			: $"/images/{Model.ImageUrl}";
+	var trailerId = "dQw4w9WgXcQ";
+	// if (!string.IsNullOrEmpty(Model?.TrailerUrl))
+	// {
+	// 	var uri = new Uri(Model.TrailerUrl);
+	// 	var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+	// 	trailerId = query["v"];
+	// }
+}
+
+<style>
+	/* Page-specific styles */
+	.hero-section {
+		background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)), url('@posterUrl') center/cover no-repeat;
+		min-height: 50vh;
+		display: flex;
+		align-items: center;
+	}
+
+	.hero-title {
+		font-size: 3.2rem;
+		font-weight: 800;
+		color: var(--contrast-color);
+	}
+
+	.hero-subtitle {
+		font-size: 1.4rem;
+		color: var(--default-color);
+	}
+
+	.rating-badge {
+		font-size: 1.4rem;
+		font-weight: bold;
+	}
+
+	.movie-details-section {
+		background-color: var(--background-color);
+		color: var(--default-color);
+		font-size: 1.15rem;
+	}
+
+	.movie-card-details img {
+		width: 100%;
+		border-radius: 0.6rem;
+	}
+
+	.btn-watch {
+		background: var(--accent-color);
+		border: none;
+		color: var(--contrast-color);
+		font-size: 1.1rem;
+		font-weight: 600;
+		transition: all 0.3s ease;
+	}
+
+	.btn-watch:hover {
+		background: color-mix(in srgb, var(--accent-color), black 15%);
+		transform: translateY(-3px);
+	}
+
+	.btn-download, .btn-bookmark {
+		background: color-mix(in srgb, var(--default-color), transparent 85%);
+		border: none;
+		color: var(--heading-color);
+		font-size: 1.1rem;
+		font-weight: 600;
+		transition: all 0.3s ease;
+	}
+
+	.btn-download:hover, .btn-bookmark:hover {
+		background: color-mix(in srgb, var(--default-color), transparent 75%);
+		transform: translateY(-3px);
+	}
+
+	.movie-desc {
+		font-size: 1.1rem;
+		line-height: 1.8;
+	}
+</style>
+
+<section class="hero-section hero d-flex align-items-center position-relative">
+	<div class="hero-overlay position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.8));"></div>
+	<div class="video-background position-absolute top-0 start-0 w-100 h-100 overflow-hidden">
+		<iframe
+			src="https://www.youtube.com/embed/TJZVs2uguH0?autoplay=1&mute=1&loop=1&playlist=TJZVs2uguH0&controls=0&showinfo=0&rel=0&iv_load_policy=3"
+			frameborder="0"
+			allow="autoplay; encrypted-media"
+			allowfullscreen
+			class="youtube-video position-absolute"
+		></iframe>
+	</div>
+	<div class="container" data-aos="fade-up">
+		<h1 class="hero-title mb-3">@Model?.Title</h1>
+		<p class="hero-subtitle">@Model?.Category?.Name</p>
+		<div class="rating-badge mt-3">
+			<i class="fas fa-star text-warning"></i>
+			@* <span>@Model?.Rating?.ToString("F1")</span> *@
+		</div>
+	</div>
+</section>
+
+<section id="poster" class=" section">
+<div class="container py-5 movie-details-section">
+	<div class="row g-5">
+				<div class="col-lg-8 col-md-7">
+			<div class="details-content">
+				<h2 class="fw-bold mb-3" style="font-size:2rem;">@Model?.Title</h2>
+				<div class="movie-info mb-4">
+					<span class="badge bg-secondary me-2">
+						<i class="fas fa-tags me-1"></i> @(Model?.Category?.Name ?? "N/A")
+					</span>
+					@* <span class="badge bg-secondary me-2">
+						<i class="fas fa-calendar-alt me-1"></i> @(Model?.ReleaseDate?.Year ?? 0)
+					</span> *@
+				</div>
+				<h4 class="mb-2">Description</h4>
+				<p class="movie-desc">@(Model?.Description ?? "No description available for this movie.")</p>
+								<div class="mt-5">
+					<h4 class="mb-3">Watch Trailer</h4>
+					<div class="ratio ratio-16x9 shadow rounded-3 overflow-hidden">
+						<iframe
+							src="https://www.youtube.com/embed/@trailerId"
+							title="YouTube video player"
+							frameborder="0"
+							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+							allowfullscreen>
+						</iframe>
+					</div>
+				</div>
+			</div>
+		</div>
+				<div class="col-lg-4 col-md-5 mb-4">
+			<div class="movie-card-details">
+				<img src="@posterUrl" class="img-fluid shadow-lg"
+					 alt="@Model?.Title Poster"
+					 onerror="this.onerror=null;this.src='/images/poster-placeholder.jpg';" />
+
+				<div class="movie-actions d-flex flex-column gap-3 mt-4">
+						<a href="/Series/View/@(Model.Id)" class="btn btn-watch w-100 py-3">
+						<i class="fas fa-play me-2"></i> Watch Now
+					</a>
+					<a href="/Series/Download/@(Model.Id)" class="btn btn-download w-100 py-3">
+						<i class="fas fa-download me-2"></i> Download
+					</a>
+					<a href="#" class="btn btn-bookmark w-100 py-3">
+						<i class="fas fa-bookmark me-2"></i> Bookmark
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+		</section>
+
+<link rel="stylesheet" href="~/css/movies.css" />
