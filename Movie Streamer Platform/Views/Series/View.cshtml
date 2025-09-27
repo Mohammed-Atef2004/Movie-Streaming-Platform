@@ -5,6 +5,5 @@
     var posterUrl = string.IsNullOrEmpty(Model?.ImageUrl)
             ? "/images/poster-placeholder.jpg"
             : $"/images/{Model.ImageUrl}";
- 
 }
-<img src="~/Images/@Model.ImageUrl" width="50%" height="30%"/>
+<img src="~/Images/@Model.ImageUrl" width="50%" height="30%" />

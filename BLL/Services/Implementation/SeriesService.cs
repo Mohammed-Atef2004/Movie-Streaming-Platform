@@ -84,6 +84,7 @@ namespace BLL.Services.Implementation
             }
 
             // Update other properties
+
             series.Update(seriesVM.Title,seriesVM.ViewCount,seriesVM.DownloadCount,seriesVM.CategoryId,seriesVM.Description, imageUrl: series.ImageUrl);
          
             if (_seriesRepository.Update(series))

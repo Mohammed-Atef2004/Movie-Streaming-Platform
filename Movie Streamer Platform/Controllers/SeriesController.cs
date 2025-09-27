@@ -14,9 +14,80 @@ namespace Movie_Streamer_Platform.Controllers
             _seriesService = seriesService;
             _categoryService = categoryService;
         }
-        public IActionResult Index()
+        public IActionResult Index(string search, string sortBy)
         {
             var series = _seriesService.GetAllSeries();
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                series = series
+                    .Where(s => s.Title.Contains(search, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+
+            switch (sortBy)
+            {
+                case "name_desc":
+                    series = series.OrderByDescending(s => s.Title).ToList();
+                    break;
+                case "views":
+                    series = series.OrderBy(s => s.ViewCount).ToList();
+                    break;
+                case "views_desc":
+                    series = series.OrderByDescending(s => s.ViewCount).ToList();
+                    break;
+                case "downloads":
+                    series = series.OrderBy(s => s.DownloadCount).ToList();
+                    break;
+                case "downloads_desc":
+                    series = series.OrderByDescending(s => s.DownloadCount).ToList();
+                    break;
+                default:
+                    series = series.OrderBy(s => s.Title).ToList(); // default sort
+                    break;
+            }
+
+            return View(series);
+        }
+
+        public IActionResult Details(int id)
+        {
+            var series = _seriesService.GetSeriesById(id); // service layer
+            if (series == null)
+            {
+                return NotFound();
+            }
+            return View(series);
+        }
+        public IActionResult Download(int id)
+        {
+            var series = _seriesService.GetSeriesById(id);
+            if (series == null || string.IsNullOrEmpty(series.ImageUrl))
+            {
+                return NotFound("No File Exist");
+            }
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Images", series.ImageUrl);
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound();
+            }
+            var fileBytes = System.IO.File.ReadAllBytes(filePath);
+            var fileName = Path.GetFileName(filePath);
+            series.DownloadCount = series.DownloadCount  + 1;
+            _seriesService.UpdateSeries(series, series.Id);
+            return File(fileBytes, "application/octet-stream", fileName);
+
+        }
+        public IActionResult View(int id)
+        {
+            var series = _seriesService.GetSeriesById(id);
+            if (series == null || string.IsNullOrEmpty(series.ImageUrl))
+            {
+                return NotFound("No Series Exist");
+            }
+            series.ViewCount = series.ViewCount + 1;
+            _seriesService.UpdateSeries(series, series.Id);
             return View(series);
         }
         public IActionResult Details(int id)
@@ -63,3 +134,4 @@ namespace Movie_Streamer_Platform.Controllers
         }
     }
 }
+

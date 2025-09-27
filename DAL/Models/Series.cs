@@ -13,10 +13,10 @@ namespace DAL.Models
         public string Title { get; private set; }
         public string? Description { get; private set; }
         public string? ImageUrl { get;  set; }
-        public int ViewCount { get; private set; }
+        public int? ViewCount { get; private set; } = 0;
         public bool? IsFree { get; set; } = true;
 
-        public int DownloadCount { get; private set; }
+        public int? DownloadCount { get; private set; } = 0;
         [ForeignKey("Category")]
         public int CategoryId { get; set; }
         public Category Category { get; set; }
@@ -32,7 +32,8 @@ namespace DAL.Models
             IsFree = isFree;
             this.CategoryId = CategoryId;
         }
-        public void Update( string title,int viewCount,int downloadCount, int CategoryId, string? discription = null, bool? isFree = true, string? imageUrl = null,string ?updater=null)
+        public void Update( string title,int ?viewcount,int ?downloadcount, string? discription = null, bool? isFree = true, string? imageUrl = null,string ?updater=null)
+
         {
             Title = title;
             Description = discription;
@@ -40,9 +41,8 @@ namespace DAL.Models
             UpdatedAt = DateTime.UtcNow;
             UpdatedBy = updater;
             IsFree = isFree;
-            this.ViewCount = viewCount;
-            this.DownloadCount = downloadCount;
-            this.CategoryId = CategoryId;
+            ViewCount = viewcount ==null ?0:viewcount;
+            DownloadCount = downloadcount == null ? 0 : downloadcount;
         }
     }
 }
