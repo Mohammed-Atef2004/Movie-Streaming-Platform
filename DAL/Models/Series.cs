@@ -31,7 +31,7 @@ namespace DAL.Models
             CreatedBy = createor;
             IsFree = isFree;
         }
-        public void Update( string title,int ?viewcount,int ?downloadcount, string? discription = null, bool? isFree = true, string? imageUrl = null,string ?updater=null)
+        public void Update( string title,int ?viewcount,int ?downloadcount,int ?categoryId, string? discription = null, bool? isFree = true, string? imageUrl = null,string ?updater=null)
         {
             Title = title;
             Description = discription;
@@ -41,6 +41,7 @@ namespace DAL.Models
             IsFree = isFree;
             ViewCount = viewcount ==null ?1:viewcount;
             DownloadCount = downloadcount == null ? 1 : downloadcount;
+            CategoryId = categoryId;
         }
     }
 }
