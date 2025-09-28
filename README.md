@@ -2,7 +2,6 @@
 
 <div align="center">
 
-![Streamify Logo](assets/logo.png)
 
 *Your Ultimate Destination for Movies and Series Streaming*
 
