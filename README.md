@@ -385,7 +385,8 @@ Users can register for new accounts or login with existing credentials. The plat
 
 ### 🏠 Home & Content Discovery
 
-![Home Page](screenshots/homepage.png)
+#### Home Page
+<img width="1357" height="640" alt="image" src="https://github.com/user-attachments/assets/574674cc-488b-4aa5-845b-a1267d2a844e" />
 
 The home page features:
 - Featured movies and series
@@ -393,19 +394,14 @@ The home page features:
 - Personalized recommendations
 - Category-based browsing
 
-### 🎬 Video Player
-
-![Video Player](screenshots/video-player.png)
-
-Advanced video player with:
-- Adaptive streaming quality
-- Subtitle support
-- Playback speed control
-- Resume functionality
-
 ### 💳 Subscription Management
 
-![Subscription Page](screenshots/subscription.png)
+#### Subscription Page
+<img width="1356" height="639" alt="image" src="https://github.com/user-attachments/assets/3d5b9aac-f1b4-48e3-9b6d-a8fa2be867fa" />
+
+#### Payment Integration
+<img width="1354" height="637" alt="image" src="https://github.com/user-attachments/assets/648f916e-8694-46f3-92a3-a0f28702e1cb" />
+
 
 Users can:
 - Choose from multiple subscription plans
@@ -414,8 +410,22 @@ Users can:
 - Cancel or upgrade subscriptions
 
 ### 🛠️ Admin Dashboard
+#### Movies Management
+<img width="1366" height="635" alt="image" src="https://github.com/user-attachments/assets/2a107253-19af-4a20-b5d5-e58701bf6819" />
 
-![Admin Dashboard](screenshots/admin-dashboard.png)
+####  Series Management
+<img width="1366" height="639" alt="image" src="https://github.com/user-attachments/assets/477c49dc-f441-4ae2-8e85-f42bb44aea63" />
+
+#### Useres Management
+<img width="1363" height="635" alt="image" src="https://github.com/user-attachments/assets/7a793106-0700-45ce-b06b-65649437a5b2" />
+
+### 🛠️ Admin Dashboard
+#### View Movies
+<img width="1344" height="632" alt="image" src="https://github.com/user-attachments/assets/43b04349-4290-4e22-8f23-27fda2df6faa" />
+
+#### View Series
+<img width="1348" height="637" alt="image" src="https://github.com/user-attachments/assets/763277c2-905e-4b22-b814-79f54530657a" />
+
 
 Administrative features include:
 - Content management
@@ -494,7 +504,9 @@ PUT /api/subscriptions/cancel
 
 ### 📊 Entity Relationship Diagram
 
-![Database Schema](screenshots/database-schema.png)
+#### DataBase Schema
+<img width="794" height="521" alt="image" src="https://github.com/user-attachments/assets/d91426f5-7c0f-4e85-b280-f1bdcf755a4f" />
+
 
 ---
 ## 🤝 Contributing
