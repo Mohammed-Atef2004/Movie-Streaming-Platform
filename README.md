@@ -51,10 +51,6 @@
 - **Movie & Series Streaming**: High-quality video streaming with adaptive bitrate
 - **User Management**: Registration, authentication, and profile management
 - **Subscription System**: Multiple subscription tiers with different access levels
-- **Watchlist**: Personal watchlist and viewing history
-- 🌍 **Localization & Globalization** – Multi-language support for a wider audience.  
-- 🕒 **Background Jobs** – Automated tasks running in the background (e.g., subscription checks, data cleanup).  
-- 📧 **Email Notifications** – Automatic email sending for account verification, password reset, and subscription updates.  
 
 ### 🔐 Authentication & Security
 - Role-based authorization (Admin, User)
