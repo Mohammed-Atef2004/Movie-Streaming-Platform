@@ -9,15 +9,16 @@ using System.Threading.Tasks;
 
 namespace BLL.Mapping
 {
-    public class DomainProfile:Profile
+    public class DomainProfile : Profile
     {
         public DomainProfile()
         {
             CreateMap<Movie, MovieVM>().ReverseMap();
             CreateMap<Category, CategoryVM>().ReverseMap();
             CreateMap<Series, SeriesVM>().ReverseMap();
-            CreateMap<ApplicationUser,RegisterUserVM>().ReverseMap();
-            CreateMap<ApplicationUser,LoginUserVM>().ReverseMap();
+            CreateMap<Episode, EpisodeVM>().ReverseMap(); // Bug #3 Fix: Added missing Episode mapping
+            CreateMap<ApplicationUser, RegisterUserVM>().ReverseMap();
+            CreateMap<ApplicationUser, LoginUserVM>().ReverseMap();
         }
     }
 }

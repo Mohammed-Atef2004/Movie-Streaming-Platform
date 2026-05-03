@@ -9,28 +9,20 @@ using System.Threading.Tasks;
 
 namespace DAL.Repositories.Implementation
 {
-    public class EpisodeRepository:GenericRepository<Episode>, IEpisodeRepository
+    public class EpisodeRepository : GenericRepository<Episode>, IEpisodeRepository
     {
         private readonly ApplicationDbContext _context;
-        public EpisodeRepository(ApplicationDbContext context):base(context)
+        public EpisodeRepository(ApplicationDbContext context) : base(context)
         {
-            _context= context;
+            _context = context;
         }
-        public bool Update(Episode episode)
-        { 
-            var EpisodewFromDb = _context.Episodes.FirstOrDefault(u => u.Id == episode.Id);
-            if(EpisodewFromDb != null)
-            {
-                EpisodewFromDb.Update(episode.Title, episode.Description,episode.UpdatedBy);
-                _context.Episodes.Update(EpisodewFromDb);
 
-                if (_context.SaveChanges() > 0)
-                {
-                    return true;
-                }
-                else return false;
-            }
-            return false;
+        public bool Update(Episode episode)
+        {
+            // Fix: Removed double-fetch (same EF tracking conflict as MovieRepository)
+            _context.Episodes.Update(episode);
+
+            return _context.SaveChanges() > 0;
         }
     }
 }

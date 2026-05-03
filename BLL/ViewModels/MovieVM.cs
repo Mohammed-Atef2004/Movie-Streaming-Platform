@@ -16,18 +16,20 @@ namespace BLL.ViewModels
     {
         public int Id { get; set; }
         [Required]
-        [MaxLength(100,ErrorMessage="Maximum length for the title is 100 character")]
+        [MaxLength(100, ErrorMessage = "Maximum length for the title is 100 character")]
         public string Title { get; set; }
         [Required]
         public string? Description { get; set; }
         public int Views { get; set; } = 0;
         public int Downloads { get; set; } = 0;
-        public IFormFile? Image { get; set; } 
+        public IFormFile? Image { get; set; }
         public string? ImageUrl { get; set; }
         public bool? IsFree { get; set; } = true;
-        public IEnumerable<SelectListItem> ?CategoryList { get; set; }
+        [ValidateNever]
+        public IEnumerable<SelectListItem>? CategoryList { get; set; }
         [ForeignKey("Category")]
         public int CategoryId { get; set; }
+        [ValidateNever] // Bug #1 Fix: Added ValidateNever so ModelState doesn't fail on missing Category object
         public Category Category { get; set; }
 
         public string DisplayImageUrl => string.IsNullOrEmpty(ImageUrl) ? "placeholder.png" : ImageUrl;

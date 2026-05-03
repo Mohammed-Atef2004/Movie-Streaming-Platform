@@ -15,11 +15,12 @@ namespace BLL.Services.Implementation
     {
         private readonly IMapper _mapper;
         private readonly IMovieRepository _movieRepository;
-        public MovieService(IMapper mapper,IMovieRepository movieRepository)
+        public MovieService(IMapper mapper, IMovieRepository movieRepository)
         {
             _mapper = mapper;
             _movieRepository = movieRepository;
         }
+
         public (bool, string) CreateMovie(MovieVM movieVM)
         {
             if (movieVM.Image != null)
@@ -29,11 +30,11 @@ namespace BLL.Services.Implementation
             }
 
             var movie = _mapper.Map<Movie>(movieVM);
-            if(_movieRepository.Add(movie))
+            if (_movieRepository.Add(movie))
             {
                 return (true, "Movie Created Successfully");
-            }    
-            return (false,"Failed to Create Movie");
+            }
+            return (false, "Failed to Create Movie");
         }
 
         public (bool, string) DeleteMovie(int id)
@@ -43,7 +44,6 @@ namespace BLL.Services.Implementation
             {
                 return (false, "Movie Not Found");
             }
-            // Only remove the file if the movie exists and has an image
             if (!string.IsNullOrEmpty(movie.ImageUrl))
             {
                 Helpers.Load.RemoveFile("Images", movie.ImageUrl);
@@ -57,7 +57,7 @@ namespace BLL.Services.Implementation
 
         public IEnumerable<MovieVM> GetAllMovies()
         {
-            var movies = _movieRepository.GetAll(includeword:"Category");
+            var movies = _movieRepository.GetAll(includeword: "Category");
             return _mapper.Map<IEnumerable<MovieVM>>(movies);
         }
 
@@ -69,39 +69,39 @@ namespace BLL.Services.Implementation
 
         public IEnumerable<Movie> GetRecentMovies(int count)
         {
-            return _movieRepository.GetAll(includeword : "Category")
-                                   .OrderByDescending(m => m.CreatedAt) 
+            return _movieRepository.GetAll(includeword: "Category")
+                                   .OrderByDescending(m => m.CreatedAt)
                                    .Take(count)
                                    .ToList();
         }
 
-        (bool, string) IMovieService.UpdateMovie(MovieVM movieVM, int Id)
+        public (bool, string) UpdateMovie(MovieVM movieVM, int Id)
         {
-            var movie = _movieRepository.GetFirstOrDefault(x => x.Id == Id,includeword:"Category");
-            if (movie == null)
-            {
-                return (false, "Movie Not Found");
-            }
+            var movie = _movieRepository.GetFirstOrDefault(x => x.Id == Id);
 
-            // Remove old image if a new one is uploaded
+            if (movie == null)
+                return (false, "Movie Not Found");
+
             if (movieVM.Image != null)
             {
                 if (!string.IsNullOrEmpty(movie.ImageUrl))
-                {
                     Helpers.Load.RemoveFile("Images", movie.ImageUrl);
-                }
-                var result = Helpers.Load.UploadFile("Images", movieVM.Image);
-                movie.ImageUrl = result;
+
+                movie.ImageUrl = Helpers.Load.UploadFile("Images", movieVM.Image);
             }
 
-            // Update other properties
-            movie.Update(movieVM.Title, movieVM.Views,movieVM.Downloads, movieVM.CategoryId,movieVM.Description, imageUrl: movie.ImageUrl);
-         
-            if (_movieRepository.Update(movie))
-            {
-                return (true, "Movie Updated Successfully");
-            }
-            return (false, "Failed to Update Movie");
+            movie.Title = movieVM.Title;
+            movie.Description = movieVM.Description;
+            movie.Views = movieVM.Views;
+            movie.Downloads = movieVM.Downloads;
+            movie.CategoryId = movieVM.CategoryId;
+            movie.IsFree = movieVM.IsFree;
+
+            var result = _movieRepository.Update(movie);
+
+            return result
+                ? (true, "Movie Updated Successfully")
+                : (false, "Failed to Update Movie");
         }
     }
 }

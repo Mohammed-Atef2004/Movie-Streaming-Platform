@@ -24,12 +24,12 @@ namespace Movie_Streamer_Platform.Areas.Admin.Controllers
             _categoryService = categoryService;
         }
 
-        //[HttpGet("1")]
         public IActionResult Index()
         {
             var movies = _movieService.GetAllMovies();
             return View(movies);
         }
+
         [HttpGet]
         public IActionResult Create()
         {
@@ -41,6 +41,7 @@ namespace Movie_Streamer_Platform.Areas.Admin.Controllers
             });
             return View(movieVM);
         }
+
         [HttpPost]
         public IActionResult Create(MovieVM movieVM, IFormFile file)
         {
@@ -63,14 +64,20 @@ namespace Movie_Streamer_Platform.Areas.Admin.Controllers
                     return View(movieVM);
                 }
             }
+            movieVM.CategoryList = _categoryService.GetAllCategories().Select(i => new SelectListItem
+            {
+                Text = i.Name,
+                Value = i.Id.ToString()
+            });
             return View(movieVM);
-
         }
+
         public IActionResult Delete(int Id)
         {
             _movieService.DeleteMovie(Id);
             return RedirectToAction("Index");
         }
+
         [HttpGet]
         public IActionResult Edit(int Id)
         {
@@ -86,14 +93,34 @@ namespace Movie_Streamer_Platform.Areas.Admin.Controllers
             }
             return NotFound();
         }
+
         [HttpPost]
         public IActionResult Edit(MovieVM movieVM, IFormFile file)
         {
-            if (ModelState.IsValid)
+            // Bug #2 Fix: Return early if ModelState is invalid instead of continuing to UpdateMovie
+            if (!ModelState.IsValid)
             {
-                if (file != null)
+                movieVM.CategoryList = _categoryService.GetAllCategories().Select(i => new SelectListItem
                 {
-                    movieVM.Image = file;
+                    Text = i.Name,
+                    Value = i.Id.ToString(),
+                    Selected = i.Id == movieVM.CategoryId
+                });
+                return View(movieVM);
+            }
+
+            if (file != null)
+            {
+                movieVM.Image = file;
+            }
+            else
+            {
+                // Bug Fix: ImageUrl doesn't get posted from the form if there's no hidden input in the View
+                // So we fetch the existing ImageUrl from DB to preserve it
+                var existing = _movieService.GetMovieById(movieVM.Id);
+                if (existing != null)
+                {
+                    movieVM.ImageUrl = existing.ImageUrl;
                 }
             }
 
@@ -102,12 +129,8 @@ namespace Movie_Streamer_Platform.Areas.Admin.Controllers
             {
                 return RedirectToAction("Index");
             }
-            else
-            {
-                ViewBag.Error = message;
-            }
 
-
+            ViewBag.Error = message;
             movieVM.CategoryList = _categoryService.GetAllCategories().Select(i => new SelectListItem
             {
                 Text = i.Name,
@@ -117,7 +140,5 @@ namespace Movie_Streamer_Platform.Areas.Admin.Controllers
 
             return View(movieVM);
         }
-
     }
-
 }

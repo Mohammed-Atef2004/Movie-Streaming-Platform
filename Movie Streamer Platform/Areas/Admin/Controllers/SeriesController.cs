@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace Series_Streamer_Platform.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    //[Route("Admin/[controller]")]
     [Authorize(Roles = "Admin")]
 
     public class SeriesController : Controller
@@ -27,9 +26,10 @@ namespace Series_Streamer_Platform.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-            var series=_seriesService.GetAllSeries();
+            var series = _seriesService.GetAllSeries();
             return View(series);
         }
+
         [HttpGet]
         public IActionResult Create()
         {
@@ -41,20 +41,16 @@ namespace Series_Streamer_Platform.Areas.Admin.Controllers
             });
             return View(seriesVM);
         }
+
         [HttpPost]
-        public IActionResult Create(SeriesVM seriesVM,IFormFile file)
+        public IActionResult Create(SeriesVM seriesVM, IFormFile file)
         {
             if (ModelState.IsValid)
             {
-                seriesVM.Image= file;
+                seriesVM.Image = file;
                 var (isSuccess, message) = _seriesService.CreateSeries(seriesVM);
                 if (isSuccess)
                 {
-                    seriesVM.CategoryList = _categoryService.GetAllCategories().Select(i => new SelectListItem
-                    {
-                        Text = i.Name,
-                        Value = i.Id.ToString()
-                    });
                     return RedirectToAction("Index");
                 }
                 else
@@ -68,18 +64,24 @@ namespace Series_Streamer_Platform.Areas.Admin.Controllers
                     return View(seriesVM);
                 }
             }
+            seriesVM.CategoryList = _categoryService.GetAllCategories().Select(i => new SelectListItem
+            {
+                Text = i.Name,
+                Value = i.Id.ToString()
+            });
             return View(seriesVM);
-
         }
+
         public IActionResult Delete(int Id)
         {
             _seriesService.DeleteSeries(Id);
             return RedirectToAction("Index");
         }
+
         [HttpGet]
         public IActionResult Edit(int Id)
         {
-            var series=_seriesService.GetSeriesById(Id);
+            var series = _seriesService.GetSeriesById(Id);
             if (series != null)
             {
                 series.CategoryList = _categoryService.GetAllCategories().Select(i => new SelectListItem
@@ -91,14 +93,34 @@ namespace Series_Streamer_Platform.Areas.Admin.Controllers
             }
             return NotFound();
         }
+
         [HttpPost]
         public IActionResult Edit(SeriesVM seriesVM, IFormFile file)
         {
-            if (ModelState.IsValid)
+            // Bug #2 Fix: Return early if ModelState is invalid instead of continuing to UpdateSeries
+            if (!ModelState.IsValid)
             {
-                if (file != null)
+                seriesVM.CategoryList = _categoryService.GetAllCategories().Select(i => new SelectListItem
                 {
-                    seriesVM.Image = file;
+                    Text = i.Name,
+                    Value = i.Id.ToString(),
+                    Selected = i.Id == seriesVM.CategoryId
+                });
+                return View(seriesVM);
+            }
+
+            if (file != null)
+            {
+                seriesVM.Image = file;
+            }
+            else
+            {
+                // Bug Fix: ImageUrl doesn't get posted from the form if there's no hidden input in the View
+                // So we fetch the existing ImageUrl from DB to preserve it
+                var existing = _seriesService.GetSeriesById(seriesVM.Id);
+                if (existing != null)
+                {
+                    seriesVM.ImageUrl = existing.ImageUrl;
                 }
             }
 
@@ -107,12 +129,8 @@ namespace Series_Streamer_Platform.Areas.Admin.Controllers
             {
                 return RedirectToAction("Index");
             }
-            else
-            {
-                ViewBag.Error = message;
-            }
 
-
+            ViewBag.Error = message;
             seriesVM.CategoryList = _categoryService.GetAllCategories().Select(i => new SelectListItem
             {
                 Text = i.Name,
@@ -122,7 +140,5 @@ namespace Series_Streamer_Platform.Areas.Admin.Controllers
 
             return View(seriesVM);
         }
-
     }
-  
 }

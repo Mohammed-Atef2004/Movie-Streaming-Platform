@@ -9,28 +9,20 @@ using System.Threading.Tasks;
 
 namespace DAL.Repositories.Implementation
 {
-    public class MovieRepository:GenericRepository<Movie>, IMovieRepository
+    public class MovieRepository : GenericRepository<Movie>, IMovieRepository
     {
         private readonly ApplicationDbContext _context;
-        public MovieRepository(ApplicationDbContext context):base(context)
+        public MovieRepository(ApplicationDbContext context) : base(context)
         {
-            _context= context;
+            _context = context;
         }
-        public bool Update(Movie movie)
-        { 
-            var MoviewFromDb = _context.Movies.FirstOrDefault(u => u.Id == movie.Id);
-            if(MoviewFromDb != null)
-            {
-                MoviewFromDb.Update(movie.Title,movie.Views,movie.Downloads,movie.CategoryId, movie.Description,movie.IsFree, movie.ImageUrl, movie.UpdatedBy);
-                _context.Movies.Update(MoviewFromDb);
 
-                if (_context.SaveChanges() > 0)
-                {
-                    return true;
-                }
-                else return false;
-            }
-            return false;
+        public bool Update(Movie movie)
+        {
+            _context.Movies.Attach(movie);
+            _context.Entry(movie).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+
+            return _context.SaveChanges() > 0;
         }
     }
 }

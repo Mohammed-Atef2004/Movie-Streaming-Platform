@@ -1,29 +1,26 @@
-﻿    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace DAL.Models
 {
-    public class Movie: CommonData
+    public class Movie : CommonData
     {
-        public int Id { get; private set; }
-        public string? Title { get; private set; }
-        public string? Description { get; private set; }
-        public string? ImageUrl { get;  set; }
-        public int Views { get; private set; }
-        public int Downloads { get; private set; }
+        public int Id { get;  set; }
+        public string? Title { get;  set; }
+        public string? Description { get;  set; }
+        public string? ImageUrl { get; set; }
+        public int Views { get;  set; }
+        public int Downloads { get;  set; }
         public bool? IsFree { get; set; } = true;
         [ForeignKey("Category")]
-        
         public int CategoryId { get; set; }
         public Category Category { get; set; }
 
-
-      
-        public void Create(string title,int CategoryId, string? discription = null, bool? isFree = true, string? imageUrl = null,string ?createor=null)
+        public void Create(string title, int CategoryId, string? discription = null, bool? isFree = true, string? imageUrl = null, string? createor = null)
         {
             Title = title;
             Description = discription;
@@ -35,23 +32,18 @@ namespace DAL.Models
             IsFree = isFree;
             this.CategoryId = CategoryId;
         }
-        public void Update( string title, int viewCount, int downloadCount, int CategoryId , string? discription = null, bool? isFree = true, string? imageUrl = null,string ?updater=null)
+
+        public void Update(string title, int viewCount, int downloadCount, int CategoryId, string? discription = null, bool? isFree = true, string? imageUrl = null, string? updater = null)
         {
             Title = title;
             Description = discription;
             ImageUrl = imageUrl;
             UpdatedAt = DateTime.UtcNow;
             UpdatedBy = updater;
-            IsFree = IsFree;
+            IsFree = isFree; // Bug Fix: was "IsFree = IsFree" (property assigned to itself, parameter was ignored)
             Views = viewCount;
             Downloads = downloadCount;
             this.CategoryId = CategoryId;
         }
-      
-
-        //public double? Rating { get; set; }
-        //public string? TrailerUrl;
-        //public DateTime? ReleaseDate;
-        //public bool IsActive { get; set; }
     }
 }
