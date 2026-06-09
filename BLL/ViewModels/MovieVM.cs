@@ -1,14 +1,9 @@
 ﻿using DAL.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.AspNetCore.Http;
 
 namespace BLL.ViewModels
 {
@@ -22,6 +17,7 @@ namespace BLL.ViewModels
         public string? Description { get; set; }
         public int Views { get; set; } = 0;
         public int Downloads { get; set; } = 0;
+
         public IFormFile? Image { get; set; }
         public string? ImageUrl { get; set; }
         public bool? IsFree { get; set; } = true;
@@ -32,6 +28,7 @@ namespace BLL.ViewModels
         [ValidateNever] // Bug #1 Fix: Added ValidateNever so ModelState doesn't fail on missing Category object
         public Category Category { get; set; }
 
+        public string TrailerURL { get; set; }
         public string DisplayImageUrl => string.IsNullOrEmpty(ImageUrl) ? "placeholder.png" : ImageUrl;
     }
 }

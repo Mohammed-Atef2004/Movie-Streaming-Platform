@@ -19,8 +19,9 @@ namespace DAL.Models
         [ForeignKey("Category")]
         public int CategoryId { get; set; }
         public Category Category { get; set; }
+        public string TrailerUrl { get; set; }
 
-        public void Create(string title, int CategoryId, string? discription = null, bool? isFree = true, string? imageUrl = null, string? createor = null)
+        public void Create(string title, int CategoryId, string? discription = null, bool? isFree = true, string? imageUrl = null, string? createor = null,string? trailerUrl=null)
         {
             Title = title;
             Description = discription;
@@ -31,6 +32,7 @@ namespace DAL.Models
             CreatedBy = createor;
             IsFree = isFree;
             this.CategoryId = CategoryId;
+            TrailerUrl = trailerUrl;
         }
 
         public void Update(string title, int viewCount, int downloadCount, int CategoryId, string? discription = null, bool? isFree = true, string? imageUrl = null, string? updater = null)

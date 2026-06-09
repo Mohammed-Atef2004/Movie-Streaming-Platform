@@ -23,7 +23,7 @@ namespace BLL.Services.Implementation
 
         public (bool, string) CreateMovie(MovieVM movieVM)
         {
-            if (movieVM.Image != null)
+            if (movieVM.Image!=null)
             {
                 var result = Helpers.Load.UploadFile("Images", movieVM.Image);
                 movieVM.ImageUrl = result;
@@ -63,7 +63,7 @@ namespace BLL.Services.Implementation
 
         public MovieVM GetMovieById(int id)
         {
-            var movie = _movieRepository.GetFirstOrDefault(x => x.Id == id);
+            var movie = _movieRepository.GetFirstOrDefault(x => x.Id == id, includeword: "Category");
             return _mapper.Map<MovieVM>(movie);
         }
 
@@ -82,7 +82,7 @@ namespace BLL.Services.Implementation
             if (movie == null)
                 return (false, "Movie Not Found");
 
-            if (movieVM.Image != null)
+            if (movieVM.Image!=null)
             {
                 if (!string.IsNullOrEmpty(movie.ImageUrl))
                     Helpers.Load.RemoveFile("Images", movie.ImageUrl);
