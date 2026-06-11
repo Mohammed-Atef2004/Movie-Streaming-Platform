@@ -1,17 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using DAL.Models;
 
 namespace BLL.ViewModels
 {
-    public class SeriesVM
+    public class MovieVM
     {
         public int Id { get; set; }
         [Required]
@@ -19,17 +15,20 @@ namespace BLL.ViewModels
         public string Title { get; set; }
         [Required]
         public string? Description { get; set; }
-        [ValidateNever]
+        public int Views { get; set; } = 0;
+        public int Downloads { get; set; } = 0;
+
         public IFormFile? Image { get; set; }
         public string? ImageUrl { get; set; }
-        public int ViewCount { get; set; }
-        public int DownloadCount { get; set; }
         public bool? IsFree { get; set; } = true;
+        [ValidateNever]
+        public IEnumerable<SelectListItem>? CategoryList { get; set; }
         [ForeignKey("Category")]
         public int CategoryId { get; set; }
         [ValidateNever] // Bug #1 Fix: Added ValidateNever so ModelState doesn't fail on missing Category object
         public Category Category { get; set; }
-        [ValidateNever]
-        public IEnumerable<SelectListItem>? CategoryList { get; set; }
+
+        public string TrailerURL { get; set; }
+        public string DisplayImageUrl => string.IsNullOrEmpty(ImageUrl) ? "placeholder.png" : ImageUrl;
     }
 }

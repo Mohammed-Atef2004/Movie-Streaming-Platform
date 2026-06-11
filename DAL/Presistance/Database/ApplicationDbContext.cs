@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DAL.Database
+namespace Infrastructure.Presistance.Database
 {
     public class ApplicationDbContext:IdentityDbContext<ApplicationUser>
     {

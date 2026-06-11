@@ -1,10 +1,10 @@
 ﻿using BLL.Mapping;
 using BLL.Services.Abstraction;
 using BLL.Services.Implementation;
-using DAL.Database;
 using DAL.Models;
 using DAL.Repositories.Abstraction;
 using DAL.Repositories.Implementation;
+using Infrastructure.Presistance.Database;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

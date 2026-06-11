@@ -1,18 +1,12 @@
-﻿using AutoMapper;
-using BLL.Services.Abstraction;
-using BLL.Services.Implementation;
+﻿using BLL.Services.Abstraction;
 using BLL.ViewModels;
-using DAL.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Win32;
 
 namespace Movie_Streamer_Platform.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Admin")]
+    [System.Web.Mvc.Authorize(Roles = "Admin")]
 
     public class MovieController : Controller
     {

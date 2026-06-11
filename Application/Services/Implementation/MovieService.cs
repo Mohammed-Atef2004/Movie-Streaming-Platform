@@ -2,6 +2,7 @@
 using BLL.Services.Abstraction;
 using BLL.ViewModels;
 using DAL.Models;
+using DAL.Repositories.Abstraction;
 using System;
 using System.Collections.Generic;
 using System.Linq;
