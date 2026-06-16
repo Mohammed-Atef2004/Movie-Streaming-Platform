@@ -273,10 +273,18 @@
 						@Model?.Title
 					</h1>
 
-					<div class="movie-meta-info d-flex align-items-center gap-3">
+					<div class="movie-meta-info d-flex flex-wrap align-items-center gap-3">
 
 						<span class="badge bg-warning text-dark px-3 py-2 fs-6 fw-bold">
 							@(Model?.Category?.Name ?? "Unknown")
+						</span>
+
+						<span class="badge bg-dark border px-3 py-2">
+							📅 @Model.Year
+						</span>
+
+						<span class="badge @(Model.IsFree == true ? "bg-success" : "bg-danger") px-3 py-2">
+							@(Model.IsFree == true ? "FREE" : "PREMIUM")
 						</span>
 
 					</div>
@@ -293,21 +301,62 @@
 
 					</div>
 
+					<div class="movie-stats">
+
+						<div class="stat-box">
+							<div class="stat-label">Release Year</div>
+							<div class="stat-value">@Model.Year</div>
+						</div>
+
+						<div class="stat-box">
+							<div class="stat-label">Rating</div>
+							<div class="stat-value">
+								⭐ @Model.Rating / 10
+							</div>
+						</div>
+
+						<div class="stat-box">
+							<div class="stat-label">Views</div>
+							<div class="stat-value">
+								@Model.Views
+							</div>
+						</div>
+
+						<div class="stat-box">
+							<div class="stat-label">Downloads</div>
+							<div class="stat-value">
+								@Model.Downloads
+							</div>
+						</div>
+
+						<div class="stat-box">
+							<div class="stat-label">Access</div>
+							<div class="stat-value">
+								@(Model.IsFree == true ? "Free" : "Premium")
+							</div>
+						</div>
+
+					</div>
+
 					<div class="d-flex flex-wrap gap-3 mt-4">
 
+						@if (!string.IsNullOrWhiteSpace(Model.MovieUrl))
+						{
+							<a href="@Model.MovieUrl"
+							   target="_blank"
+							   class="btn btn-action-watch">
+								<i class="fas fa-film me-2"></i>
+								Watch Movie
+							</a>
+						}
+
 						<a href="#trailer-section"
-						   class="btn btn-action-watch">
+						   class="btn btn-action-outline">
 							<i class="fas fa-play me-2"></i>
 							Watch Trailer
 						</a>
 
-						<button class="btn btn-action-outline">
-							<i class="fas fa-heart me-2"></i>
-							Add To Watchlist
-						</button>
-
 					</div>
-
 				</div>
 
 			</div>

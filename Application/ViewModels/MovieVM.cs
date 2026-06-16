@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using DAL.Models;
+using System.Text.Json.Serialization.Metadata;
 
 namespace BLL.ViewModels
 {
@@ -20,7 +21,7 @@ namespace BLL.ViewModels
 
         public IFormFile? Image { get; set; }
         public string? ImageUrl { get; set; }
-        public bool? IsFree { get; set; } = true;
+        public bool IsFree { get; set; } = true;
         [ValidateNever]
         public IEnumerable<SelectListItem>? CategoryList { get; set; }
         [ForeignKey("Category")]
@@ -29,6 +30,9 @@ namespace BLL.ViewModels
         public Category Category { get; set; }
 
         public string TrailerURL { get; set; }
+        public string MovieUrl { get; set; }
+        public int Year {  get; set; }
+        public int Rating { get; set; } = 5;
         public string DisplayImageUrl => string.IsNullOrEmpty(ImageUrl) ? "placeholder.png" : ImageUrl;
     }
 }

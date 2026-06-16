@@ -79,6 +79,44 @@
                         <textarea asp-for="TrailerURL" class="form-control" rows="3" placeholder="Enter movie description..."></textarea>
                         <span asp-validation-for="TrailerURL" class="text-danger"></span>
                     </div>
+                    <div class="mb-3">
+                        <label asp-for="MovieUrl" class="form-label fw-bold"></label>
+                        <input asp-for="MovieUrl"
+                               class="form-control"
+                               placeholder="Enter movie url..." />
+                        <span asp-validation-for="MovieUrl" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Year" class="form-label fw-bold"></label>
+                            <input asp-for="Year"
+                                   class="form-control"
+                                   placeholder="Enter release year..." />
+                            <span asp-validation-for="Year" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Rating" class="form-label fw-bold"></label>
+                            <input asp-for="Rating"
+                                   type="number"
+                                   min="0"
+                                   max="10"
+                                   step="0.1"
+                                   class="form-control"
+                                   placeholder="Enter rating..." />
+                            <span asp-validation-for="Rating" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-check form-switch mb-4">
+                        <input asp-for="IsFree"
+                               class="form-check-input"
+                               type="checkbox" />
+                        <label asp-for="IsFree" class="form-check-label fw-bold">
+                            Free Movie
+                        </label>
+                    </div>
 
                     <div class="mb-3">
                         @* <label asp-for="Price" class="form-label fw-bold"></label> *@
