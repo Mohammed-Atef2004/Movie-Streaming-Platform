@@ -2,7 +2,6 @@
 
 <div align="center">
 
-
 *Your Ultimate Destination for Movies and Series Streaming*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -23,242 +22,168 @@
 - [📦 Installation](#-installation)
 - [⚙️ Configuration](#️-configuration)
 - [📱 Screenshots](#-screenshots)
-- [🔧 API Documentation](#-api-documentation)
 - [🤝 Contributing](#-contributing)
 - [📄 License](#-license)
 - [👥 Authors](#-authors)
-- [🙏 Acknowledgments](#-acknowledgments)
 
 ---
 
 ## 🎯 Overview
 
-**Streamify** is a modern, full-featured online movie and series streaming platform built with .NET 8 and Entity Framework Core. The platform provides users with a seamless streaming experience, featuring user management, subscription handling, payment processing, and content management capabilities.
+**Streamify** is a modern, full-featured online movie and series streaming platform built with **.NET 8** and **Entity Framework Core**. The platform follows **Clean Architecture** principles with a clear separation between Core, Application, Infrastructure, and Presentation layers.
 
 ### 🎥 What Makes Streamify Special?
 
-- **N-tier Architecture**: Implements Domain-Driven Design with clear separation of concerns
-- **Modern UI**: Responsive design with intuitive user experience
-- **Secure**: Robust authentication and authorization system
-- **Payment Integration**: Seamless payment processing for subscriptions
-- **Admin Panel**: Comprehensive content and user management
+- **Clean Architecture**: Domain-Driven Design with proper layer separation and dependency inversion
+- **Soft Delete Pattern**: All entities support soft delete with full audit trail (CreatedAt, UpdatedAt, DeletedAt, CreatedBy, UpdatedBy, DeletedBy)
+- **Role-Based Access**: Admin and User roles with automatic seeding on startup
+- **Free / Premium Content Model**: Each movie and series can be marked as free or premium (`IsFree` flag)
+- **Areas-Based Structure**: Separate Admin and Customer areas for clean routing
 
 ---
 
 ## ✨ Features
 
-### 🎬 Core Features
-- **Movie & Series Streaming**: High-quality video streaming with adaptive bitrate
-- **User Management**: Registration, authentication, and profile management
-- **Subscription System**: Multiple subscription tiers with different access levels
+### 🎬 Core Content
+- **Movies**: Browse, view details, stream movies with trailer and main video support
+- **Series & Episodes**: Full series management with episode-level video URLs and view/download tracking
+- **Categories (Genres)**: Content organized by categories with many-to-many mapping to movies
 
-### 🔐 Authentication & Security
-- Role-based authorization (Admin, User)
-- Secure password hashing
-- Session management
+### 🔐 Authentication & Authorization
+- ASP.NET Core Identity with role-based authorization (`Admin`, `User`)
+- Cookie-based authentication
+- Custom Login / Register / Access Denied pages
+- Auto-seeded admin account on first run (`admin@gmail.com` / `Admin@123`)
 
-### 💳 Payment & Subscriptions
-- Subscription management
-- Billing history
+### 🛠️ Admin Panel
+- Manage Movies (Create, Edit, View All, Soft Delete)
+- Manage Series (Create, Edit, View All, Soft Delete)
+- Manage Categories (Create, Edit, Delete)
+- User Management with role assignment
 
-### 📊 Administrative Features
-- Content management system
-- Subscription analytics
-- System monitoring
+### 💳 Subscriptions
+- Subscription plans page (UI ready, business logic in roadmap)
+
+### 📊 Content Tracking
+- View count and download count per movie and episode
+- Rating field per movie (default 5.0)
+- Release year tracking
 
 ---
 
 ## 🏗️ Architecture
 
-Streamify follows **Clean Architecture** principles with a clear separation of concerns:
+Streamify follows **Clean Architecture** with four distinct layers:
 
 ```
-├── 🎯 BLL (Business Logic Layer)/
-│   ├── 📁 Dependencies/
-│   ├── 📁 Helpers/
-│   │   └── 📄 Load.cs
-│   ├── 📁 Mapping/
-│   │   └── 📄 DomainProfile.cs
-│   ├── 📁 Services/
-│   │   ├── 📁 Abstraction/
-│   │   │   ├── 📄 IAccountService.cs
-│   │   │   ├── 📄 ICategoryService.cs
-│   │   │   ├── 📄 IEpisodeService.cs
-│   │   │   ├── 📄 IMovieService.cs
-│   │   │   ├── 📄 IPaymentService.cs
-│   │   │   ├── 📄 ISeriesService.cs
-│   │   │   └── 📄 IUserManagerService.cs
-│   │   └── 📁 Implementation/
-│   │       ├── 📄 AccountService.cs
-│   │       ├── 📄 CategoryService.cs
-│   │       ├── 📄 EpisodeService.cs
-│   │       ├── 📄 MovieService.cs
-│   │       ├── 📄 PaymentService.cs
-│   │       ├── 📄 SeriesService.cs
-│   │       ├── 📄 StripePaymentService.cs
-│   │       └── 📄 UserManagerService.cs
-│   │
-│   ├── 📁 ViewModels/
-│   │   ├── 📄 CategoryVM.cs
-│   │   ├── 📄 EpisodeVM.cs
-│   │   ├── 📄 LoginUserVM.cs
-│   │   ├── 📄 MovieVM.cs
-│   │   ├── 📄 RegisterUserVM.cs
-│   │   ├── 📄 SeriesVM.cs
-│   │   └── 📄 UserVM.cs
+├── 🧠 Core/                        
+│   ├── Models/
+│   │   ├── CommonData.cs               ← Abstract base (audit + soft delete)
+│   │   ├── ApplicationUser.cs          ← IdentityUser extension
+│   │   ├── Movie.cs                    ← Movie entity
+│   │   ├── Series.cs                   ← Series entity
+│   │   ├── Episode.cs                  ← Episode entity
+│   │   └── Category.cs                 ← Category/Genre entity
+│   └── Repositories/
+│       ├── IGenericRepository.cs       ← Base CRUD contract
+│       ├── IMovieRepository.cs
+│       ├── ISeriesRepository.cs
+│       ├── IEpisodeRepository.cs
+│       └── ICategoryRepository.cs
 │
-├── 🗄️ DAL (Data Access Layer)/
-│   ├── 📁 Dependencies/
-│   ├── 📁 Database/
-│   │   └── 📄 ApplicationDbContext.cs
-│   ├── 📁 Migrations/
-│   ├── 📁 Models/
-│   │   ├── 📄 ApplicationUser.cs
-│   │   ├── 📄 Category.cs
-│   │   ├── 📄 CommonData.cs
-│   │   ├── 📄 Episode.cs
-│   │   ├── 📄 ErrorViewModel.cs
-│   │   ├── 📄 Movie.cs
-│   │   └── 📄 Series.cs
-│   └── 📁 Repositories/
-│       ├── 📁 Abstraction/
-│       │   ├── 📄 ICategoryRepository.cs
-│       │   ├── 📄 IEpisodeRepository.cs
-│       │   ├── 📄 IGenericRepository.cs
-│       │   ├── 📄 IMovieRepository.cs
-│       │   └── 📄 ISeriesRepository.cs
-│       └── 📁 Implementation/
-│           ├── 📄 CategoryRepository.cs
-│           ├── 📄 EpisodeRepository.cs
-│           ├── 📄 GenericRepository.cs
-│           ├── 📄 MovieRepository.cs
-│           └── 📄 SeriesRepository.cs
+├── 📦 Application/                     
+│   ├── Services/
+│   │   ├── Abstraction/
+│   │   │   ├── IMovieService.cs
+│   │   │   ├── ISeriesService.cs
+│   │   │   ├── IEpisodeService.cs
+│   │   │   ├── ICategoryService.cs
+│   │   │   ├── IAccountService.cs
+│   │   │   └── IUserMangerService.cs
+│   │   └── Implementation/
+│   │       ├── MovieService.cs
+│   │       ├── SeriesService.cs
+│   │       ├── EpisodeService.cs
+│   │       ├── CategoryService.cs
+│   │       ├── AccountService.cs
+│   │       └── UserMangerService.cs
+│   ├── ViewModels/
+│   │   ├── MovieVM.cs
+│   │   ├── SeriesVM.cs
+│   │   ├── EpisodeVM.cs
+│   │   ├── CategoryVM.cs
+│   │   ├── LoginUserVM.cs
+│   │   ├── RegisterUserVM.cs
+│   │   └── UserVM.cs
+│   ├── Mapping/
+│   │   └── DomainProfile.cs            ← AutoMapper configuration
+│   └── Helpers/
+│       └── Load.cs
 │
-└── 🌐 PL (Presentation Layer)/
-    ├── 📁 Connected Services/
-    ├── 📁 Dependencies/
-    ├── 📁 Properties/
-    ├── 📁 wwwroot/
-    ├── 📁 Areas/
-    │   ├── 📁 Admin/
-    │   │   └── 📁 Views/
-    │   └── 📁 Customer/
-    │       └── 📁 Views/
-    ├── 📁 Controllers/
-    │   ├── 📄 AccountController.cs
-    │   ├── 📄 ErrorController.cs
-    │   ├── 📄 HomeController.cs
-    │   ├── 📄 MoviesController.cs
-    │   ├── 📄 PaymentController.cs
-    │   ├── 📄 SeriesController.cs
-    │   ├── 📄 SubscriptionController.cs
-    │   └── 📄 UserManagerController.cs
-    ├── 📁 Views/
-    │   ├── 📁 Account/
-    │   ├── 📁 Error/
-    │   ├── 📁 Home/
-    │   ├── 📁 Movies/
-    │   ├── 📁 Payment/
-    │   ├── 📁 Series/
-    │   ├── 📁 Shared/
-    │   └── 📁 Subscriptions/
-    ├── 📄 _ViewImports.cshtml
-    ├── 📄 _ViewStart.cshtml
-    ├── 📄 appsettings.json
-    ├── 📄 Class1.cs
-    └── 📄 Program.cs
-
+├── 🗄️ Infrastructure/                 
+│   ├── Presistance/Database/
+│   │   └── ApplicationDbContext.cs     ← EF Core DbContext
+│   ├── Repositories/Implementation/
+│   │   ├── GenericRepository.cs
+│   │   ├── MovieRepository.cs
+│   │   ├── SeriesRepository.cs
+│   │   ├── EpisodeRepository.cs
+│   │   └── CategoryRepository.cs
+│   └── Migrations/
+│
+└── 🌐 Movie Streamer Platform/         
+    ├── Areas/
+    │   ├── Admin/
+    │   │   ├── Controllers/
+    │   │   │   ├── HomeController.cs
+    │   │   │   ├── MovieController.cs
+    │   │   │   ├── SeriesController.cs
+    │   │   │   ├── CategoryController.cs
+    │   │   │   └── UserController.cs
+    │   │   └── Views/
+    │   └── Customer/
+    │       ├── Controllers/
+    │       │   └── HomeController.cs
+    │       └── Views/
+    ├── Controllers/
+    │   ├── AccountController.cs
+    │   ├── HomeController.cs
+    │   ├── MoviesController.cs
+    │   ├── SeriesController.cs
+    │   ├── SubscriptionController.cs
+    │   └── ErrorController.cs
+    ├── Views/
+    │   ├── Account/       (Login, Register, AccessDenied)
+    │   ├── Movies/        (Index, Details, View)
+    │   ├── Series/        (Index, Details, View)
+    │   ├── Home/          (Index, Movies, Privacy)
+    │   ├── Subscriptions/ (Index)
+    │   ├── Error/         (NotFound)
+    │   └── Shared/        (_Layout, Error)
+    └── Program.cs
 ```
 
-### 🎯 Business Logic Layer (BLL)
+### 🧱 Domain Model Highlights
 
-#### 📋 Service Abstractions
-- **IAccountService.cs** - User authentication and account management interface
-- **ICategoryService.cs** - Content category management interface  
-- **IEpisodeService.cs** - TV series episode management interface
-- **IMovieService.cs** - Movie content management interface
-- **IPaymentService.cs** - Payment processing interface
-- **ISeriesService.cs** - TV series management interface
-- **IUserManagerService.cs** - User administration interface
+**CommonData** — abstract base class inherited by all entities:
 
-#### ⚙️ Service Implementations  
-- **AccountService.cs** - Handles user registration, login, profile management
-- **CategoryService.cs** - Manages content categories and genres
-- **EpisodeService.cs** - Handles episode CRUD operations and metadata
-- **MovieService.cs** - Manages movie content, metadata, and streaming
-- **PaymentService.cs** - Core payment processing logic
-- **SeriesService.cs** - Handles TV series operations and season management
-- **StripePaymentService.cs** - Stripe payment gateway integration
-- **UserManagerService.cs** - Advanced user management and administration
+| Field | Type | Notes |
+|---|---|---|
+| CreatedAt | DateTime? | Auto-set on creation |
+| UpdatedAt | DateTime? | Auto-set on update |
+| IsDeleted | bool? | Soft delete flag |
+| DeletedAt | DateTime? | Timestamp of deletion |
+| CreatedBy | string? | Username who created |
+| UpdatedBy | string? | Username who updated |
+| DeletedBy | string? | Username who deleted |
 
-#### 🔧 Utilities
-- **Load.cs** - Helper class for data loading and initialization
-- **DomainProfile.cs** - AutoMapper configuration for entity-to-DTO mappings
+**Movie** fields: `Title`, `Description`, `ImageUrl`, `TrailerUrl`, `MovieUrl`, `IsFree`, `Rating`, `Year`, `Views`, `Downloads`, `CategoryId`
 
-### 🗄️ Data Access Layer (DAL)
+**Series** fields: `Title`, `Description`, `ImageUrl`, `IsFree`, `ViewCount`, `DownloadCount`, `CategoryId`
 
-#### 🏛️ Database Context
-- **ApplicationDbContext.cs** - Entity Framework Core context with all entity configurations
+**Episode** fields: `Title`, `Description`, `VideoUrl`, `ViewCount`, `DownloadCount`, `SeriesId`
 
-#### 📊 Domain Models
-- **ApplicationUser.cs** - Extended Identity user with streaming platform specific properties
-- **Category.cs** - Content categorization and genre management
-- **CommonData.cs** - Shared data models and common properties
-- **Episode.cs** - Individual episode entity with series relationships  
-- **ErrorViewModel.cs** - Error handling and display model
-- **Movie.cs** - Movie entity with metadata, ratings, and streaming info
-- **Series.cs** - TV series entity with episode collections and season data
-
-#### 🔍 Repository Abstractions
-- **ICategoryRepository.cs** - Category data access interface
-- **IEpisodeRepository.cs** - Episode-specific data operations interface
-- **IGenericRepository.cs** - Base repository pattern for common CRUD operations
-- **IMovieRepository.cs** - Movie-specific data access interface
-- **ISeriesRepository.cs** - Series data management interface
-
-#### 💾 Repository Implementations
-- **CategoryRepository.cs** - Category data access implementation with advanced queries
-- **EpisodeRepository.cs** - Episode data operations with series relationships
-- **GenericRepository.cs** - Base repository implementation for all entities
-- **MovieRepository.cs** - Movie data access with filtering, searching, and streaming
-- **SeriesRepository.cs** - Series data management with episode handling
-
-### 🌐 Presentation Layer (PL)
-
-#### 🎮 Controllers
-- **AccountController.cs** - User authentication, registration, and profile management
-- **ErrorController.cs** - Global error handling and custom error pages
-- **HomeController.cs** - Landing page, dashboard, and general navigation
-- **MoviesController.cs** - Movie browsing, details, and streaming interface
-- **PaymentController.cs** - Payment processing, billing, and transaction handling
-- **SeriesController.cs** - TV series browsing, episode navigation, and streaming
-- **SubscriptionController.cs** - Subscription plans, upgrades, and management
-- **UserManagerController.cs** - Administrative user management functionality
-
-#### 📱 View Models
-- **CategoryVM.cs** - Category display and management view model
-- **EpisodeVM.cs** - Episode information and streaming view model
-- **LoginUserVM.cs** - User login form and validation model
-- **MovieVM.cs** - Movie display and interaction view model
-- **RegisterUserVM.cs** - User registration form with validation
-- **SeriesVM.cs** - Series information and episode listing model
-- **UserVM.cs** - User profile and management view model
-
-#### 🎨 View Structure
-- **Account Views** - Login, registration, profile management interfaces
-- **Error Views** - Custom error pages and exception handling
-- **Home Views** - Landing pages, dashboard, and navigation
-- **Movies Views** - Movie library, details, and player interfaces
-- **Payment Views** - Checkout, billing history, and payment method management
-- **Series Views** - Series library, season/episode navigation, and player
-- **Shared Views** - Common layouts, partial views, and components
-- **Subscriptions Views** - Plan selection, account management, and billing
-
-#### ⚙️ Configuration Files
-- **Program.cs** - Application startup, dependency injection, and middleware configuration
-- **appsettings.json** - Application configuration, connection strings, and settings
-- **_ViewImports.cshtml** - Global view imports and tag helpers
-- **_ViewStart.cshtml** - Default layout and view configuration
+**Category** fields: `Name`, `Description` → has a collection of `Movies`
 
 ---
 
@@ -266,23 +191,21 @@ Streamify follows **Clean Architecture** principles with a clear separation of c
 
 ### 📋 Prerequisites
 
-Before you begin, ensure you have the following installed:
-
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) (LocalDB or Full)
+- [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) (LocalDB or full instance)
 - [Visual Studio 2022](https://visualstudio.microsoft.com/) or [VS Code](https://code.visualstudio.com/)
-- [Node.js](https://nodejs.org/) (for client-side dependencies)
 - [Git](https://git-scm.com/)
 
 ### 🎯 Tech Stack
 
-- **Backend**: .NET 8, ASP.NET Core MVC
-- **Database**: SQL Server with Entity Framework Core
-- **Frontend**: HTML5, CSS3, JavaScript, Bootstrap
-- **Authentication**: ASP.NET Core Identity
-- **Mapping**: AutoMapper
-- **Testing**: xUnit, Moq
-- **Containerization**: Docker (optional)
+| Layer | Technology |
+|---|---|
+| Backend | .NET 8, ASP.NET Core MVC |
+| Database | SQL Server + Entity Framework Core 8 |
+| Auth | ASP.NET Core Identity (Cookie-based) |
+| Mapping | AutoMapper |
+| Frontend | HTML5, CSS3, JavaScript, Bootstrap |
+| Admin UI | Custom admin template |
 
 ---
 
@@ -298,217 +221,135 @@ cd streamify
 ### 2️⃣ Restore Dependencies
 
 ```bash
-# Restore NuGet packages
 dotnet restore
-
-# Install client-side packages (if using npm)
-npm install
 ```
 
-### 3️⃣ Database Setup
+### 3️⃣ Configure the Database
+
+Update the connection string in `Movie Streamer Platform/appsettings.json`:
+
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=(localdb)\\MSSQLLocalDB;Database=StreamifyDB;Trusted_Connection=true;MultipleActiveResultSets=true"
+  }
+}
+```
+
+### 4️⃣ Run Migrations
 
 ```bash
-# Update connection string in appsettings.json
-# Run migrations
-dotnet ef database update --project DAL --startup-project PL
+dotnet ef database update --project Infrastructure --startup-project "Movie Streamer Platform"
+```
 
-# Or using Package Manager Console in Visual Studio
+Or in Package Manager Console:
+
+```powershell
 Update-Database
 ```
 
-### 4️⃣ Build and Run
+### 5️⃣ Run the Application
 
 ```bash
-# Build the solution
-dotnet build
-
-# Run the application
-dotnet run --project PL
+dotnet run --project "Movie Streamer Platform"
 ```
 
-The application will be available at `https://localhost:5001` or `http://localhost:5000`.
+The app will be available at `https://localhost:7221` or `http://localhost:5257`.
+
+> **First run**: An admin account is automatically seeded.
+> - Email: `admin@gmail.com`
+> - Password: `Admin@123`
 
 ---
 
 ## ⚙️ Configuration
 
-### 🔧 Application Settings
-
-Update `appsettings.json` in the PL project:
+### appsettings.json
 
 ```json
 {
   "ConnectionStrings": {
     "DefaultConnection": "Server=(localdb)\\MSSQLLocalDB;Database=StreamifyDB;Trusted_Connection=true;MultipleActiveResultSets=true"
   },
-  "JwtSettings": {
-    "SecretKey": "your-super-secret-key-here",
-    "Issuer": "Streamify",
-    "Audience": "StreamifyUsers",
-    "ExpiryMinutes": 60
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
   },
-  "PaymentSettings": {
-    "StripePublishableKey": "pk_test_your_stripe_key",
-    "StripeSecretKey": "sk_test_your_stripe_secret"
-  }
+  "AllowedHosts": "*"
 }
 ```
 
-### 🌍 Environment Variables
+### Routing
 
-For production deployment, set these environment variables:
+The app uses area-based routing:
 
-```bash
-ASPNETCORE_ENVIRONMENT=Production
-ConnectionStrings__DefaultConnection=your_production_connection_string
-JwtSettings__SecretKey=your_production_secret_key
-```
+| Area | Pattern | Purpose |
+|---|---|---|
+| Admin | `/Admin/{controller}/{action}/{id?}` | Admin dashboard |
+| Customer | `/Customer/{controller}/{action}/{id?}` | Customer-facing pages |
+| Default | `/{controller=Home}/{action=Index}/{id?}` | Public pages |
 
 ---
-
 
 ## 📱 Screenshots
 
-### 👤 User Registration & Login
+### 🏠 Home Page
+<img width="1357" height="640" alt="Home Page" src="https://github.com/user-attachments/assets/574674cc-488b-4aa5-845b-a1267d2a844e" />
 
-![User Registration](screenshots/registration.png)
+### 💳 Subscription Page
+<img width="1356" height="639" alt="Subscription" src="https://github.com/user-attachments/assets/3d5b9aac-f1b4-48e3-9b6d-a8fa2be867fa" />
 
-Users can register for new accounts or login with existing credentials. The platform supports:
-- Email verification
-- Password reset functionality
-- Social login options (Google, Facebook)
+### 💰 Payment Integration
+<img width="1354" height="637" alt="Payment" src="https://github.com/user-attachments/assets/648f916e-8694-46f3-92a3-a0f28702e1cb" />
 
-### 🏠 Home & Content Discovery
+### 🛠️ Admin — Movies Management
+<img width="1366" height="635" alt="Admin Movies" src="https://github.com/user-attachments/assets/2a107253-19af-4a20-b5d5-e58701bf6819" />
 
-#### Home Page
-<img width="1357" height="640" alt="image" src="https://github.com/user-attachments/assets/574674cc-488b-4aa5-845b-a1267d2a844e" />
+### 🛠️ Admin — Series Management
+<img width="1366" height="639" alt="Admin Series" src="https://github.com/user-attachments/assets/477c49dc-f441-4ae2-8e85-f42bb44aea63" />
 
-The home page features:
-- Featured movies and series
-- Trending content
-- Personalized recommendations
-- Category-based browsing
+### 👥 Admin — User Management
+<img width="1363" height="635" alt="User Management" src="https://github.com/user-attachments/assets/7a793106-0700-45ce-b06b-65649437a5b2" />
 
-### 💳 Subscription Management
+### 🎬 Browse Movies
+<img width="1344" height="632" alt="View Movies" src="https://github.com/user-attachments/assets/43b04349-4290-4e22-8f23-27fda2df6faa" />
 
-#### Subscription Page
-<img width="1356" height="639" alt="image" src="https://github.com/user-attachments/assets/3d5b9aac-f1b4-48e3-9b6d-a8fa2be867fa" />
-
-#### Payment Integration
-<img width="1354" height="637" alt="image" src="https://github.com/user-attachments/assets/648f916e-8694-46f3-92a3-a0f28702e1cb" />
-
-
-Users can:
-- Choose from multiple subscription plans
-- Manage payment methods
-- View billing history
-- Cancel or upgrade subscriptions
-
-### 🛠️ Admin Dashboard
-#### Movies Management
-<img width="1366" height="635" alt="image" src="https://github.com/user-attachments/assets/2a107253-19af-4a20-b5d5-e58701bf6819" />
-
-####  Series Management
-<img width="1366" height="639" alt="image" src="https://github.com/user-attachments/assets/477c49dc-f441-4ae2-8e85-f42bb44aea63" />
-
-#### Useres Management
-<img width="1363" height="635" alt="image" src="https://github.com/user-attachments/assets/7a793106-0700-45ce-b06b-65649437a5b2" />
-
-### 🛠️ Admin Dashboard
-#### View Movies
-<img width="1344" height="632" alt="image" src="https://github.com/user-attachments/assets/43b04349-4290-4e22-8f23-27fda2df6faa" />
-
-#### View Series
-<img width="1348" height="637" alt="image" src="https://github.com/user-attachments/assets/763277c2-905e-4b22-b814-79f54530657a" />
-
-
-Administrative features include:
-- Content management
-- User management
-- Analytics and reporting
-- System configuration
+### 📺 Browse Series
+<img width="1348" height="637" alt="View Series" src="https://github.com/user-attachments/assets/763277c2-905e-4b22-b814-79f54530657a" />
 
 ---
 
+## 🗺️ Development Roadmap
 
-## 🔧 API Documentation
+### ✅ Completed
+- [x] Core domain models with soft delete and audit trail
+- [x] Movie CRUD with category, trailer, rating, and free/premium flag
+- [x] Series & Episode management
+- [x] Category management
+- [x] ASP.NET Identity with Admin/User roles
+- [x] Admin area with full content management
+- [x] Customer area with movie and series browsing
+- [x] Generic repository pattern
+- [x] AutoMapper integration
 
-### 🎬 Movies Endpoints
-
-```http
-GET /api/movies
-GET /api/movies/{id}
-POST /api/movies
-PUT /api/movies/{id}
-DELETE /api/movies/{id}
-```
-
-### 📺 Series Endpoints
-
-```http
-GET /api/series
-GET /api/series/{id}
-GET /api/series/{id}/episodes
-POST /api/series
-PUT /api/series/{id}
-DELETE /api/series/{id}
-```
-
-### 👤 User Endpoints
-
-```http
-POST /api/auth/register
-POST /api/auth/login
-POST /api/auth/refresh
-GET /api/users/profile
-PUT /api/users/profile
-```
-
-### 💳 Subscription Endpoints
-
-```http
-GET /api/subscriptions/plans
-POST /api/subscriptions/subscribe
-GET /api/subscriptions/current
-PUT /api/subscriptions/cancel
-```
-
-### 📊 Example API Response
-
-```json
-{
-  "success": true,
-  "data": {
-    "id": 1,
-    "title": "The Matrix",
-    "description": "A computer programmer discovers reality is a simulation.",
-    "genre": "Science Fiction",
-    "releaseYear": 1999,
-    "duration": 136,
-    "rating": 8.7,
-    "posterUrl": "/images/matrix-poster.jpg",
-    "trailerUrl": "/videos/matrix-trailer.mp4"
-  },
-  "message": "Movie retrieved successfully"
-}
-```
+### 🔄 In Progress / Planned
+- [ ] Subscription plans & payment processing (Stripe)
+- [ ] User watchlist and favorites
+- [ ] Watch history with resume support
+- [ ] User ratings and reviews
+- [ ] Search and filtering by genre/year/rating
+- [ ] Trending and top-rated sections
+- [ ] Real-time features (SignalR)
+- [ ] Caching layer (IMemoryCache → Redis)
+- [ ] FluentValidation integration
+- [ ] Unit and integration tests
+- [ ] Docker support
 
 ---
 
-## 🏛️ Database Schema
-
-### 📊 Entity Relationship Diagram
-
-#### DataBase Schema
-<img width="794" height="521" alt="image" src="https://github.com/user-attachments/assets/d91426f5-7c0f-4e85-b280-f1bdcf755a4f" />
-
-
----
 ## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
-
-### 🔄 Development Workflow
 
 1. **Fork** the repository
 2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
@@ -516,73 +357,36 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 4. **Push** to the branch (`git push origin feature/amazing-feature`)
 5. **Open** a Pull Request
 
-### 📝 Code Style
-
+### Code Style Guidelines
 - Follow C# coding conventions
-- Use meaningful variable and method names
-- Add XML documentation for public APIs
-- Write unit tests for new features
-- Ensure all tests pass before submitting PR
-
-### 🐛 Bug Reports
-
-When reporting bugs, please include:
-- Steps to reproduce
-- Expected vs actual behavior
-- Environment details
-- Screenshots if applicable
+- Keep domain logic inside entity methods (e.g., `movie.Create(...)`, `movie.Update(...)`)
+- Do not expose setters on domain properties — use domain methods
+- Write meaningful commit messages
 
 ---
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
 
 ```
-MIT License
-
-Copyright (c) 2024 Streamify Team
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+MIT License — Copyright (c) 2024 Streamify Team
 ```
 
 ---
 
 ## 👥 Authors
 
-- **Mohammed Atef** - *Backend Development* - [GitHub](https://github.com/Mohammed-Atef2004)
-- **Shady Atef** - *Frontend development* - [GitHub]([https://github.com/member2](https://github.com/shady-ateff))
-
----
-
-## 🙏 Acknowledgments
-
-- **Bootstrap** - For the responsive UI framework
-- **Entity Framework Team** - For the excellent ORM
-- **ASP.NET Core Team** - For the robust web framework
-- **Community Contributors** - For their valuable feedback and contributions
-- **Font Awesome** - For the beautiful icons
-- **Unsplash** - For the stock photos used in development
+- **Mohammed Atef** — Backend Development — [GitHub](https://github.com/Mohammed-Atef2004)
+- **Shady Atef** — Frontend Development — [GitHub](https://github.com/shady-ateff)
 
 ---
 
 ## 📞 Support
 
-Need help? We're here for you!
-
-- 📧 **Email**: muhamedatef.82@gmail.com
-
+- 📧 Email: muhamedatef.82@gmail.com
 
 ---
-
 
 <div align="center">
 
