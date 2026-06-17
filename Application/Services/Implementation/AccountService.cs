@@ -14,19 +14,21 @@ namespace BLL.Services.Implementation
 {
     public class AccountService : IAccountService
     {
-        private readonly RoleManager<ApplicationUser> _roleManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IMapper _mapper;
-        public AccountService(RoleManager<ApplicationUser> roleManager, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IMapper mapper)
+
+        public AccountService(
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
+            IMapper mapper)
         {
-            _roleManager = roleManager;
             _userManager = userManager;
             _signInManager = signInManager;
             _mapper = mapper;
         }
 
-       public async Task<bool> Login(LoginUserVM loginUserVM)
+        public async Task<bool> Login(LoginUserVM loginUserVM)
         {
             var user=_mapper.Map<ApplicationUser>(loginUserVM);
             var result=await _signInManager.PasswordSignInAsync(user.UserName,loginUserVM.Password,loginUserVM.RememberMe,false);
@@ -36,6 +38,11 @@ namespace BLL.Services.Implementation
 
         public async Task<ApplicationUser> Register(RegisterUserVM registerUserVM)
         {
+            if (registerUserVM.Image != null)
+            {
+                var url = Helpers.Load.UploadFile("Images", registerUserVM.Image);
+                registerUserVM.ImageURL = url;
+            }
             var user=_mapper.Map<ApplicationUser>(registerUserVM);
             user.EmailConfirmed = true;
             var result= await _userManager.CreateAsync(user,registerUserVM.Password);

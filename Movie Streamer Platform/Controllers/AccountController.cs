@@ -1,4 +1,5 @@
 ﻿using BLL.Services.Abstraction;
+using BLL.Services.Implementation;
 using BLL.ViewModels;
 using DAL.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -9,45 +10,29 @@ namespace Movie_Streamer_Platform.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly UserManager<ApplicationUser> _userManger;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IAccountService _accountService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public AccountController(UserManager<ApplicationUser> userManger, SignInManager<ApplicationUser> singInManager)
+        public AccountController(IAccountService accountService, UserManager<ApplicationUser> userManager)
         {
-            _userManger = userManger;
-            _signInManager = singInManager;
-
+            _accountService = accountService;
+            _userManager = userManager;
         }
+
         [HttpGet]
         public IActionResult Register()
         {
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterUserVM registerUserVM)
+        public async Task<IActionResult> Register(RegisterUserVM vm)
         {
-            var user = new ApplicationUser()
-            {
-                UserName = registerUserVM.UserName,
-                Email = registerUserVM.Email,
+            var user = await _accountService.Register(vm);
 
-            };
-
-            var result = await _userManger.CreateAsync(user, registerUserVM.Password);
-
-            if (result.Succeeded)
-            {
-                await _userManger.AddToRoleAsync(user, "User");
+            if (user is not null)
                 return RedirectToAction("Login");
-            }
-            else
-            {
-                foreach (var item in result.Errors)
-                {
-                    ModelState.AddModelError("Password", item.Description);
-                }
-                return View(registerUserVM);
-            }
+
+            return View(vm);
         }
 
 
@@ -57,30 +42,35 @@ namespace Movie_Streamer_Platform.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> Login(LoginUserVM loginUserVMl)
+        public async Task<IActionResult> Login(LoginUserVM loginUserVM)
         {
-            if (ModelState.IsValid)
-            {
-                var result = await _signInManager.PasswordSignInAsync(loginUserVMl.UserName, loginUserVMl.Password, loginUserVMl.RememberMe, false);
-                if (result.Succeeded)
-                {
-                    return RedirectToAction("Index", "Home");
-                }
-                else
-                {
-                    ModelState.AddModelError("", "Invalid UserName Or Password");
-                    return View(loginUserVMl);
-                }
-            }
-            return View(loginUserVMl);
+            if (!ModelState.IsValid)
+                return View(loginUserVM);
+
+            bool result = await _accountService.Login(loginUserVM);
+
+            if (result)
+                return RedirectToAction("Index", "Home");
+
+            ModelState.AddModelError("", "Invalid UserName Or Password");
+
+            return View(loginUserVM);
         }
         [HttpPost]
-        public async Task<IActionResult> Logout()
+        public async Task<IActionResult> Logout(LoginUserVM loginUserVM)
         {
-            await _signInManager.SignOutAsync();
+            await _accountService.Logout(loginUserVM);
             return RedirectToAction("Login");
         }
 
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> Profile()
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            return View(user);
+        }
         [HttpGet]
         public IActionResult AccessDenied()
         {
