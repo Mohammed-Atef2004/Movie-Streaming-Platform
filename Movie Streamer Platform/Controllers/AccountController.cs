@@ -1,4 +1,5 @@
-﻿using BLL.Services.Abstraction;
+﻿using Application.ViewModels;
+using BLL.Services.Abstraction;
 using BLL.Services.Implementation;
 using BLL.ViewModels;
 using DAL.Models;
@@ -70,6 +71,67 @@ namespace Movie_Streamer_Platform.Controllers
             var user = await _userManager.GetUserAsync(User);
 
             return View(user);
+        }
+        [Authorize]
+        public async Task<IActionResult> EditProfile()
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
+                return NotFound();
+
+            var vm = new EditProfileVM
+            {
+                UserName = user.UserName,
+                Email = user.Email,
+                CurrentImage = user.ImageURL
+            };
+
+            return View(vm);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditProfile(EditProfileVM vm)
+        {
+            if (!ModelState.IsValid)
+                return View(vm);
+
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
+                return NotFound();
+
+            user.UserName = vm.UserName;
+            user.Email = vm.Email;
+
+            if (vm.Image is not null)
+            {
+                var fileName = Guid.NewGuid() +
+                               Path.GetExtension(vm.Image.FileName);
+
+                var path = Path.Combine(
+                    Directory.GetCurrentDirectory(),
+                    "wwwroot/Images",
+                    fileName);
+
+                using var stream = new FileStream(path, FileMode.Create);
+
+                await vm.Image.CopyToAsync(stream);
+
+                user.ImageURL = fileName;
+            }
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                    ModelState.AddModelError("", error.Description);
+
+                return View(vm);
+            }
+
+            return RedirectToAction(nameof(Profile));
         }
         [HttpGet]
         public IActionResult AccessDenied()

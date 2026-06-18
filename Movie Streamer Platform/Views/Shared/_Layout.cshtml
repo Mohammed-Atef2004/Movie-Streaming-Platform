@@ -178,6 +178,11 @@
     <script src="~/assets/vendor/glightbox/js/glightbox.min.js"></script>
 
     <script src="~/assets/js/main.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+    @await RenderSectionAsync("ValidationScripts", required: false)
 
 </body>
 

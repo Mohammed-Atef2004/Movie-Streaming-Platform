@@ -1,0 +1,107 @@
+﻿@using Application.ViewModels
+@model EditProfileVM
+
+@{
+    ViewData["Title"] = "Edit Profile";
+
+    var imageUrl = string.IsNullOrEmpty(Model.CurrentImage)
+        ? "/Images/default-user.png"
+        : $"/Images/{Model.CurrentImage}";
+}
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-6">
+
+            <div class="card bg-dark text-white shadow-lg border-0">
+
+                <div class="card-body p-4">
+
+                    <h2 class="mb-4">
+                        Edit Profile
+                    </h2>
+
+                    <form asp-action="EditProfile"
+                          enctype="multipart/form-data">
+
+                        <div class="text-center mb-4">
+
+                            <img src="@imageUrl"
+                                 width="150"
+                                 height="150"
+                                 class="rounded-circle border border-danger"
+                                 style="object-fit:cover;" />
+
+                        </div>
+
+                        <div asp-validation-summary="All"
+                             class="text-danger mb-3">
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label asp-for="UserName"
+                                   class="form-label">
+                            </label>
+
+                            <input asp-for="UserName"
+                                   class="form-control" />
+
+                            <span asp-validation-for="UserName"
+                                  class="text-danger">
+                            </span>
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label asp-for="Email"
+                                   class="form-label">
+                            </label>
+
+                            <input asp-for="Email"
+                                   class="form-control" />
+
+                            <span asp-validation-for="Email"
+                                  class="text-danger">
+                            </span>
+
+                        </div>
+
+                        <div class="mb-4">
+
+                            <label asp-for="Image"
+                                   class="form-label">
+                                Profile Image
+                            </label>
+
+                            <input asp-for="Image"
+                                   class="form-control" />
+
+                        </div>
+
+                        <button type="submit"
+                                class="btn btn-danger w-100">
+
+                            Save Changes
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section ValidationScripts
+{
+    <partial name="_ValidationScriptsPartial" />
+}
