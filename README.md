@@ -323,6 +323,10 @@ The app uses area-based routing:
 ### 📺 Movie Details
 <img width="928" height="531" alt="image" src="https://github.com/user-attachments/assets/2d4d6b9c-965c-46f6-992a-d1a8b08b8ac3" />
 
+### Profile
+<img width="894" height="573" alt="image" src="https://github.com/user-attachments/assets/7e048208-07fe-47f3-974a-a9c15b1a2def" />
+
+
 ---
 
 ## 🗺️ Development Roadmap
