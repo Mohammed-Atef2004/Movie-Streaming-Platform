@@ -333,10 +333,10 @@ The app uses area-based routing:
 - [x] Customer area with movie and series browsing
 - [x] Generic repository pattern
 - [x] AutoMapper integration
+- [x] User watchlist and favorites
 
 ### 🔄 In Progress / Planned
 - [ ] Subscription plans & payment processing (Stripe)
-- [ ] User watchlist and favorites
 - [ ] Watch history with resume support
 - [ ] User ratings and reviews
 - [ ] Search and filtering by genre/year/rating
