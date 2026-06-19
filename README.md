@@ -305,7 +305,7 @@ The app uses area-based routing:
 <img width="1354" height="637" alt="Payment" src="https://github.com/user-attachments/assets/648f916e-8694-46f3-92a3-a0f28702e1cb" />
 
 ### 🛠️ Admin — Movies Management
-<img width="1366" height="635" alt="Admin Movies" src="https://github.com/user-attachments/assets/2a107253-19af-4a20-b5d5-e58701bf6819" />
+<img width="1327" height="633" alt="image" src="https://github.com/user-attachments/assets/d4cd1d20-a067-4592-81c4-3af7d03008e8" />
 
 ### 🛠️ Admin — Series Management
 <img width="1366" height="639" alt="Admin Series" src="https://github.com/user-attachments/assets/477c49dc-f441-4ae2-8e85-f42bb44aea63" />
@@ -314,10 +314,14 @@ The app uses area-based routing:
 <img width="1363" height="635" alt="User Management" src="https://github.com/user-attachments/assets/7a793106-0700-45ce-b06b-65649437a5b2" />
 
 ### 🎬 Browse Movies
-<img width="1344" height="632" alt="View Movies" src="https://github.com/user-attachments/assets/43b04349-4290-4e22-8f23-27fda2df6faa" />
+<img width="672" height="568" alt="image" src="https://github.com/user-attachments/assets/7a41f944-f8fb-4d21-a4aa-e45d5dbb6098" />
+
 
 ### 📺 Browse Series
 <img width="1348" height="637" alt="View Series" src="https://github.com/user-attachments/assets/763277c2-905e-4b22-b814-79f54530657a" />
+
+### 📺 Movie Details
+<img width="928" height="531" alt="image" src="https://github.com/user-attachments/assets/2d4d6b9c-965c-46f6-992a-d1a8b08b8ac3" />
 
 ---
 
