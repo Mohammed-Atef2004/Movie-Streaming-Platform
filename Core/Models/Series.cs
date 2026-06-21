@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Core.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -20,6 +21,8 @@ namespace DAL.Models
         [ForeignKey("Category")]
         public int CategoryId { get; set; }
         public Category Category { get; set; }
+        public virtual ICollection<UserSeries> UserSeries { get; set; }
+    = new HashSet<UserSeries>();
         public void Create(string title, int viewCount, int downloadCount,int CategoryId, string? discription = null,bool? isFree=true ,string? imageUrl = null,string ?createor=null)
         {
             Title = title;

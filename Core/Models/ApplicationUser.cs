@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Core.Models;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +11,11 @@ namespace DAL.Models
     public class ApplicationUser:IdentityUser
     {
         public string ImageURL { get; set; }
-        public ICollection<Movie> WatchedMovies { get; set; } = new HashSet<Movie>();
-        public ICollection<Series> WatchedSeries { get; set; } = new HashSet<Series>();
-        public ICollection<Movie> FavouriteMovies { get; set; } = new HashSet<Movie>();
-        public ICollection<Series> FavouriteSeries { get; set; } = new HashSet<Series>();
+        public virtual ICollection<UserMovie> UserMovies { get; set; }
+            = new HashSet<UserMovie>();
+
+        public virtual ICollection<UserSeries> UserSeries { get; set; }
+            = new HashSet<UserSeries>();
 
     }
 }

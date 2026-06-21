@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Core.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -19,13 +20,16 @@ namespace DAL.Models
         [ForeignKey("Category")]
         public int CategoryId { get; set; }
         public Category Category { get; set; }
+        [ForeignKey("ApplicationUser")]
         public string TrailerUrl { get; set; }
         public string MovieUrl { get; set; }
         public double Rating { get; set; } = 5;
         public int year { get; set; }
+        public virtual ICollection<UserMovie> UserMovies { get; set; }
+            = new HashSet<UserMovie>();
 
 
-     public void Create(
+        public void Create(
      string title,
      string? description,
      string? imageUrl,
