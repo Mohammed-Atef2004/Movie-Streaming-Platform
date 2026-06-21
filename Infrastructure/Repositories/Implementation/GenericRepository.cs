@@ -83,5 +83,10 @@ namespace DAL.Repositories.Implementation
             }
             return false;
         }
+        public bool Update(T entity)
+        {
+            _dbSet.Update(entity);
+            return _context.SaveChanges() > 0;
+        }
     }
 }

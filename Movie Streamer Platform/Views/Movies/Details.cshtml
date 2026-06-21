@@ -356,6 +356,61 @@
 							Watch Trailer
 						</a>
 
+						@if (User.Identity.IsAuthenticated)
+						{
+							<form asp-action="ToggleFavorite"
+								  asp-controller="Movies"
+								  method="post"
+								  class="d-inline">
+
+								<input type="hidden"
+									   name="movieId"
+									   value="@Model.Id" />
+
+								<button type="submit"
+										class="btn btn-action-outline">
+
+									@if (ViewBag.IsFavorite == true)
+									{
+										<i class="fas fa-heart me-2"></i>
+										<span>Remove Favorite</span>
+									}
+									else
+									{
+										<i class="far fa-heart me-2"></i>
+										<span>Add Favorite</span>
+									}
+
+								</button>
+							</form>
+
+							<form asp-action="ToggleWatchList"
+								  asp-controller="Movies"
+								  method="post"
+								  class="d-inline">
+
+								<input type="hidden"
+									   name="movieId"
+									   value="@Model.Id" />
+
+								<button type="submit"
+										class="btn btn-action-outline">
+
+									@if (ViewBag.IsInWatchList == true)
+									{
+										<i class="fas fa-bookmark me-2"></i>
+										<span>Remove Watchlist</span>
+									}
+									else
+									{
+										<i class="far fa-bookmark me-2"></i>
+										<span>Add Watchlist</span>
+									}
+
+								</button>
+							</form>
+						}
+
 					</div>
 				</div>
 

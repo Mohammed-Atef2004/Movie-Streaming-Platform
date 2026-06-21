@@ -1,10 +1,14 @@
-﻿using BLL.Mapping;
+﻿using Application.Services.Abstraction;
+using Application.Services.Implementation;
+using BLL.Mapping;
 using BLL.Services.Abstraction;
 using BLL.Services.Implementation;
+using Core.Repositories;
 using DAL.Models;
 using DAL.Repositories.Abstraction;
 using DAL.Repositories.Implementation;
 using Infrastructure.Presistance.Database;
+using Infrastructure.Repositories.Implementation;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -26,12 +30,14 @@ namespace Movie_Streamer_Platform
             builder.Services.AddScoped<IMovieRepository,MovieRepository>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<ISeriesRepository, SeriesRepository>();
+            builder.Services.AddScoped<IUserMovieRepository, UserMovieRepository>();
 
             // Register your services
             builder.Services.AddScoped<IMovieService, MovieService>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<ISeriesService, SeriesService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
+            builder.Services.AddScoped<IUserMovieService,UserMovieService>();
 
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,

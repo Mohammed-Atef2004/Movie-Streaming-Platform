@@ -1,7 +1,8 @@
-﻿using BLL.Services.Abstraction;
-using Microsoft.AspNetCore.Mvc;
-using BLL.ViewModels;
+﻿using Application.Services.Abstraction;
 using BLL.Services;
+using BLL.Services.Abstraction;
+using BLL.ViewModels;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Movie_Streamer_Platform.Controllers
@@ -10,13 +11,14 @@ namespace Movie_Streamer_Platform.Controllers
     {
         private readonly IMovieService _movieService;
         private readonly ICategoryService _categoryService;
+        private readonly IUserMovieService _userMovieService;
 
-        public MoviesController(IMovieService movieService, ICategoryService categoryService)
+        public MoviesController(IMovieService movieService, ICategoryService categoryService, IUserMovieService userMovieService)
         {
             _movieService = movieService;
             _categoryService = categoryService;
+            _userMovieService = userMovieService;
         }
-
 
         public IActionResult Index()
         {
@@ -25,12 +27,58 @@ namespace Movie_Streamer_Platform.Controllers
         }
         public IActionResult Details(int id)
         {
-            var movie = _movieService.GetMovieById(id); // service layer
+            var movie = _movieService.GetMovieById(id);
+
             if (movie == null)
-            {
                 return NotFound();
+            ViewBag.IsFavorite = false;
+            ViewBag.IsInWatchList = false;
+
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                var userId = User.FindFirst(
+                    System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                ViewBag.IsFavorite =
+                    _userMovieService.IsFavorite(userId, id);
+
+                ViewBag.IsInWatchList =
+                    _userMovieService.IsInWatchList(userId, id);
             }
+
             return View(movie);
+        }
+        [HttpPost]
+        public IActionResult ToggleFavorite(int movieId)
+        {
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+
+            var userId = User.FindFirst(
+                System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (_userMovieService.IsFavorite(userId, movieId))
+                _userMovieService.RemoveFromFavorites(userId, movieId);
+            else
+                _userMovieService.AddToFavorites(userId, movieId);
+
+            return RedirectToAction(nameof(Details), new { id = movieId });
+        }
+        [HttpPost]
+        public IActionResult ToggleWatchList(int movieId)
+        {
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+
+            var userId = User.FindFirst(
+                System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (_userMovieService.IsInWatchList(userId, movieId))
+                _userMovieService.RemoveFromWatchList(userId, movieId);
+            else
+                _userMovieService.AddToWatchList(userId, movieId);
+
+            return RedirectToAction(nameof(Details), new { id = movieId });
         }
 
     }

@@ -13,6 +13,8 @@ namespace DAL.Repositories.Abstraction
         T GetFirstOrDefault(Expression<Func<T, bool>>? predict = null, string? includeword = null);
         bool Add(T entity);
         bool Remove(T entity);
+        bool Update(T entity);
+
         bool RemoveRange(IEnumerable<T> entities);
 
     }
