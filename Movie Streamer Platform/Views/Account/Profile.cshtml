@@ -1,322 +1,830 @@
-﻿@using DAL.Models
-@model ApplicationUser
+﻿@using Application.ViewModels
+@model ProfileVM
 
 @{
     ViewData["Title"] = "My Profile";
 
-    var imageUrl = string.IsNullOrEmpty(Model.ImageURL)
-        ? "/Images/default-user.png"
-        : $"/Images/{Model.ImageURL}";
+    var imageUrl = string.IsNullOrEmpty(Model.User.ImageURL)
+     ? "/Images/default-user.png"
+     : $"/Images/{Model.User.ImageURL}";
 
-    // var totalWatched = Model.WatchedMovies.Count + Model.WatchedSeries.Count;
-    // var totalFavorites = Model.FavouriteMovies.Count + Model.FavouriteSeries.Count;
+    var favoriteMoviesCount = Model.FavoriteMovies?.Count() ?? 0;
+    var favoriteSeriesCount = Model.FavoriteSeries?.Count() ?? 0;
+
+    var watchListMoviesCount = Model.WatchListMovies?.Count() ?? 0;
+    var watchListSeriesCount = Model.WatchListSeries?.Count() ?? 0;
+
+    var totalFavorites = favoriteMoviesCount + favoriteSeriesCount;
+    var totalWatchList = watchListMoviesCount + watchListSeriesCount;
+
 }
 
 <style>
 
-    body {
-        background-color: #0b0b0b;
-        color: white;
+    /* ── Reset & Base ─────────────────────────────── */
+
+    *, *::before, *::after {
+        box-sizing: border-box;
     }
+
+    body {
+        background-color: #141414;
+        color: #e5e5e5;
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        overflow-x: hidden;
+    }
+
+    /* ── Hero ─────────────────────────────────────── */
 
     .profile-hero {
         position: relative;
-        height: 350px;
-        background: linear-gradient( rgba(0,0,0,.45), rgba(0,0,0,.95)), url('/images/profile-cover.jpg');
+        height: 420px;
+        background: linear-gradient(180deg, rgba(20,20,20,.3) 0%, rgba(20,20,20,.55) 40%, rgba(20,20,20,.85) 70%, #141414 100%), url('/images/profile-cover.jpg');
         background-size: cover;
-        background-position: center;
+        background-position: center 30%;
     }
 
-    .profile-content {
-        margin-top: -120px;
-        position: relative;
-        z-index: 10;
-    }
-
-    .profile-card {
-        background: rgba(255,255,255,.05);
-        backdrop-filter: blur(15px);
-        border: 1px solid rgba(255,255,255,.08);
-        border-radius: 24px;
-        padding: 2rem;
-        transition: .3s;
-        box-shadow: 0 15px 40px rgba(0,0,0,.35);
-    }
-
-        .profile-card:hover {
-            transform: translateY(-5px);
+        .profile-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 0%, rgba(229,9,20,.08) 0%, transparent 70%);
+            pointer-events: none;
         }
 
-    .avatar {
-        width: 180px;
-        height: 180px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 5px solid #e50914;
-        box-shadow: 0 0 35px rgba(229,9,20,.35);
+    /* ── Layout ───────────────────────────────────── */
+
+    .profile-content {
+        margin-top: -140px;
+        position: relative;
+        z-index: 10;
+        padding-bottom: 6rem;
     }
 
+    /* ── Profile Card ─────────────────────────────── */
+
+    .profile-card {
+        background: rgba(30,30,30,.75);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255,255,255,.06);
+        border-radius: 16px;
+        padding: 2.5rem;
+        box-shadow: 0 8px 40px rgba(0,0,0,.5);
+    }
+
+    /* ── Avatar ───────────────────────────────────── */
+
+    .avatar-wrapper {
+        position: relative;
+        display: inline-block;
+    }
+
+    .avatar-ring {
+        position: absolute;
+        inset: -6px;
+        border-radius: 50%;
+        border: 2px solid transparent;
+        border-top-color: #e50914;
+        border-right-color: #e50914;
+        animation: ring-rotate 3s linear infinite;
+    }
+
+        .avatar-ring:nth-child(2) {
+            inset: -10px;
+            border-top-color: transparent;
+            border-right-color: transparent;
+            border-bottom-color: rgba(229,9,20,.3);
+            border-left-color: rgba(229,9,20,.3);
+            animation-direction: reverse;
+            animation-duration: 5s;
+        }
+
+    @@keyframes ring-rotate {
+        to
+
+    {
+        transform: rotate(360deg);
+    }
+
+    }
+
+    .avatar {
+        position: relative;
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #1a1a1a;
+        box-shadow: 0 0 0 1px rgba(229,9,20,.2), 0 8px 30px rgba(0,0,0,.6);
+    }
+
+    /* ── Typography ───────────────────────────────── */
+
     .username {
-        font-size: 2.2rem;
+        font-size: 2.6rem;
         font-weight: 700;
+        color: #fff;
+        letter-spacing: -.03em;
+        line-height: 1.1;
     }
 
     .email {
-        color: #b3b3b3;
-        font-size: 1rem;
+        color: #8c8c8c;
+        font-size: .95rem;
+        margin-top: .3rem;
     }
 
+    /* ── Badges ───────────────────────────────────── */
+
     .badge-custom {
-        background: rgba(229,9,20,.15);
-        color: #ff4d57;
-        border: 1px solid rgba(229,9,20,.4);
-        padding: .5rem 1rem;
-        border-radius: 50px;
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        background: rgba(255,255,255,.06);
+        color: #ccc;
+        border: 1px solid rgba(255,255,255,.08);
+        padding: .4rem 1rem;
+        border-radius: 4px;
+        font-size: .8rem;
+        font-weight: 500;
+        transition: all .25s ease;
+    }
+
+        .badge-custom:hover {
+            background: rgba(255,255,255,.1);
+            color: #fff;
+        }
+
+        .badge-custom .badge-icon {
+            font-size: .75rem;
+        }
+
+    /* ── Button ───────────────────────────────────── */
+
+    .btn-netflix {
+        display: inline-flex;
+        align-items: center;
+        gap: .5rem;
+        background: #fff;
+        border: none;
+        color: #000;
+        padding: 10px 24px;
+        border-radius: 4px;
+        font-weight: 600;
+        font-size: .88rem;
+        transition: all .2s ease;
+    }
+
+        .btn-netflix:hover {
+            background: #e5e5e5;
+            color: #000;
+            transform: scale(1.02);
+        }
+
+    /* ── Stat Cards ───────────────────────────────── */
+
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
     }
 
     .stat-card {
-        background: #161616;
-        border-radius: 18px;
-        padding: 1.5rem;
+        background: #1a1a1a;
+        border-radius: 8px;
+        padding: 1.6rem 1rem;
         text-align: center;
-        transition: .3s;
-        height: 100%;
-        border: 1px solid rgba(255,255,255,.05);
+        border: 1px solid rgba(255,255,255,.04);
+        transition: all .3s ease;
+        position: relative;
+        overflow: hidden;
     }
 
-        .stat-card:hover {
-            transform: translateY(-5px);
-            background: #1d1d1d;
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e50914;
+            transform: scaleX(0);
+            transition: transform .3s ease;
         }
 
+        .stat-card:hover {
+            background: #222;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,.3);
+        }
+
+            .stat-card:hover::after {
+                transform: scaleX(1);
+            }
+
+    .stat-icon {
+        font-size: 1.3rem;
+        margin-bottom: .7rem;
+        opacity: .6;
+    }
+
     .stat-value {
-        font-size: 2rem;
-        font-weight: bold;
-        color: #e50914;
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1;
     }
 
     .stat-title {
-        color: #b3b3b3;
-        margin-top: .4rem;
+        color: #666;
+        margin-top: .6rem;
+        font-size: .72rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: .1em;
     }
+
+    /* ── Info Cards ───────────────────────────────── */
 
     .info-card {
-        background: #161616;
-        border-radius: 18px;
-        padding: 1.5rem;
+        background: #1a1a1a;
+        border-radius: 8px;
+        padding: 1.8rem;
         height: 100%;
-        border: 1px solid rgba(255,255,255,.05);
-        transition: .3s;
+        border: 1px solid rgba(255,255,255,.04);
     }
 
-        .info-card:hover {
-            transform: translateY(-5px);
+    .section-title {
+        font-weight: 600;
+        margin-bottom: 1.2rem;
+        font-size: 1.05rem;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+    }
+
+        .section-title .title-accent {
+            color: #e50914;
         }
+
+    /* ── Info Rows ────────────────────────────────── */
 
     .info-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: .9rem 0;
-        border-bottom: 1px solid rgba(255,255,255,.08);
+        padding: .85rem 0;
+        border-bottom: 1px solid rgba(255,255,255,.05);
     }
 
         .info-row:last-child {
             border-bottom: none;
         }
 
-    .btn-netflix {
-        background: #e50914;
-        border: none;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 12px;
-        font-weight: 600;
-        transition: .3s;
+    .info-row-label {
+        color: #777;
+        font-size: .88rem;
     }
 
-        .btn-netflix:hover {
-            background: #ff1d28;
-            color: white;
-            transform: scale(1.03);
+    .info-row-value {
+        font-weight: 600;
+        font-size: .9rem;
+        color: #e5e5e5;
+    }
+
+    .premium-badge {
+        background: rgba(229,9,20,.12);
+        color: #e50914;
+        padding: .3rem .8rem;
+        border-radius: 3px;
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+    }
+
+    /* ── Movie/Series Card Grid ───────────────────── */
+
+    .content-section {
+        margin-top: 2.5rem;
+    }
+
+    .content-section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+
+    .content-section-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+    }
+
+    .content-count {
+        font-size: .78rem;
+        color: #555;
+        font-weight: 400;
+    }
+
+    .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+        gap: .8rem;
+    }
+
+    /* ── Individual Poster Card ───────────────────── */
+
+    .poster-card {
+        position: relative;
+        border-radius: 6px;
+        overflow: hidden;
+        aspect-ratio: 2 / 3;
+        cursor: pointer;
+        transition: transform .35s cubic-bezier(.25,.46,.45,.94), box-shadow .35s ease;
+        background: #0d0d0d;
+    }
+
+        .poster-card:hover {
+            transform: scale(1.08);
+            z-index: 20;
+            box-shadow: 0 14px 40px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.08);
         }
 
-    .section-title {
-        font-weight: 600;
-        margin-bottom: 1.5rem;
+        .poster-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: filter .35s ease;
+        }
+
+        .poster-card:hover img {
+            filter: brightness(.55);
+        }
+
+    .poster-overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: .9rem;
+        opacity: 0;
+        transition: opacity .3s ease;
+        background: linear-gradient( to top, rgba(0,0,0,.95) 0%, rgba(0,0,0,.5) 40%, transparent 100% );
     }
 
+    .poster-card:hover .poster-overlay {
+        opacity: 1;
+    }
+
+    .poster-title {
+        font-size: .85rem;
+        font-weight: 600;
+        color: #fff;
+        line-height: 1.3;
+        margin-bottom: .2rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .poster-year {
+        font-size: .72rem;
+        color: #999;
+        margin-bottom: .7rem;
+    }
+
+    .poster-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: .35rem;
+        background: #fff;
+        color: #000;
+        border: none;
+        padding: .45rem 0;
+        border-radius: 3px;
+        font-size: .75rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background .2s ease;
+        width: 100%;
+        text-align: center;
+    }
+
+        .poster-btn:hover {
+            background: #e5e5e5;
+            color: #000;
+        }
+
+    /* ── Rank Badge on Poster ─────────────────────── */
+
+    .poster-rank {
+        position: absolute;
+        top: .5rem;
+        left: .5rem;
+        background: rgba(0,0,0,.7);
+        backdrop-filter: blur(4px);
+        color: #e50914;
+        font-size: .7rem;
+        font-weight: 700;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 3px;
+        z-index: 5;
+        opacity: 0;
+        transition: opacity .3s ease;
+    }
+
+    .poster-card:hover .poster-rank {
+        opacity: 1;
+    }
+
+    /* ── Empty State ──────────────────────────────── */
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: #444;
+        font-size: .9rem;
+    }
+
+    .empty-state-icon {
+        font-size: 2.5rem;
+        margin-bottom: .8rem;
+        opacity: .4;
+    }
+
+    .empty-state-text {
+        font-size: .85rem;
+        color: #555;
+    }
+
+    /* ── Section Divider ──────────────────────────── */
+
+    .section-divider {
+        height: 1px;
+        background: rgba(255,255,255,.06);
+        margin: 2rem 0 0;
+    }
+
+    /* ── Responsive ───────────────────────────────── */
+
+    @@media (max-width: 991px) {
+        .profile-hero
+
+    {
+        height: 300px;
+    }
+
+    .profile-content {
+        margin-top: -100px;
+    }
+
+    .username {
+        font-size: 2rem;
+    }
+
+    .avatar {
+        width: 130px;
+        height: 130px;
+    }
+
+    }
+
+    @@media (max-width: 767px) {
+        .profile-hero
+
+    {
+        height: 220px;
+    }
+
+    .profile-content {
+        margin-top: -70px;
+    }
+
+    .profile-card {
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    .avatar {
+        width: 110px;
+        height: 110px;
+    }
+
+    .username {
+        font-size: 1.6rem;
+    }
+
+    .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .card-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: .6rem;
+    }
+
+    .badge-wrap {
+        justify-content: center;
+    }
+
+    }
+
+    @@media (max-width: 480px) {
+        .card-grid
+
+    {
+        grid-template-columns: repeat(3, 1fr);
+        gap: .5rem;
+    }
+
+    }
 </style>
 
 <div class="profile-hero"></div>
 
 <div class="container profile-content">
 
-    <!-- Profile Header -->
+    <!-- ─── Profile Header ─── -->
 
     <div class="profile-card">
-
         <div class="row align-items-center g-4">
-
             <div class="col-lg-3 text-center">
-
-                <img src="@imageUrl"
-                     class="avatar"
-                     alt="@Model.UserName" />
-
-            </div>
-
-            <div class="col-lg-9">
-
-                <h1 class="username mb-2">
-                    @Model.UserName
-                </h1>
-
-                <p class="email mb-3">
-                    @Model.Email
-                </p>
-
-                <div class="d-flex flex-wrap gap-2 mb-4">
-
-                    <span class="badge-custom">
-                        Movie Enthusiast
-                    </span>
-
-                  @*   <span class="badge-custom">
-                        @totalFavorites Favorites
-                    </span>
-
-                    <span class="badge-custom">
-                        @totalWatched Watched
-                    </span> *@
-
+                <div class="avatar-wrapper">
+                    <div class="avatar-ring"></div>
+                    <div class="avatar-ring"></div>
+                    <img src="@imageUrl" class="avatar" alt="@Model.User.UserName" />
                 </div>
-
-                <a asp-action="EditProfile"
-                   class="btn btn-netflix">
+            </div>
+            <div class="col-lg-9">
+                <h1 class="username mb-1">@Model.User.UserName</h1>
+                <p class="email mb-3">@Model.User.Email</p>
+                <div class="d-flex flex-wrap gap-2 mb-4 badge-wrap">
+                    <span class="badge-custom">
+                        <span class="badge-icon">🎬</span> Movie Enthusiast
+                    </span>
+                    <span class="badge-custom">
+                        <span class="badge-icon">❤️</span> @totalFavorites Favorites
+                    </span>
+                    <span class="badge-custom">
+                        <span class="badge-icon">📌</span> @totalWatchList in WatchList
+                    </span>
+                </div>
+                <a asp-action="EditProfile" class="btn-netflix">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
                     Edit Profile
                 </a>
-
             </div>
-
         </div>
-
     </div>
 
-    <!-- Stats -->
+    <!-- ─── Stats ─── -->
 
-    <div class="row mt-4 g-4">
-
-        <div class="col-md-3">
-            <div class="stat-card">
-                <div class="stat-value">
-                    @* @Model.WatchedMovies.Count *@
-                </div>
-                <div class="stat-title">
-                    Movies Watched
-                </div>
-            </div>
+    <div class="stats-row mt-4">
+        <div class="stat-card">
+            <div class="stat-icon">🎬</div>
+            <div class="stat-value">@watchListMoviesCount</div>
+            <div class="stat-title">WatchList Movies</div>
         </div>
-
-        <div class="col-md-3">
-            <div class="stat-card">
-                <div class="stat-value">
-                    @* @Model.WatchedSeries.Count *@
-                </div>
-                <div class="stat-title">
-                    Series Watched
-                </div>
-            </div>
+        <div class="stat-card">
+            <div class="stat-icon">📺</div>
+            <div class="stat-value">@watchListSeriesCount</div>
+            <div class="stat-title">WatchList Series</div>
         </div>
-
-        <div class="col-md-3">
-            <div class="stat-card">
-                <div class="stat-value">
-                    @* @Model.FavouriteMovies.Count *@
-                </div>
-                <div class="stat-title">
-                    Favorite Movies
-                </div>
-            </div>
+        <div class="stat-card">
+            <div class="stat-icon">❤️</div>
+            <div class="stat-value">@favoriteMoviesCount</div>
+            <div class="stat-title">Favorite Movies</div>
         </div>
-
-        <div class="col-md-3">
-            <div class="stat-card">
-                <div class="stat-value">
-                    @* @Model.FavouriteSeries.Count *@
-                </div>
-                <div class="stat-title">
-                    Favorite Series
-                </div>
-            </div>
+        <div class="stat-card">
+            <div class="stat-icon">🔥</div>
+            <div class="stat-value">@favoriteSeriesCount</div>
+            <div class="stat-title">Favorite Series</div>
         </div>
-
     </div>
 
-    <!-- Information Section -->
+    <!-- ─── Account Info ─── -->
 
-    <div class="row mt-4 g-4">
-
+    <div class="row mt-4 g-3">
         <div class="col-lg-6">
-
             <div class="info-card">
-
-                <h4 class="section-title">
-                    Account Information
-                </h4>
-
+                <h4 class="section-title">📋 Account Information</h4>
                 <div class="info-row">
-                    <span>User Name</span>
-                    <span>@Model.UserName</span>
+                    <span class="info-row-label">Total WatchList</span>
+                    <span class="info-row-value">@totalWatchList</span>
                 </div>
-
                 <div class="info-row">
-                    <span>Email</span>
-                    <span>@Model.Email</span>
+                    <span class="info-row-label">Total Favorites</span>
+                    <span class="info-row-value">@totalFavorites</span>
                 </div>
-
                 <div class="info-row">
-                    <span>Phone Number</span>
-                    <span>
-                        @(string.IsNullOrEmpty(Model.PhoneNumber)
-                                                ? "Not Added"
-                                                : Model.PhoneNumber)
-                    </span>
+                    <span class="info-row-label">Membership</span>
+                    <span class="premium-badge">Premium</span>
                 </div>
-
             </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="info-card">
+                <h4 class="section-title">📊 Activity Summary</h4>
+                <div class="info-row">
+                    <span class="info-row-label">Total Watched</span>
+                    @* <span class="info-row-value">@totalWatched</span> *@
+                </div>
+                <div class="info-row">
+                    <span class="info-row-label">Total Favorites</span>
+                    @* <span class="info-row-value">@totalFavorites</span> *@
+                </div>
+                <div class="info-row">
+                    <span class="info-row-label">Membership</span>
+                    <span class="premium-badge">Premium</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <div class="section-divider"></div>
+
+    <!-- ─── Favorite Movies ─── -->
+
+    <div class="content-section">
+        <div class="content-section-header">
+            <h3 class="content-section-title">
+                <span class="title-accent">❤️</span> Favorite Movies
+                <span class="content-count">(@favoriteMoviesCount)</span>
+            </h3>
         </div>
 
-        <div class="col-lg-6">
-
-            <div class="info-card">
-
-                <h4 class="section-title">
-                    Activity Summary
-                </h4>
-
-                <div class="info-row">
-                    <span>Total Watched</span>
-                    @* <span>@totalWatched</span> *@
-                </div>
-
-                <div class="info-row">
-                    <span>Total Favorites</span>
-                    @* <span>@totalFavorites</span> *@
-                </div>
-
-                <div class="info-row">
-                    <span>Membership</span>
-                    <span class="text-danger fw-bold">
-                        Premium
-                    </span>
-                </div>
-
+        @if (Model.FavoriteMovies.Any())
+        {
+            <div class="card-grid">
+                @{
+                    var fmIndex = 0;
+                }
+                @foreach (var item in Model.FavoriteMovies)
+                {
+                    fmIndex++;
+                    <a asp-controller="Movies" asp-action="Details" asp-route-id="@item.MovieId" style="text-decoration:none;color:inherit;">
+                        <div class="poster-card">
+                            <span class="poster-rank">@fmIndex</span>
+                            <img src="/Images/@item.Movie.ImageUrl" alt="@item.Movie.Title" loading="lazy" />
+                            <div class="poster-overlay">
+                                <div class="poster-title">@item.Movie.Title</div>
+                                <div class="poster-year">@item.Movie.year</div>
+                                <div class="poster-btn">▶ View Details</div>
+                            </div>
+                        </div>
+                    </a>
+                }
             </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div class="empty-state-icon">🎬</div>
+                <div class="empty-state-text">No favorite movies yet.</div>
+            </div>
+        }
+    </div>
 
+    <!-- ─── WatchList Movies ─── -->
+
+    <div class="content-section">
+        <div class="content-section-header">
+            <h3 class="content-section-title">
+                <span style="color:#f5c518;">🎬</span> WatchList Movies
+                <span class="content-count">(@watchListMoviesCount)</span>
+            </h3>
         </div>
 
+        @if (Model.WatchListMovies.Any())
+        {
+            <div class="card-grid">
+                @{
+                    var wlmIndex = 0;
+                }
+                @foreach (var item in Model.WatchListMovies)
+                {
+                    wlmIndex++;
+                    <a asp-controller="Movies" asp-action="Details" asp-route-id="@item.MovieId" style="text-decoration:none;color:inherit;">
+                        <div class="poster-card">
+                            <span class="poster-rank">@wlmIndex</span>
+                            <img src="/Images/@item.Movie.ImageUrl" alt="@item.Movie.Title" loading="lazy" />
+                            <div class="poster-overlay">
+                                <div class="poster-title">@item.Movie.Title</div>
+                                <div class="poster-year">@item.Movie.year</div>
+                                <div class="poster-btn">▶ View Details</div>
+                            </div>
+                        </div>
+                    </a>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div class="empty-state-icon">📌</div>
+                <div class="empty-state-text">Your WatchList is empty.</div>
+            </div>
+        }
+    </div>
+
+    <!-- ─── Favorite Series ─── -->
+
+    <div class="content-section">
+        <div class="content-section-header">
+            <h3 class="content-section-title">
+                <span class="title-accent">❤️</span> Favorite Series
+                <span class="content-count">(@favoriteSeriesCount)</span>
+            </h3>
+        </div>
+
+        @if (Model.FavoriteSeries.Any())
+        {
+            <div class="card-grid">
+                @{
+                    var fsIndex = 0;
+                }
+                @foreach (var item in Model.FavoriteSeries)
+                {
+                    fsIndex++;
+                    <a asp-controller="Series" asp-action="Details" asp-route-id="@item.SeriesId" style="text-decoration:none;color:inherit;">
+                        <div class="poster-card">
+                            <span class="poster-rank">@fsIndex</span>
+                            <img src="/Images/@item.Series.ImageUrl" alt="@item.Series.Title" loading="lazy" />
+                            <div class="poster-overlay">
+                                <div class="poster-title">@item.Series.Title</div>
+                                @* <div class="poster-year">@item.Series.Year</div> *@
+                                <div class="poster-btn">▶ View Details</div>
+                            </div>
+                        </div>
+                    </a>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div class="empty-state-icon">📺</div>
+                <div class="empty-state-text">No favorite series yet.</div>
+            </div>
+        }
+    </div>
+
+    <!-- ─── WatchList Series ─── -->
+
+    <div class="content-section">
+        <div class="content-section-header">
+            <h3 class="content-section-title">
+                <span style="color:#f5c518;">📺</span> WatchList Series
+                <span class="content-count">(@watchListSeriesCount)</span>
+            </h3>
+        </div>
+
+        @if (Model.WatchListSeries.Any())
+        {
+            <div class="card-grid">
+                @{
+                    var wlsIndex = 0;
+                }
+                @foreach (var item in Model.WatchListSeries)
+                {
+                    wlsIndex++;
+                    <a asp-controller="Series" asp-action="Details" asp-route-id="@item.SeriesId" style="text-decoration:none;color:inherit;">
+                        <div class="poster-card">
+                            <span class="poster-rank">@wlsIndex</span>
+                            <img src="/Images/@item.Series.ImageUrl" alt="@item.Series.Title" loading="lazy" />
+                            <div class="poster-overlay">
+                                <div class="poster-title">@item.Series.Title</div>
+                                @* <div class="poster-year">@item.Series.Year</div> *@
+                                <div class="poster-btn">▶ View Details</div>
+                            </div>
+                        </div>
+                    </a>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div class="empty-state-icon">📌</div>
+                <div class="empty-state-text">Your WatchList is empty.</div>
+            </div>
+        }
     </div>
 
 </div>

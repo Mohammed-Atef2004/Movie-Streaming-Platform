@@ -11,7 +11,9 @@ using Infrastructure.Presistance.Database;
 using Infrastructure.Repositories.Implementation;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace Movie_Streamer_Platform
 {
@@ -31,6 +33,7 @@ namespace Movie_Streamer_Platform
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<ISeriesRepository, SeriesRepository>();
             builder.Services.AddScoped<IUserMovieRepository, UserMovieRepository>();
+            builder.Services.AddScoped<IUserSeriesRepository, UserSeriesRepository>();
 
             // Register your services
             builder.Services.AddScoped<IMovieService, MovieService>();
@@ -38,6 +41,7 @@ namespace Movie_Streamer_Platform
             builder.Services.AddScoped<ISeriesService, SeriesService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IUserMovieService,UserMovieService>();
+            builder.Services.AddScoped<IUserSeriesService, UserSeriesService>();
 
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,

@@ -1,4 +1,5 @@
-﻿using Application.ViewModels;
+﻿using Application.Services.Abstraction;
+using Application.ViewModels;
 using BLL.Services.Abstraction;
 using BLL.Services.Implementation;
 using BLL.ViewModels;
@@ -13,11 +14,15 @@ namespace Movie_Streamer_Platform.Controllers
     {
         private readonly IAccountService _accountService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IUserMovieService _userMovieService;
+        private readonly IUserSeriesService _userSeriesService;
 
-        public AccountController(IAccountService accountService, UserManager<ApplicationUser> userManager)
+        public AccountController(IAccountService accountService, UserManager<ApplicationUser> userManager, IUserMovieService userMovieService, IUserSeriesService userSeriesService)
         {
             _accountService = accountService;
             _userManager = userManager;
+            _userMovieService = userMovieService;
+            _userSeriesService = userSeriesService;
         }
 
         [HttpGet]
@@ -64,27 +69,31 @@ namespace Movie_Streamer_Platform.Controllers
             return RedirectToAction("Login");
         }
 
+       
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> Profile()
         {
             var user = await _userManager.GetUserAsync(User);
 
-            return View(user);
-        }
-        [Authorize]
-        public async Task<IActionResult> EditProfile()
-        {
-            var user = await _userManager.GetUserAsync(User);
-
             if (user == null)
                 return NotFound();
 
-            var vm = new EditProfileVM
+            var vm = new ProfileVM
             {
-                UserName = user.UserName,
-                Email = user.Email,
-                CurrentImage = user.ImageURL
+                User = user,
+
+                FavoriteMovies =
+                    _userMovieService.GetFavorites(user.Id),
+
+                WatchListMovies =
+                    _userMovieService.GetWatchList(user.Id),
+
+                FavoriteSeries =
+                    _userSeriesService.GetFavorites(user.Id),
+
+                WatchListSeries =
+                    _userSeriesService.GetWatchList(user.Id)
             };
 
             return View(vm);
