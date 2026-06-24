@@ -19,6 +19,7 @@ namespace Infrastructure.Presistance.Database
         public DbSet<ApplicationUser> Users { get; set; }
         public DbSet<UserMovie> UserMovies { get; set; }
         public DbSet<UserSeries> UserSeries{ get; set; }
+        public DbSet<Review> Reviews { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options):base(options)
         {
         }
