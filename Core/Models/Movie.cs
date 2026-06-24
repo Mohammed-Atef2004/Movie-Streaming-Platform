@@ -27,6 +27,9 @@ namespace DAL.Models
         public int year { get; set; }
         public virtual ICollection<UserMovie> UserMovies { get; set; }
             = new HashSet<UserMovie>();
+        public virtual ICollection<Review> UserReviews { get; set; }
+            = new HashSet<Review>();
+       
 
 
         public void Create(

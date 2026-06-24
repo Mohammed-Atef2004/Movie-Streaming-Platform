@@ -31,6 +31,8 @@ namespace Infrastructure.Presistance.Database
 
             builder.Entity<UserSeries>()
                 .HasKey(x => new { x.UserId, x.SeriesId });
+            builder.Entity<Review>()
+                .HasKey(x=>new {x.UserId, x.MovieId});
         }
     }
 }

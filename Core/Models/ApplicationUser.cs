@@ -16,6 +16,7 @@ namespace DAL.Models
 
         public virtual ICollection<UserSeries> UserSeries { get; set; }
             = new HashSet<UserSeries>();
+        public virtual ICollection<Review> Reviews { get; set; }
 
     }
 }

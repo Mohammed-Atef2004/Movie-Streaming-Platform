@@ -1,6 +1,7 @@
 ﻿using DAL.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,10 +18,11 @@ namespace Core.Models
             this.Comment = comment;
         }
 
-        public int Id { get; set; }
+        [ForeignKey(nameof(User))]
         public string UserId { get; set; }
         public ApplicationUser User { get; set; }
 
+        [ForeignKey(nameof(Movie))]
         public int MovieId { get; set; }
         public Movie Movie { get; set; }
 
@@ -28,7 +30,7 @@ namespace Core.Models
 
         public DateTime AddedAt { get; set; } = DateTime.UtcNow;
        
-        public Review Create(string userId,int movieId,string comment)
+        public static Review Create(string userId,int movieId,string comment)
         {
             return new Review(userId, movieId, comment);
         }
