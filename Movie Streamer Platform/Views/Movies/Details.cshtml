@@ -711,9 +711,56 @@
     </div>
 
 </section>
+<section class="py-5 bg-dark">
+    <div class="container">
 
+        <h3 class="text-white mb-4">
+            Reviews
+        </h3>
+
+        @if (User.Identity.IsAuthenticated)
+        {
+            <div class="card bg-black border-secondary mb-4">
+                <div class="card-body">
+
+                    <textarea id="reviewComment"
+                          class="form-control mb-3"
+                          rows="3"
+                          placeholder="Write your review..."></textarea>
+
+                    <button class="btn btn-warning"
+                            onclick="addReview(@Model.Id)">
+                        Submit Review
+                    </button>
+
+                </div>
+            </div>
+        }
+
+        <div id="reviewsContainer">
+
+            @foreach (var review in ViewBag.Reviews)
+            {
+                <div class="card bg-black border-secondary mb-3 review-item">
+                    <div class="card-body">
+                        <h6 class="text-warning">
+                            @(review.User?.UserName ?? "Unknown User")
+                        </h6>
+
+                        <p class="text-light mb-0">
+                            @review.Comment
+                        </p>
+                    </div>
+                </div>
+            }
+
+        </div>
+
+    </div>
+</section>
 <div class="cinema-toast" id="cinema-toast"></div>
 
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
     (function () {
         'use strict';
@@ -726,14 +773,20 @@
             return GUID_RE.test(s) || NUM_RE.test(s);
         }
 
-        function toast(msg) {
-            var el = document.getElementById('cinema-toast');
-            if (!el) return;
-            el.textContent = msg;
-            el.classList.add('show');
-            clearTimeout(el._t);
-            el._t = setTimeout(function () { el.classList.remove('show'); }, 2400);
-        }
+            window.toast = function(msg)
+    {
+        var el = document.getElementById('cinema-toast');
+        if (!el) return;
+
+        el.textContent = msg;
+        el.classList.add('show');
+
+        clearTimeout(el._t);
+
+        el._t = setTimeout(function () {
+            el.classList.remove('show');
+        }, 2400);
+    }
 
         function localKey(type, id) { return 'cinema_' + type + '_' + id; }
         function localGet(type, id)  { try { return localStorage.getItem(localKey(type, id)) === '1'; } catch (e) { return false; } }
@@ -815,4 +868,54 @@
         };
 
     })();
+</script>
+<script>
+
+    function addReview(movieId)
+    {
+        let comment =
+            document.getElementById("reviewComment").value;
+
+        if(comment.trim() === "")
+        {
+            toast("Write a review first");
+            return;
+        }
+
+        $.ajax({
+            url: '/Review/Create',
+            type: 'POST',
+            data: {
+                movieId: movieId,
+                comment: comment
+            },
+            success: function(res)
+            {
+                let html = `
+                    <div class="card bg-black border-secondary mb-3 review-item">
+                        <div class="card-body">
+                            <h6 class="text-warning">
+                                ${res.user}
+                            </h6>
+
+                            <p class="text-light mb-0">
+                                ${res.comment}
+                            </p>
+                        </div>
+                    </div>
+                `;
+
+                $("#reviewsContainer").prepend(html);
+
+                $("#reviewComment").val("");
+
+                toast("Review Added Successfully");
+            },
+            error: function()
+            {
+                toast("Failed To Add Review");
+            }
+        });
+    }
+
 </script>

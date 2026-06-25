@@ -12,12 +12,18 @@ namespace Movie_Streamer_Platform.Controllers
         private readonly IMovieService _movieService;
         private readonly ICategoryService _categoryService;
         private readonly IUserMovieService _userMovieService;
+        private readonly IReviewService _reviewService;
 
-        public MoviesController(IMovieService movieService, ICategoryService categoryService, IUserMovieService userMovieService)
+        public MoviesController(
+            IMovieService movieService,
+            ICategoryService categoryService,
+            IUserMovieService userMovieService,
+            IReviewService reviewService)
         {
             _movieService = movieService;
             _categoryService = categoryService;
             _userMovieService = userMovieService;
+            _reviewService = reviewService;
         }
 
         public IActionResult Index()
@@ -27,6 +33,7 @@ namespace Movie_Streamer_Platform.Controllers
         }
         public IActionResult Details(int id)
         {
+            ViewBag.Reviews = _reviewService.GetFilmReviews(id);
             var movie = _movieService.GetMovieById(id);
 
             if (movie == null)

@@ -57,9 +57,9 @@ namespace Application.Services.Implementation
         {
             return _reviewRepository.GetAll(x=>x.UserId == userId);
         }
-        public IEnumerable<Review> GetFilmReviews(int  movieId)
-        { 
-            return _reviewRepository.GetAll(x=> x.MovieId == movieId); 
+        public IEnumerable<Review> GetFilmReviews(int movieId)
+        {
+            return _reviewRepository.GetMovieReviewsWithUsers(movieId);
         }
     }
 }

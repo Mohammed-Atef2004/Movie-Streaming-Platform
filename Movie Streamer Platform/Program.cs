@@ -34,6 +34,7 @@ namespace Movie_Streamer_Platform
             builder.Services.AddScoped<ISeriesRepository, SeriesRepository>();
             builder.Services.AddScoped<IUserMovieRepository, UserMovieRepository>();
             builder.Services.AddScoped<IUserSeriesRepository, UserSeriesRepository>();
+            builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 
             // Register your services
             builder.Services.AddScoped<IMovieService, MovieService>();
@@ -42,6 +43,7 @@ namespace Movie_Streamer_Platform
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IUserMovieService,UserMovieService>();
             builder.Services.AddScoped<IUserSeriesService, UserSeriesService>();
+            builder.Services.AddScoped<IReviewService, ReviewService>();
 
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,

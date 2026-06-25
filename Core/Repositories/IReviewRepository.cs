@@ -10,5 +10,6 @@ namespace Core.Repositories
 {
     public interface IReviewRepository:IGenericRepository<Review>
     {
+        IEnumerable<Review> GetMovieReviewsWithUsers(int movieId);
     }
 }
