@@ -1,41 +1,34 @@
-﻿using DAL.Models;
-using Microsoft.AspNetCore.Http;
+﻿using Core.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BLL.ViewModels
 {
     public class EpisodeVM
     {
         public int Id { get; set; }
-        [Required]
-        [MaxLength(100,ErrorMessage="Maximum length for the title is 100 character")]
-        public string Title { get; set; }
-        [Required]
+
+        [Required(ErrorMessage = "Title is required")]
+        [MaxLength(100, ErrorMessage = "Maximum length for the title is 100 characters")]
+        public string Title { get; set; } = string.Empty;
+
+        [MaxLength(2000, ErrorMessage = "Maximum length for the description is 2000 characters")]
         public string? Description { get; set; }
-        [ValidateNever]
 
-        public IFormFile? Image { get; set; }
-        public string? ImageUrl { get; set; }
+        [MaxLength(500)]
+        public string? VideoUrl { get; set; }
+
         public int? ViewCount { get; set; }
-        public int? DownloadCount { get;  set; }
-        public bool? IsFree { get; set; } = true;
-        public IEnumerable<SelectListItem> SeriesList { get; set; }
-        [ForeignKey("Series")]
-        public int? SeriesId { get; set; }
-        public Series? Sereies { get; set; }
+        public int DownloadCount { get; set; }
 
-        public double? Rating { get; set; }
-        public int? Views { get; set; }
-        public int? Downloads { get; set; }
-        public string? TrailerUrl;
-        public DateTime? ReleaseDate;
+        [Range(1, int.MaxValue, ErrorMessage = "Please choose a series")]
+        public int SeriesId { get; set; }
+
+        [ValidateNever]
+        public IEnumerable<SelectListItem>? SeriesList { get; set; }
+
+        [ValidateNever]
+        public Series? Series { get; set; }
     }
 }

@@ -1,19 +1,23 @@
 ﻿using BLL.ViewModels;
-using DAL.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BLL.Services.Abstraction
 {
     public interface ISeriesService
     {
-        (bool,string) CreateSeries(SeriesVM seriesVM);
-        (bool,string) UpdateSeries(SeriesVM seriesVM,int Id);
-        (bool, string) DeleteSeries(int id);
-        SeriesVM GetSeriesById(int id);
-        IEnumerable<SeriesVM> GetAllSeries();
+        Task<(bool Success, string Message)> CreateSeriesAsync(SeriesVM seriesVM, string? actor = null);
+        Task<(bool Success, string Message)> UpdateSeriesAsync(SeriesVM seriesVM, int id, string? actor = null);
+        Task<(bool Success, string Message)> DeleteSeriesAsync(int id, string? actor = null);
+        Task<IEnumerable<SeriesVM>> GetAllSeriesAsync();
+        Task<SeriesVM?> GetSeriesByIdAsync(int id);
+        Task<int> GetSeriesCountAsync();
+        Task<(IEnumerable<SeriesVM> Series, int TotalCount)> SearchSeriesAsync(
+            string? searchTerm = null,
+            int? categoryId = null,
+            string? sortBy = null,
+            int page = 1,
+            int pageSize = 12);
+        Task IncrementViewsAsync(int id);
+        Task IncrementDownloadsAsync(int id);
+        Task<bool> IsSeriesFreeAsync(int id);
     }
 }

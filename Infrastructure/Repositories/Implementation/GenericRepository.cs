@@ -1,92 +1,126 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
-using DAL.Repositories.Abstraction;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Core.Models;
+using Core.Repositories;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using Infrastructure.Presistance.Database;
 
-namespace DAL.Repositories.Implementation
+namespace Infrastructure.Repositories.Implementation
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        private readonly ApplicationDbContext _context;
-        private DbSet<T> _dbSet;
+        protected readonly ApplicationDbContext _context;
+        protected readonly DbSet<T> _dbSet;
+
         public GenericRepository(ApplicationDbContext context)
         {
             _context = context;
-            _dbSet = _context.Set<T>();
-        }
-        public bool Add(T entity)
-        {
-            _dbSet.Add(entity);
-            if (_context.SaveChanges() > 0)
-            {
-                return true;
-            }
-            return false;
+            _dbSet = context.Set<T>();
         }
 
-        public IEnumerable<T> GetAll(Expression<Func<T, bool>>? predict=null, string? includeword= null)
+        protected virtual IQueryable<T> BuildQuery(
+            Expression<Func<T, bool>>? predicate,
+            string? includeWords,
+            bool asNoTracking)
         {
             IQueryable<T> query = _dbSet;
-            if(predict != null)
+
+            if (predicate != null)
+                query = query.Where(predicate);
+
+            if (!string.IsNullOrWhiteSpace(includeWords))
             {
-                query = query.Where(predict);
+                foreach (var include in includeWords.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                    query = query.Include(include);
             }
-            if(includeword != null)
-            {
-                foreach(var item in includeword.Split(new char[] {','},StringSplitOptions.RemoveEmptyEntries))
-                {
-                    query=query.Include(item);
-                }
-            }
-            return query.ToList();
+
+            if (asNoTracking)
+                query = query.AsNoTracking();
+
+            return query;
         }
 
-        public T GetFirstOrDefault(Expression<Func<T, bool>>? predict = null, string? includeword = null)
+        public virtual async Task<List<T>> GetAllAsync(
+            Expression<Func<T, bool>>? predicate = null,
+            string? includeWords = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+            CancellationToken cancellationToken = default)
         {
-            IQueryable<T> query = _dbSet;
-            if (predict != null)
-            {
-                query = query.Where(predict);
-            }
-            if (includeword != null)
-            {
-                foreach (var item in includeword.Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries))
-                {
-                    query = query.Include(item);
-                }
-            }
-            return query.SingleOrDefault();
+            var query = BuildQuery(predicate, includeWords, asNoTracking: true);
+            if (orderBy != null)
+                query = orderBy(query);
+            return await query.ToListAsync(cancellationToken);
         }
 
-        public bool Remove(T entity)
+        public virtual async Task<T?> GetFirstOrDefaultAsync(
+            Expression<Func<T, bool>>? predicate = null,
+            string? includeWords = null,
+            CancellationToken cancellationToken = default)
         {
-            _dbSet.Remove(entity);
-            if (_context.SaveChanges() > 0)
-            {
-                return true;
-            }
-            return false;
+            // Tracking query by default so the fetched entity can be updated/removed afterwards.
+            var query = BuildQuery(predicate, includeWords, asNoTracking: false);
+            return await query.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public bool RemoveRange(IEnumerable<T> entities)
+        public virtual async Task<bool> ExistsAsync(
+            Expression<Func<T, bool>> predicate,
+            CancellationToken cancellationToken = default)
         {
-           _dbSet.RemoveRange(entities);
-            if (_context.SaveChanges() > 0)
-            {
-                return true;
-            }
-            return false;
+            return await _dbSet.AnyAsync(predicate, cancellationToken);
         }
-        public bool Update(T entity)
+
+        public virtual async Task<int> CountAsync(
+            Expression<Func<T, bool>>? predicate = null,
+            CancellationToken cancellationToken = default)
         {
+            return predicate == null
+                ? await _dbSet.CountAsync(cancellationToken)
+                : await _dbSet.CountAsync(predicate, cancellationToken);
+        }
+
+        public virtual async Task<bool> AddAsync(T entity, CancellationToken cancellationToken = default)
+        {
+            await _dbSet.AddAsync(entity, cancellationToken);
+            return await _context.SaveChangesAsync(cancellationToken) > 0;
+        }
+
+        public virtual async Task<bool> UpdateAsync(T entity, CancellationToken cancellationToken = default)
+        {
+            // The entity is expected to be tracked (fetched via GetFirstOrDefaultAsync);
+            // Update() also re-attaches detached entities, which keeps the old behaviour working.
             _dbSet.Update(entity);
-            return _context.SaveChanges() > 0;
+            return await _context.SaveChangesAsync(cancellationToken) > 0;
+        }
+
+        public virtual async Task<bool> RemoveAsync(T entity, CancellationToken cancellationToken = default)
+        {
+            if (entity is CommonData auditable)
+            {
+                // Real soft delete: keep the row, flag it as deleted (a global query filter hides it).
+                auditable.SoftDelete();
+                _dbSet.Update(entity);
+            }
+            else
+            {
+                _dbSet.Remove(entity);
+            }
+
+            return await _context.SaveChangesAsync(cancellationToken) > 0;
+        }
+
+        public virtual async Task<bool> RemoveRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default)
+        {
+            var materialized = entities as ICollection<T> ?? entities.ToList();
+
+            foreach (var entity in materialized.OfType<CommonData>())
+                entity.SoftDelete();
+
+            if (materialized.All(e => e is CommonData))
+                _dbSet.UpdateRange(materialized);
+            else
+                _dbSet.RemoveRange(materialized);
+
+            return await _context.SaveChangesAsync(cancellationToken) > 0;
         }
     }
 }

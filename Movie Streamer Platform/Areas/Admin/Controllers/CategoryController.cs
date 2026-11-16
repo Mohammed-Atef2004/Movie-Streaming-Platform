@@ -1,13 +1,11 @@
 ﻿using BLL.Services.Abstraction;
 using BLL.ViewModels;
-using DAL.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Movie_Streamer_Platform.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    //[Route("Admin/[controller]")]
     [Authorize(Roles = "Admin")]
     public class CategoryController : Controller
     {
@@ -16,9 +14,9 @@ namespace Movie_Streamer_Platform.Areas.Admin.Controllers
         {
             _categoryService = categoryService;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var result=_categoryService.GetAllCategories();
+            var result = await _categoryService.GetAllCategoriesAsync();
             return View(result);
         }
         [HttpGet]
@@ -27,28 +25,29 @@ namespace Movie_Streamer_Platform.Areas.Admin.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult Create(CategoryVM categoryVM)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(CategoryVM categoryVM)
         {
             if (ModelState.IsValid)
             {
-                var (isSuccess, message) = _categoryService.CreateCategory(categoryVM);
+                var (isSuccess, message) = await _categoryService.CreateCategoryAsync(categoryVM, actor: User.Identity?.Name);
                 if (isSuccess)
                 {
-                    ViewBag.Success = message;
+                    TempData["Message"] = message;
                     return RedirectToAction("Index");
                 }
                 else
                 {
-                    ViewBag.Error = message;
+                    ModelState.AddModelError("", message);
                     return View(categoryVM);
                 }
             }
             return View(categoryVM);
         }
         [HttpGet]
-        public IActionResult Edit(int Id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var category = _categoryService.GetCategoryById(Id);
+            var category = await _categoryService.GetCategoryByIdAsync(id);
             if (category != null)
             {
                 return View(category);
@@ -57,27 +56,45 @@ namespace Movie_Streamer_Platform.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(CategoryVM categoryVM)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(CategoryVM categoryVM)
         {
             if (ModelState.IsValid)
             {
-                var (isSuccess, message) = _categoryService.UpdateCategory(categoryVM);
+                var (isSuccess, message) = await _categoryService.UpdateCategoryAsync(categoryVM, actor: User.Identity?.Name);
                 if (isSuccess)
                 {
-                    ViewBag.Success = message;
+                    TempData["Message"] = message;
                     return RedirectToAction("Index");
                 }
                 else
                 {
-                    ViewBag.Error = message;
+                    ModelState.AddModelError("", message);
                     return View(categoryVM);
                 }
             }
             return View(categoryVM);
         }
-        public IActionResult Delete(int Id)
+
+        // Bug fix: the old GET action deleted immediately, which made the existing
+        // confirmation view (Delete.cshtml) unreachable and allowed one-click deletion.
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
         {
-            _categoryService.DeleteCategory(Id);
+            var category = await _categoryService.GetCategoryByIdAsync(id);
+            if (category == null)
+            {
+                return RedirectToAction("Index");
+            }
+            return View(category);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteCategory(int id)
+        {
+            var (_, message) = await _categoryService.DeleteCategoryAsync(id, actor: User.Identity?.Name);
+            TempData["Message"] = message;
             return RedirectToAction("Index");
         }
     }

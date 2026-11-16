@@ -1,16 +1,17 @@
-﻿// Areas/Admin/Controllers/UserController.cs
-
 using BLL.ViewModels;
-using DAL.Models;
+using Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace Movie_Streamer_Platform.Areas.Admin.Controllers
 {
+    // SECURITY FIX: this controller previously had no [Authorize] at all - any
+    // anonymous visitor could list users, change roles and delete accounts.
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class UserController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -25,7 +26,7 @@ namespace Movie_Streamer_Platform.Areas.Admin.Controllers
         // GET: Admin/User
         public async Task<IActionResult> Index()
         {
-            var users = await _userManager.Users.ToListAsync();
+            var users = await _userManager.Users.OrderBy(u => u.UserName).ToListAsync();
             var userList = new List<UserVM>();
 
             foreach (var user in users)
@@ -34,8 +35,8 @@ namespace Movie_Streamer_Platform.Areas.Admin.Controllers
                 userList.Add(new UserVM
                 {
                     Id = user.Id,
-                    UserName = user.UserName,
-                    Email = user.Email,
+                    UserName = user.UserName ?? string.Empty,
+                    Email = user.Email ?? string.Empty,
                     Roles = roles.ToList(),
                     IsBanned = await _userManager.IsLockedOutAsync(user)
                 });
@@ -58,8 +59,8 @@ namespace Movie_Streamer_Platform.Areas.Admin.Controllers
             var model = new EditUserRolesVM
             {
                 UserId = user.Id,
-                UserName = user.UserName,
-                Email = user.Email,
+                UserName = user.UserName ?? string.Empty,
+                Email = user.Email ?? string.Empty,
                 CurrentRoles = userRoles.ToList(),
                 AllRoles = allRoles
             };
@@ -67,6 +68,7 @@ namespace Movie_Streamer_Platform.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateRoles(EditUserRolesVM model)
         {
             var user = await _userManager.FindByIdAsync(model.UserId);
@@ -78,25 +80,37 @@ namespace Movie_Streamer_Platform.Areas.Admin.Controllers
             var currentRoles = await _userManager.GetRolesAsync(user);
             var result = await _userManager.RemoveFromRolesAsync(user, currentRoles);
 
-            if (!result.Succeeded) { /* handle errors */ }
+            if (result.Succeeded)
+                result = await _userManager.AddToRolesAsync(user, model.CurrentRoles ?? new List<string>());
 
-            result = await _userManager.AddToRolesAsync(user, model.CurrentRoles);
+            if (!result.Succeeded)
+            {
+                TempData["Message"] = string.Join(" ", result.Errors.Select(e => e.Description));
+                return RedirectToAction(nameof(ManageRoles), new { id = model.UserId });
+            }
 
-            if (!result.Succeeded) { /* handle errors */ }
-
+            TempData["Message"] = $"Roles updated for {user.UserName}.";
             return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteUser(string id)
         {
+            // Guard: an admin must not delete their own account while logged in.
+            if (id == User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier))
+            {
+                TempData["Message"] = "You cannot delete your own account while logged in.";
+                return RedirectToAction(nameof(Index));
+            }
+
             var user = await _userManager.FindByIdAsync(id);
             if (user != null)
             {
                 var result = await _userManager.DeleteAsync(user);
                 if (!result.Succeeded)
                 {
-                    // handle error
+                    TempData["Message"] = string.Join(" ", result.Errors.Select(e => e.Description));
                 }
             }
             return RedirectToAction(nameof(Index));

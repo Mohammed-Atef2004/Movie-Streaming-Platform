@@ -1,7 +1,6 @@
 ﻿using BLL.Services.Abstraction;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Movie_Streamer_Platform.Areas.Admin.Controllers
 {
@@ -12,28 +11,32 @@ namespace Movie_Streamer_Platform.Areas.Admin.Controllers
     {
         private readonly IMovieService _movieService;
         private readonly ISeriesService _seriesService;
-        //private readonly IUserMangerService _userService;
-        //private readonly IPaymentService _paymentService;
+        private readonly IEpisodeService _episodeService;
+        private readonly ICategoryService _categoryService;
 
-        public HomeController(IMovieService movieService, ISeriesService seriesService )
+        public HomeController(
+            IMovieService movieService,
+            ISeriesService seriesService,
+            IEpisodeService episodeService,
+            ICategoryService categoryService)
         {
             _movieService = movieService;
             _seriesService = seriesService;
-            //_userService = userService;
-            //_paymentService = paymentService;
+            _episodeService = episodeService;
+            _categoryService = categoryService;
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            //ViewBag.RecentMovies = recentMovies;
-            ViewBag.MovieCount = _movieService.GetAllMovies().Count(); ;
-            ViewBag.SeriesCount = _seriesService.GetAllSeries().Count();
-            //ViewBag.UserCount = _userService.GetAll().Count();
-            //ViewBag.PaymentCount = _paymentService.GetAll().Count();
-            ViewBag.RecentMovies = _movieService.GetRecentMovies(5); // آخر 5 أفلام
+            // Bug fix: the old dashboard materialised every row just to count
+            // them (GetAllMovies().Count()); these are plain COUNT(*) queries now.
+            ViewBag.MovieCount = await _movieService.GetMoviesCountAsync();
+            ViewBag.SeriesCount = await _seriesService.GetSeriesCountAsync();
+            ViewBag.EpisodeCount = (await _episodeService.GetAllEpisodesAsync()).Count();
+            ViewBag.CategoryCount = (await _categoryService.GetAllCategoriesAsync()).Count();
+            ViewBag.RecentMovies = await _movieService.GetRecentMoviesAsync(5);
             return View();
         }
     }
-
 }

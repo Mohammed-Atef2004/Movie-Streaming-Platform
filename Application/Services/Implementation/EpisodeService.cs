@@ -1,9 +1,9 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BLL.Services.Abstraction;
 using BLL.ViewModels;
-using DAL.Models;
-using DAL.Repositories.Abstraction;
-
+using Core.Models;
+using Core.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace BLL.Services.Implementation
 {
@@ -11,73 +11,120 @@ namespace BLL.Services.Implementation
     {
         private readonly IMapper _mapper;
         private readonly IEpisodeRepository _episodeRepository;
-        public EpisodeService(IMapper mapper,IEpisodeRepository episodeRepository)
+        private readonly ILogger<EpisodeService> _logger;
+
+        public EpisodeService(IMapper mapper, IEpisodeRepository episodeRepository, ILogger<EpisodeService> logger)
         {
             _mapper = mapper;
             _episodeRepository = episodeRepository;
-        }
-        public (bool, string) CreateEpisode(EpisodeVM episodeVM)
-        {
-            
-            var episode = _mapper.Map<Episode>(episodeVM);
-            if(_episodeRepository.Add(episode))
-            {
-                return (true, "Episode Created Successfully");
-            }    
-            return (false,"Failed to Create Episode");
+            _logger = logger;
         }
 
-        public (bool, string) DeleteEpisode(int id)
+        public async Task<(bool Success, string Message)> CreateEpisodeAsync(EpisodeVM episodeVM, string? actor = null)
         {
-            var episode = _episodeRepository.GetFirstOrDefault(x => x.Id == id, includeword: "Series");
-            if (episode == null)
+            try
             {
-                return (false, "Episode Not Found");
+                var episode = new Episode();
+                episode.Create(
+                    episodeVM.Title,
+                    episodeVM.SeriesId,
+                    description: episodeVM.Description,
+                    videoUrl: episodeVM.VideoUrl,
+                    creator: actor);
+
+                if (await _episodeRepository.AddAsync(episode))
+                {
+                    return (true, "Episode Created Successfully");
+                }
+                return (false, "Failed to Create Episode");
             }
-           
-            if (_episodeRepository.Remove(episode))
+            catch (Exception ex)
             {
-                return (true, "Episode Deleted Successfully");
+                _logger.LogError(ex, "Failed to create episode {Title}", episodeVM.Title);
+                return (false, "An unexpected error occurred while creating the episode. Please check the series exists and try again.");
             }
-            return (false, "Failed to Delete Episode");
         }
 
-        public IEnumerable<EpisodeVM> GetAllEpisodes()
+        public async Task<(bool Success, string Message)> DeleteEpisodeAsync(int id, string? actor = null)
         {
-            var episodes = _episodeRepository.GetAll(includeword:"Series");
+            try
+            {
+                var episode = await _episodeRepository.GetFirstOrDefaultAsync(x => x.Id == id);
+                if (episode == null)
+                {
+                    return (false, "Episode Not Found");
+                }
+
+                if (await _episodeRepository.RemoveAsync(episode))
+                {
+                    return (true, "Episode Deleted Successfully");
+                }
+                return (false, "Failed to Delete Episode");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to delete episode {EpisodeId}", id);
+                return (false, "An unexpected error occurred while deleting the episode.");
+            }
+        }
+
+        public async Task<IEnumerable<EpisodeVM>> GetAllEpisodesAsync()
+        {
+            var episodes = await _episodeRepository.GetAllAsync(includeWords: "Series", orderBy: q => q.OrderByDescending(e => e.SeriesId).ThenBy(e => e.Id));
             return _mapper.Map<IEnumerable<EpisodeVM>>(episodes);
         }
 
-        public EpisodeVM GetEpisodeById(int id)
+        public async Task<EpisodeVM?> GetEpisodeByIdAsync(int id)
         {
-            var episode = _episodeRepository.GetFirstOrDefault(x => x.Id == id);
-            return _mapper.Map<EpisodeVM>(episode);
+            var episode = await _episodeRepository.GetFirstOrDefaultAsync(x => x.Id == id, includeWords: "Series");
+            return episode == null ? null : _mapper.Map<EpisodeVM>(episode);
         }
 
-        public IEnumerable<Episode> GetRecentEpisodes(int count)
+        public async Task<IEnumerable<EpisodeVM>> GetEpisodesBySeriesAsync(int seriesId)
         {
-            return _episodeRepository.GetAll(includeword : "Series")
-                                   .OrderByDescending(m => m.CreatedAt) 
-                                   .Take(count)
-                                   .ToList();
+            var episodes = await _episodeRepository.GetBySeriesAsync(seriesId);
+            return _mapper.Map<IEnumerable<EpisodeVM>>(episodes);
         }
 
-        (bool, string) IEpisodeService.UpdateEpisode(EpisodeVM episodeVM, int Id)
+        public async Task IncrementEpisodeViewsAsync(int id)
         {
-            var episode = _episodeRepository.GetFirstOrDefault(x => x.Id == Id,includeword:"Series");
-            if (episode == null)
-            {
-                return (false, "Episode Not Found");
-            }
+            await _episodeRepository.IncrementViewsAsync(id);
+        }
 
-        
-            episode.Update(episodeVM.Title,episodeVM.Description);
-         
-            if (_episodeRepository.Update(episode))
+        public async Task IncrementEpisodeDownloadsAsync(int id)
+        {
+            await _episodeRepository.IncrementDownloadsAsync(id);
+        }
+
+        public async Task<(bool Success, string Message)> UpdateEpisodeAsync(EpisodeVM episodeVM, int id, string? actor = null)
+        {
+            try
             {
-                return (true, "Episode Updated Successfully");
+                var episode = await _episodeRepository.GetFirstOrDefaultAsync(x => x.Id == id);
+                if (episode == null)
+                {
+                    return (false, "Episode Not Found");
+                }
+
+                // Bug fix: the old implementation never updated VideoUrl or SeriesId.
+                episode.Update(
+                    episodeVM.Title,
+                    description: episodeVM.Description,
+                    videoUrl: episodeVM.VideoUrl,
+                    seriesId: episodeVM.SeriesId,
+                    updater: actor);
+
+                if (await _episodeRepository.UpdateAsync(episode))
+                {
+                    return (true, "Episode Updated Successfully");
+                }
+                return (false, "Failed to Update Episode");
             }
-            return (false, "Failed to Update Episode");
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to update episode {EpisodeId}", id);
+                return (false, "An unexpected error occurred while updating the episode.");
+            }
         }
     }
 }

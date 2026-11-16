@@ -1,13 +1,9 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BLL.Services.Abstraction;
 using BLL.ViewModels;
-using DAL.Models;
-using DAL.Repositories.Abstraction;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Core.Models;
+using Core.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace BLL.Services.Implementation
 {
@@ -15,82 +11,174 @@ namespace BLL.Services.Implementation
     {
         private readonly IMapper _mapper;
         private readonly ISeriesRepository _seriesRepository;
-        public SeriesService(IMapper mapper,ISeriesRepository seriesRepository)
+        private readonly ILogger<SeriesService> _logger;
+
+        public SeriesService(IMapper mapper, ISeriesRepository seriesRepository, ILogger<SeriesService> logger)
         {
             _mapper = mapper;
             _seriesRepository = seriesRepository;
-        }
-        public (bool, string) CreateSeries(SeriesVM seriesVM)
-        {
-            var result = Helpers.Load.UploadFile("Images", seriesVM.Image);
-            seriesVM.ImageUrl = result;
-
-            var series = _mapper.Map<Series>(seriesVM);
-            if(_seriesRepository.Add(series))
-            {
-                return (true, "Series Created Successfully");
-            }    
-            return (false,"Failed to Create Series");
+            _logger = logger;
         }
 
-        public (bool, string) DeleteSeries(int id)
+        public async Task<(bool Success, string Message)> CreateSeriesAsync(SeriesVM seriesVM, string? actor = null)
         {
-            var series = _seriesRepository.GetFirstOrDefault(x => x.Id == id, includeword: "Category");
-            if (series == null)
+            try
             {
-                return (false, "Series Not Found");
+                // Bug fix: the old implementation called UploadFile without a null
+                // check and crashed with a NullReferenceException when no image was picked.
+                if (seriesVM.Image != null)
+                {
+                    seriesVM.ImageUrl = BLL.Helpers.Load.UploadImage(seriesVM.Image);
+                }
+
+                var series = _mapper.Map<Series>(seriesVM);
+                series.Create(
+                    seriesVM.Title,
+                    viewCount: 0,
+                    downloadCount: 0,
+                    categoryId: seriesVM.CategoryId,
+                    description: seriesVM.Description,
+                    isFree: seriesVM.IsFree,
+                    imageUrl: seriesVM.ImageUrl,
+                    creator: actor);
+
+                if (await _seriesRepository.AddAsync(series))
+                {
+                    return (true, "Series Created Successfully");
+                }
+                return (false, "Failed to Create Series");
             }
-            // Only remove the file if the series exists and has an image
-            if (!string.IsNullOrEmpty(series.ImageUrl))
+            catch (InvalidDataException ex)
             {
-                Helpers.Load.RemoveFile("Images", series.ImageUrl);
+                return (false, ex.Message);
             }
-            if (_seriesRepository.Remove(series))
+            catch (Exception ex)
             {
-                return (true, "Series Deleted Successfully");
+                _logger.LogError(ex, "Failed to create series {Title}", seriesVM.Title);
+                return (false, "An unexpected error occurred while creating the series. Please check the category exists and try again.");
             }
-            return (false, "Failed to Delete Series");
         }
 
-        public IEnumerable<SeriesVM> GetAllSeries()
+        public async Task<(bool Success, string Message)> DeleteSeriesAsync(int id, string? actor = null)
         {
-            var series = _seriesRepository.GetAll(includeword: "Category");
+            try
+            {
+                var series = await _seriesRepository.GetFirstOrDefaultAsync(x => x.Id == id);
+                if (series == null)
+                {
+                    return (false, "Series Not Found");
+                }
+
+                // Remove the DB row first (soft delete) and only then the image file.
+                if (await _seriesRepository.RemoveAsync(series))
+                {
+                    if (!string.IsNullOrEmpty(series.ImageUrl))
+                    {
+                        BLL.Helpers.Load.RemoveFile("Images", series.ImageUrl);
+                    }
+                    return (true, "Series Deleted Successfully");
+                }
+                return (false, "Failed to Delete Series");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to delete series {SeriesId}", id);
+                return (false, "An unexpected error occurred while deleting the series.");
+            }
+        }
+
+        public async Task<IEnumerable<SeriesVM>> GetAllSeriesAsync()
+        {
+            var series = await _seriesRepository.GetAllAsync(includeWords: "Category", orderBy: q => q.OrderByDescending(s => s.CreatedAt));
             return _mapper.Map<IEnumerable<SeriesVM>>(series);
         }
 
-        public SeriesVM GetSeriesById(int id)
+        public async Task<SeriesVM?> GetSeriesByIdAsync(int id)
         {
-            var series = _seriesRepository.GetFirstOrDefault(x => x.Id == id, includeword: "Category");
-            return _mapper.Map<SeriesVM>(series);
+            var series = await _seriesRepository.GetFirstOrDefaultAsync(x => x.Id == id, includeWords: "Category");
+            return series == null ? null : _mapper.Map<SeriesVM>(series);
         }
 
-        (bool, string) ISeriesService.UpdateSeries(SeriesVM seriesVM, int Id)
+        public async Task<int> GetSeriesCountAsync()
         {
-            var series = _seriesRepository.GetFirstOrDefault(x => x.Id == Id, includeword: "Category");
-            if (series == null)
-            {
-                return (false, "Series Not Found");
-            }
+            return await _seriesRepository.CountAsync();
+        }
 
-            // Remove old image if a new one is uploaded
-            if (seriesVM.Image != null)
+        public async Task<(IEnumerable<SeriesVM> Series, int TotalCount)> SearchSeriesAsync(
+            string? searchTerm = null,
+            int? categoryId = null,
+            string? sortBy = null,
+            int page = 1,
+            int pageSize = 12)
+        {
+            var (items, totalCount) = await _seriesRepository.SearchAsync(searchTerm, categoryId, sortBy, page, pageSize);
+            return (_mapper.Map<IEnumerable<SeriesVM>>(items), totalCount);
+        }
+
+        public async Task IncrementViewsAsync(int id)
+        {
+            await _seriesRepository.IncrementViewsAsync(id);
+        }
+
+        public async Task IncrementDownloadsAsync(int id)
+        {
+            await _seriesRepository.IncrementDownloadsAsync(id);
+        }
+
+        public async Task<bool> IsSeriesFreeAsync(int id)
+        {
+            var series = await _seriesRepository.GetFirstOrDefaultAsync(x => x.Id == id);
+            return series?.IsFree ?? false;
+        }
+
+        public async Task<(bool Success, string Message)> UpdateSeriesAsync(SeriesVM seriesVM, int id, string? actor = null)
+        {
+            try
             {
-                if (!string.IsNullOrEmpty(series.ImageUrl))
+                var series = await _seriesRepository.GetFirstOrDefaultAsync(x => x.Id == id);
+                if (series == null)
                 {
-                    Helpers.Load.RemoveFile("Images", series.ImageUrl);
+                    return (false, "Series Not Found");
                 }
-                var result = Helpers.Load.UploadFile("Images", seriesVM.Image);
-                series.ImageUrl = result;
-            }
 
-            // Update other properties
-            series.Update(seriesVM.Title,seriesVM.ViewCount,seriesVM.DownloadCount,seriesVM.CategoryId,seriesVM.Description, imageUrl: series.ImageUrl);
-         
-            if (_seriesRepository.Update(series))
-            {
-                return (true, "Series Updated Successfully");
+                if (seriesVM.Image != null)
+                {
+                    var oldImage = series.ImageUrl;
+                    var newImage = BLL.Helpers.Load.UploadImage(seriesVM.Image);
+                    series.ImageUrl = newImage;
+
+                    if (await _seriesRepository.UpdateAsync(series) && !string.IsNullOrEmpty(oldImage))
+                    {
+                        BLL.Helpers.Load.RemoveFile("Images", oldImage);
+                    }
+                }
+
+                // Bug fix: the old repository update re-fetched the entity and had a
+                // positional-argument bug that silently dropped IsFree. Views/Downloads
+                // are preserved (they are incremented by watch/download actions).
+                series.Update(
+                    seriesVM.Title,
+                    seriesVM.CategoryId,
+                    description: seriesVM.Description,
+                    isFree: seriesVM.IsFree,
+                    imageUrl: series.ImageUrl,
+                    updater: actor);
+
+                if (await _seriesRepository.UpdateAsync(series))
+                {
+                    return (true, "Series Updated Successfully");
+                }
+                return (false, "Failed to Update Series");
             }
-            return (false, "Failed to Update Series");
+            catch (InvalidDataException ex)
+            {
+                return (false, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to update series {SeriesId}", id);
+                return (false, "An unexpected error occurred while updating the series.");
+            }
         }
     }
 }

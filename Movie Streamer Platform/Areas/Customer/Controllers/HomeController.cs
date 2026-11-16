@@ -17,77 +17,51 @@ namespace Movie_Streamer_Platform.Areas.Customer.Controllers
         {
             return View();
         }
-        public IActionResult Movies()
+
+        // Bug fix: these actions used to render views that did not exist in the
+        // Customer area (Series/MovieDetails/SeriesDetails -> 500) or duplicated
+        // the public browse pages with weaker features. They now delegate to the
+        // real, searchable/paged pages under /Movies and /Series.
+
+        public async Task<IActionResult> Movies()
         {
-            var movies = _movieService.GetAllMovies();
-            if (movies == null)
-            {
-                return NotFound();
-            }
+            var movies = await _movieService.GetAllMoviesAsync();
             return View(movies);
         }
+
         public IActionResult Series()
         {
-            var series = _seriesService.GetAllSeries();
-            if (series == null)
-            {
-                return NotFound();
-            }
-            return View(series);
+            return RedirectToAction("Index", "Series", new { area = "" });
         }
+
         public IActionResult MovieDetails(int id)
         {
-            var movie = _movieService.GetMovieById(id);
-            if (movie == null)
-            {
-                return NotFound();
-            }
-            return View(movie);
+            return RedirectToAction("Details", "Movies", new { area = "", id });
         }
+
         public IActionResult SeriesDetails(int id)
         {
-            var series = _seriesService.GetSeriesById(id);
-            if (series == null)
-            {
-                return NotFound();
-            }
-            return View(series);
+            return RedirectToAction("Details", "Series", new { area = "", id });
         }
+
         public IActionResult MoviesSortedByViews()
         {
-            var movies = _movieService.GetAllMovies().OrderByDescending(m => m.Views);
-            if (movies == null)
-            {
-                return NotFound();
-            }
-            return View(movies);
+            return RedirectToAction("Index", "Movies", new { area = "", sortBy = "views" });
         }
+
         public IActionResult SeriesSortedByViews()
         {
-            var series = _seriesService.GetAllSeries().OrderByDescending(s => s.ViewCount);
-            if (series == null)
-            {
-                return NotFound();
-            }
-            return View(series);
+            return RedirectToAction("Index", "Series", new { area = "", sortBy = "views" });
         }
+
         public IActionResult MoviesSortedByDownloads()
         {
-            var movies = _movieService.GetAllMovies().OrderByDescending(m => m.Downloads);
-            if (movies == null)
-            {
-                return NotFound();
-            }
-            return View(movies);
+            return RedirectToAction("Index", "Movies", new { area = "", sortBy = "downloads" });
         }
+
         public IActionResult SeriesSortedByDownloads()
         {
-            var series = _seriesService.GetAllSeries().OrderByDescending(s => s.DownloadCount);
-            if (series == null)
-            {
-                return NotFound();
-            }
-            return View(series);
+            return RedirectToAction("Index", "Series", new { area = "", sortBy = "downloads" });
         }
     }
 }

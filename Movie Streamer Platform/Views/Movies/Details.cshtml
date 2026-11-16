@@ -1,4 +1,4 @@
-﻿@using BLL.ViewModels
+@using BLL.ViewModels
 @model MovieVM
 
 @{
@@ -492,6 +492,30 @@
         }
 
     /* =========================
+               REVIEW STARS
+            ========================= */
+
+    .star-btn {
+        background: none;
+        border: none;
+        font-size: 1.7rem;
+        line-height: 1;
+        color: rgba(255,255,255,.22);
+        cursor: pointer;
+        padding: 0 .15rem;
+        transition: color .15s ease, transform .15s ease;
+    }
+
+        .star-btn.active {
+            color: #ffc107;
+            text-shadow: 0 0 12px rgba(255,193,7,.45);
+        }
+
+        .star-btn:hover {
+            transform: scale(1.2);
+        }
+
+    /* =========================
                MOBILE
             ========================= */
 
@@ -551,11 +575,15 @@
                         </span>
 
                         <span class="badge bg-dark border px-3 py-2">
-                            📅 @Model.Year
+                            <i class="fas fa-calendar me-1"></i> @Model.Year
                         </span>
 
                         <span class="badge @(Model.IsFree == true ? "bg-success" : "bg-danger") px-3 py-2">
                             @(Model.IsFree == true ? "FREE" : "PREMIUM")
+                        </span>
+
+                        <span class="badge bg-warning text-dark px-3 py-2">
+                            <i class="fas fa-star me-1"></i> @Model.Rating.ToString("0.0") / 10
                         </span>
 
                     </div>
@@ -582,7 +610,7 @@
                         <div class="stat-box">
                             <div class="stat-label">Rating</div>
                             <div class="stat-value">
-                                ⭐ @Model.Rating / 10
+                                <i class="fas fa-star"></i> @Model.Rating.ToString("0.0") / 10
                             </div>
                         </div>
 
@@ -613,8 +641,7 @@
 
                         @if (!string.IsNullOrWhiteSpace(Model.MovieUrl))
                         {
-                            <a href="@Model.MovieUrl"
-                               target="_blank"
+                            <a asp-controller="Movies" asp-action="Watch" asp-route-id="@Model.Id"
                                class="btn btn-action-watch">
                                 <i class="fas fa-film me-2"></i>
                                 Watch Movie
@@ -696,7 +723,7 @@
 
                 <div class="ratio ratio-16x9 video-player-container">
 
-                    <iframe src="@Model?.TrailerURL"
+                    <iframe src="@Model?.TrailerUrl"
                             title="Trailer"
                             frameborder="0"
                             allowfullscreen>
@@ -723,6 +750,15 @@
             <div class="card bg-black border-secondary mb-4">
                 <div class="card-body">
 
+                    <label class="text-white fw-bold mb-1 d-block">Your Rating</label>
+                    <div id="starRating" class="d-flex gap-1 mb-3" role="radiogroup" aria-label="Your rating out of 5">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <button type="button" class="star-btn active" data-value="@i" aria-label="@i of 5 stars">&#9733;</button>
+                        }
+                    </div>
+                    <input type="hidden" id="reviewRating" value="5" />
+
                     <textarea id="reviewComment"
                           class="form-control mb-3"
                           rows="3"
@@ -745,6 +781,12 @@
                     <div class="card-body">
                         <h6 class="text-warning">
                             @(review.User?.UserName ?? "Unknown User")
+                            <span class="float-end text-white-50">
+                                @for (int i = 0; i < (int)review.Rating; i++)
+                                {
+                                    <i class="fas fa-star"></i>
+                                }
+                            </span>
                         </h6>
 
                         <p class="text-light mb-0">
@@ -760,6 +802,8 @@
 </section>
 <div class="cinema-toast" id="cinema-toast"></div>
 
+@Html.AntiForgeryToken()
+
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
     (function () {
@@ -771,6 +815,11 @@
         function validId(id) {
             var s = String(id);
             return GUID_RE.test(s) || NUM_RE.test(s);
+        }
+
+        window.getRequestToken = function () {
+            var input = document.querySelector('input[name="__RequestVerificationToken"]');
+            return input ? input.value : '';
         }
 
             window.toast = function(msg)
@@ -800,23 +849,25 @@
             x.onreadystatechange = function () {
                 if (x.readyState === 4) done(x.status === 200);
             };
-            x.send('movieId=' + encodeURIComponent(id));
+            var body = 'movieId=' + encodeURIComponent(id) +
+                       '&__RequestVerificationToken=' + encodeURIComponent(window.getRequestToken());
+            x.send(body);
         }
 
         var CONFIG = {
             fav: {
                 cls:     'is-active-heart',
                 action:  'ToggleFavorite',
-                onMsg:   '❤️ Added to Favorites',
-                offMsg:  '💔 Removed from Favorites',
+                onMsg:   '?? Added to Favorites',
+                offMsg:  '?? Removed from Favorites',
                 onTip:   'Remove Favorite',
                 offTip:  'Add Favorite'
             },
             watch: {
                 cls:     'is-active-clock',
                 action:  'ToggleWatchList',
-                onMsg:   '🕐 Added to Watchlist',
-                offMsg:  '✖️ Removed from Watchlist',
+                onMsg:   '?? Added to Watchlist',
+                offMsg:  '?? Removed from Watchlist',
                 onTip:   'Remove from Watchlist',
                 offTip:  'Watch Later'
             }
@@ -828,7 +879,7 @@
             var cfg  = CONFIG[type];
 
             if (!cfg || !validId(id)) {
-                toast('⚠️ Invalid movie');
+                toast('?? Invalid movie');
                 return;
             }
 
@@ -860,7 +911,7 @@
                     else           btn.classList.remove(cfg.cls);
                     tip.textContent = wasActive ? cfg.onTip : cfg.offTip;
                     localSet(type, id, wasActive);
-                    toast('❌ Something went wrong');
+                    toast('? Something went wrong');
                 } else {
                     toast(next ? cfg.onMsg : cfg.offMsg);
                 }
@@ -870,6 +921,32 @@
     })();
 </script>
 <script>
+
+    // Star rating selector
+    (function () {
+        var container = document.getElementById('starRating');
+        if (!container) return;
+
+        var stars = container.querySelectorAll('.star-btn');
+        var hidden = document.getElementById('reviewRating');
+
+        function paint(value) {
+            stars.forEach(function (b) {
+                var v = parseInt(b.getAttribute('data-value'), 10);
+                b.classList.toggle('active', v <= value);
+            });
+        }
+
+        stars.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var value = parseInt(btn.getAttribute('data-value'), 10);
+                hidden.value = value;
+                paint(value);
+            });
+        });
+
+        paint(parseInt(hidden.value, 10) || 5);
+    })();
 
     function addReview(movieId)
     {
@@ -887,15 +964,23 @@
             type: 'POST',
             data: {
                 movieId: movieId,
-                comment: comment
+                comment: comment,
+                rating: document.getElementById("reviewRating").value,
+                __RequestVerificationToken: window.getRequestToken()
             },
             success: function(res)
             {
+                let stars = '';
+                for (let i = 0; i < (res.rating || 0); i++) {
+                    stars += '<i class="fas fa-star"></i>';
+                }
+
                 let html = `
                     <div class="card bg-black border-secondary mb-3 review-item">
                         <div class="card-body">
                             <h6 class="text-warning">
                                 ${res.user}
+                                <span class="float-end text-white-50">${stars}</span>
                             </h6>
 
                             <p class="text-light mb-0">

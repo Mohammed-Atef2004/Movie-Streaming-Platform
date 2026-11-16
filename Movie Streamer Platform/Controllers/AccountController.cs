@@ -1,12 +1,13 @@
-﻿using Application.Services.Abstraction;
+using Application.Services.Abstraction;
 using Application.ViewModels;
+using BLL.Helpers;
 using BLL.Services.Abstraction;
-using BLL.Services.Implementation;
 using BLL.ViewModels;
-using DAL.Models;
+using Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Movie_Streamer_Platform.Controllers
 {
@@ -30,46 +31,59 @@ namespace Movie_Streamer_Platform.Controllers
         {
             return View();
         }
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterUserVM vm)
         {
-            var user = await _accountService.Register(vm);
+            // Bug fix: the old code never checked ModelState and swallowed all
+            // Identity errors, so an empty form just silently re-rendered.
+            if (!ModelState.IsValid)
+                return View(vm);
+
+            var (user, error) = await _accountService.RegisterAsync(vm);
 
             if (user is not null)
+            {
+                TempData["Success"] = "Account created successfully. Please log in.";
                 return RedirectToAction("Login");
+            }
 
+            ModelState.AddModelError(string.Empty, error ?? "Registration failed. Please try again.");
             return View(vm);
         }
-
 
         [HttpGet]
         public IActionResult Login()
         {
             return View();
         }
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginUserVM loginUserVM)
         {
             if (!ModelState.IsValid)
                 return View(loginUserVM);
 
-            bool result = await _accountService.Login(loginUserVM);
+            bool result = await _accountService.LoginAsync(loginUserVM);
 
             if (result)
                 return RedirectToAction("Index", "Home");
 
-            ModelState.AddModelError("", "Invalid UserName Or Password");
+            ModelState.AddModelError("", "Invalid Username Or Password");
 
             return View(loginUserVM);
         }
+
         [HttpPost]
-        public async Task<IActionResult> Logout(LoginUserVM loginUserVM)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
         {
-            await _accountService.Logout(loginUserVM);
+            await _accountService.LogoutAsync();
             return RedirectToAction("Login");
         }
 
-       
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> Profile()
@@ -84,20 +98,43 @@ namespace Movie_Streamer_Platform.Controllers
                 User = user,
 
                 FavoriteMovies =
-                    _userMovieService.GetFavorites(user.Id),
+                    await _userMovieService.GetFavoritesAsync(user.Id),
 
                 WatchListMovies =
-                    _userMovieService.GetWatchList(user.Id),
+                    await _userMovieService.GetWatchListAsync(user.Id),
 
                 FavoriteSeries =
-                    _userSeriesService.GetFavorites(user.Id),
+                    await _userSeriesService.GetFavoritesAsync(user.Id),
 
                 WatchListSeries =
-                    _userSeriesService.GetWatchList(user.Id)
+                    await _userSeriesService.GetWatchListAsync(user.Id)
             };
 
             return View(vm);
         }
+
+        // Bug fix: the GET action was missing entirely, so the edit form was
+        // unreachable (the navbar linked to a 404).
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> EditProfile()
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
+                return NotFound();
+
+            var vm = new EditProfileVM
+            {
+                UserName = user.UserName ?? string.Empty,
+                Email = user.Email ?? string.Empty,
+                CurrentImage = user.ImageURL
+            };
+
+            return View(vm);
+        }
+
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditProfile(EditProfileVM vm)
@@ -115,19 +152,20 @@ namespace Movie_Streamer_Platform.Controllers
 
             if (vm.Image is not null)
             {
-                var fileName = Guid.NewGuid() +
-                               Path.GetExtension(vm.Image.FileName);
-
-                var path = Path.Combine(
-                    Directory.GetCurrentDirectory(),
-                    "wwwroot/Images",
-                    fileName);
-
-                using var stream = new FileStream(path, FileMode.Create);
-
-                await vm.Image.CopyToAsync(stream);
-
-                user.ImageURL = fileName;
+                try
+                {
+                    // Bug fix: uploads used to bypass validation and could accept any file.
+                    var oldImage = user.ImageURL;
+                    user.ImageURL = Load.UploadImage(vm.Image);
+                    if (!string.IsNullOrEmpty(oldImage))
+                        Load.RemoveFile("Images", oldImage);
+                }
+                catch (InvalidDataException ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                    vm.CurrentImage = user.ImageURL;
+                    return View(vm);
+                }
             }
 
             var result = await _userManager.UpdateAsync(user);
@@ -137,11 +175,14 @@ namespace Movie_Streamer_Platform.Controllers
                 foreach (var error in result.Errors)
                     ModelState.AddModelError("", error.Description);
 
+                vm.CurrentImage = user.ImageURL;
                 return View(vm);
             }
 
+            TempData["Success"] = "Profile updated successfully.";
             return RedirectToAction(nameof(Profile));
         }
+
         [HttpGet]
         public IActionResult AccessDenied()
         {

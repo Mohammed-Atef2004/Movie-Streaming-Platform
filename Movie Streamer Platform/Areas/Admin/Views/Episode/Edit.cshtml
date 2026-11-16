@@ -1,0 +1,117 @@
+@using BLL.ViewModels
+@model EpisodeVM
+@{
+    ViewBag.PageTitle = "Episode Management";
+    ViewBag.CardTitle = "Edit Episode";
+}
+
+<style>
+    /* Admin Dark Theme Overrides for Form */
+    .card.shadow-lg {
+        background-color: var(--admin-dark-surface);
+        color: var(--admin-text-color);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .card-header.bg-primary {
+        background-color: var(--admin-dark-surface) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+        .card-header.bg-primary h4 {
+            color: var(--admin-link-color);
+        }
+
+    .form-control,
+    .form-select {
+        background-color: #333 !important;
+        border: 1px solid #555 !important;
+        color: var(--admin-text-color) !important;
+    }
+
+    .form-control::placeholder {
+        color: #888 !important;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: var(--admin-active-color) !important;
+        box-shadow: 0 0 0 0.25rem rgba(227, 0, 0, 0.25) !important;
+    }
+
+    .form-label, .text-muted {
+        color: var(--admin-text-color) !important;
+    }
+
+    .btn-outline-secondary {
+        border-color: #555 !important;
+        color: var(--admin-text-color) !important;
+    }
+
+        .btn-outline-secondary:hover {
+            background-color: #555 !important;
+            color: #fff !important;
+        }
+</style>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-lg border-0 rounded-3">
+            <div class="card-header bg-primary text-white text-center">
+                <h4>@ViewBag.CardTitle</h4>
+            </div>
+            <div class="card-body p-4">
+                <form asp-area="Admin" asp-controller="Episode" asp-action="Edit" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <input type="hidden" asp-for="Id" />
+
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label fw-bold"></label>
+                        <input asp-for="Title" class="form-control" placeholder="Enter episode title..." />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label fw-bold"></label>
+                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Enter episode description..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="VideoUrl" class="form-label fw-bold"></label>
+                        <input asp-for="VideoUrl" class="form-control" placeholder="Enter episode video url..." />
+                        <span asp-validation-for="VideoUrl" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ViewCount" class="form-label fw-bold">View Count</label>
+                            <input asp-for="ViewCount" class="form-control" />
+                            <span asp-validation-for="ViewCount" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DownloadCount" class="form-label fw-bold">Download Count</label>
+                            <input asp-for="DownloadCount" class="form-control" />
+                            <span asp-validation-for="DownloadCount" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="SeriesId" class="form-label fw-bold">Series</label>
+                        <select asp-for="SeriesId" class="form-select" asp-items="Model.SeriesList">
+                            <option value="">-- Select Series --</option>
+                        </select>
+                        <span asp-validation-for="SeriesId" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-area="Admin" asp-controller="Episode" asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+                        <input type="submit" value="Save Changes" class="btn btn-danger" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

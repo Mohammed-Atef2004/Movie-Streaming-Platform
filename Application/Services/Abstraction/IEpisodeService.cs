@@ -1,20 +1,16 @@
 ﻿using BLL.ViewModels;
-using DAL.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BLL.Services.Abstraction
 {
     public interface IEpisodeService
     {
-        (bool, string) CreateEpisode(EpisodeVM episodeVM);
-        (bool, string) UpdateEpisode(EpisodeVM episodeVM, int Id);
-        (bool, string) DeleteEpisode(int id);
-        EpisodeVM GetEpisodeById(int id);
-        IEnumerable<EpisodeVM> GetAllEpisodes();
-        public IEnumerable<Episode> GetRecentEpisodes(int count);
+        Task<(bool Success, string Message)> CreateEpisodeAsync(EpisodeVM episodeVM, string? actor = null);
+        Task<(bool Success, string Message)> UpdateEpisodeAsync(EpisodeVM episodeVM, int id, string? actor = null);
+        Task<(bool Success, string Message)> DeleteEpisodeAsync(int id, string? actor = null);
+        Task<IEnumerable<EpisodeVM>> GetAllEpisodesAsync();
+        Task<EpisodeVM?> GetEpisodeByIdAsync(int id);
+        Task<IEnumerable<EpisodeVM>> GetEpisodesBySeriesAsync(int seriesId);
+        Task IncrementEpisodeViewsAsync(int id);
+        Task IncrementEpisodeDownloadsAsync(int id);
     }
 }

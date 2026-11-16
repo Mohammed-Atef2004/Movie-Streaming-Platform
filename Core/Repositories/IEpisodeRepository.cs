@@ -1,14 +1,13 @@
-﻿using DAL.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Core.Models;
 
-namespace DAL.Repositories.Abstraction
+namespace Core.Repositories
 {
-    public interface IEpisodeRepository: IGenericRepository<Episode>
+    public interface IEpisodeRepository : IGenericRepository<Episode>
     {
-        public bool Update(Episode episode);
+        Task<IEnumerable<Episode>> GetBySeriesAsync(int seriesId, CancellationToken cancellationToken = default);
+
+        Task IncrementViewsAsync(int episodeId, CancellationToken cancellationToken = default);
+
+        Task IncrementDownloadsAsync(int episodeId, CancellationToken cancellationToken = default);
     }
 }

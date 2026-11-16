@@ -2,6 +2,9 @@
     ViewBag.PageTitle = "Series";
     ViewBag.CardTitle = "Browse Series";
     var isAdmin = User.IsInRole("Admin");
+    var totalPages = (int)(ViewBag.TotalPages ?? 0);
+    var currentPage = (int)(ViewBag.Page ?? 1);
+    var totalCount = (int)(ViewBag.TotalCount ?? 0);
 }
 @using BLL.ViewModels
 @model IEnumerable<SeriesVM>
@@ -34,7 +37,7 @@
 <!-- Filters -->
 <section id="series-filters">
     <div class="container" data-aos="fade-up" data-aos-delay="100">
-        <form method="get" asp-action="Index" class="filter-form d-flex align-items-center gap-3">
+        <form method="get" asp-action="Index" class="filter-form d-flex align-items-center gap-3 flex-wrap">
 
             <!-- Search -->
             <div class="input-group flex-grow-1" style="max-width: 280px;">
@@ -45,7 +48,26 @@
                        name="search"
                        class="form-control filter-input"
                        placeholder="Search series..."
-                       value="@Context.Request.Query["search"]" />
+                       value="@ViewBag.Search" />
+            </div>
+
+            <!-- Category -->
+            <div class="input-group" style="max-width: 220px;">
+                <span class="input-group-text">
+                    <i class="fas fa-tags"></i>
+                </span>
+                <select name="categoryId" class="form-select filter-select">
+                    <option value="">All Categories</option>
+                    @if (ViewBag.Categories is IEnumerable<BLL.ViewModels.CategoryVM> categories)
+                    {
+                        foreach (var category in categories)
+                        {
+                            <option value="@category.Id" selected="@(ViewBag.CategoryId != null && (int)ViewBag.CategoryId == category.Id)">
+                                @category.Name
+                            </option>
+                        }
+                    }
+                </select>
             </div>
 
             <!-- Sort -->
@@ -55,9 +77,9 @@
                 </span>
                 <select name="sortBy" class="form-select filter-select">
                     <option value="">Sort By</option>
-                    <option value="views" selected="@(Context.Request.Query["sortBy"]=="views")">Most Viewed</option>
-                    <option value="rating" selected="@(Context.Request.Query["sortBy"]=="rating")">Top Rated</option>
-                    <option value="downloads" selected="@(Context.Request.Query["sortBy"]=="downloads")">Most Downloaded</option>
+                    <option value="views" selected="@(ViewBag.SortBy as string == "views")">Most Viewed</option>
+                    <option value="rating" selected="@(ViewBag.SortBy as string == "rating")">Top Rated</option>
+                    <option value="downloads" selected="@(ViewBag.SortBy as string == "downloads")">Most Downloaded</option>
                 </select>
             </div>
 
@@ -69,6 +91,7 @@
     </div>
 </section>
     <div class="container" data-aos="fade-up" data-aos-delay="100">
+        <p class="text-white-50 mb-4">@totalCount series found</p>
         <div class="row g-4">
             @foreach (var item in Model)
             {
@@ -98,17 +121,17 @@
                                                 : item.Description))
                                     </p>
 
-                                    <div class="movie-rating">
-                                        @* ⭐⭐⭐⭐⭐ <span>(@item.Rating.ToString())</span> *@
+                                    <div class="movie-meta d-flex flex-wrap gap-2 mb-2">
+                                        <span class="badge @(item.IsFree == true ? "bg-success" : "bg-danger") px-2 py-1">
+                                            @(item.IsFree == true ? "FREE" : "PREMIUM")
+                                        </span>
+                                        <span class="badge bg-dark border px-2 py-1">
+                                            <i class="fas fa-eye"></i> @item.ViewCount
+                                        </span>
                                     </div>
 
-                                    @* <div class="movie-meta">
-                                        <span class="movie-price">💲@item.Price</span>
-                                    </div> *@
-
                                     <div class="movie-actions">
-                                        <button class="btn btn-bookmark">🔖 Bookmark</button>
-                                        <button class="btn btn-watch">▶ Watch Now</button>
+                                        <span class="btn btn-watch">Watch Now</span>
                                     </div>
                                 </div>
                             </div>
@@ -116,6 +139,26 @@
                     </div>
             }
         </div>
+
+        @if (totalPages > 1)
+        {
+            <nav aria-label="Series pages" class="mt-5">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-search="@ViewBag.Search" asp-route-categoryId="@ViewBag.CategoryId" asp-route-sortBy="@ViewBag.SortBy" asp-route-page="@(currentPage - 1)">Previous</a>
+                    </li>
+                    @for (int p = 1; p <= totalPages; p++)
+                    {
+                        <li class="page-item @(p == currentPage ? "active" : "")">
+                            <a class="page-link" asp-action="Index" asp-route-search="@ViewBag.Search" asp-route-categoryId="@ViewBag.CategoryId" asp-route-sortBy="@ViewBag.SortBy" asp-route-page="@p">@p</a>
+                        </li>
+                    }
+                    <li class="page-item @(currentPage >= totalPages ? "disabled" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-search="@ViewBag.Search" asp-route-categoryId="@ViewBag.CategoryId" asp-route-sortBy="@ViewBag.SortBy" asp-route-page="@(currentPage + 1)">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        }
     </div>
 </section>
 

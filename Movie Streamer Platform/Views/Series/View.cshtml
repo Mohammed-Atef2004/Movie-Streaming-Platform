@@ -1,10 +1,182 @@
 ﻿@using BLL.ViewModels
 @model SeriesVM
+
 @{
-    ViewBag.PageTitle = $"{Model?.Title} - Details";
+    ViewBag.PageTitle = $"Watch {Model?.Title}";
+
     var posterUrl = string.IsNullOrEmpty(Model?.ImageUrl)
-            ? "/images/poster-placeholder.jpg"
-            : $"/images/{Model.ImageUrl}";
- 
+        ? "/images/poster-placeholder.jpg"
+        : $"/images/{Model.ImageUrl}";
+
+    var episodes = ViewBag.Episodes as IEnumerable<BLL.ViewModels.EpisodeVM> ?? Enumerable.Empty<BLL.ViewModels.EpisodeVM>();
+    var current = ViewBag.CurrentEpisode as BLL.ViewModels.EpisodeVM;
 }
-<img src="~/Images/@Model.ImageUrl" width="50%" height="30%"/>
+
+<style>
+    .watch-page {
+        background: #050505;
+        min-height: 100vh;
+        color: white;
+        padding: 2rem 0 4rem;
+    }
+
+    .watch-player {
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,.1);
+        box-shadow: 0 25px 80px rgba(0,0,0,.8);
+        background: #000;
+    }
+
+    .watch-title {
+        font-size: 2rem;
+        font-weight: 800;
+        color: white;
+    }
+
+    .watch-subtitle {
+        color: rgba(255,255,255,.65);
+        font-weight: 500;
+    }
+
+    .watch-back {
+        color: rgba(255,255,255,.7);
+        text-decoration: none;
+        font-weight: 600;
+        transition: color .25s ease;
+    }
+
+        .watch-back:hover {
+            color: #ffc107;
+        }
+
+    .episode-list {
+        max-height: 480px;
+        overflow-y: auto;
+        border: 1px solid rgba(255,255,255,.1);
+        border-radius: 14px;
+        background: rgba(255,255,255,.03);
+    }
+
+    .episode-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: .9rem 1.1rem;
+        color: rgba(255,255,255,.85);
+        text-decoration: none;
+        border-bottom: 1px solid rgba(255,255,255,.06);
+        transition: background .2s ease, color .2s ease;
+    }
+
+        .episode-item:last-child {
+            border-bottom: none;
+        }
+
+        .episode-item:hover {
+            background: rgba(255,255,255,.07);
+            color: white;
+        }
+
+        .episode-item.active {
+            background: rgba(255,193,7,.12);
+            color: #ffc107;
+            border-left: 3px solid #ffc107;
+        }
+
+    .episode-views {
+        font-size: .8rem;
+        color: rgba(255,255,255,.45);
+        white-space: nowrap;
+    }
+</style>
+
+<div class="watch-page">
+    <div class="container">
+
+        <a asp-controller="Series" asp-action="Details" asp-route-id="@Model?.Id" class="watch-back">
+            <i class="fas fa-arrow-left me-2"></i> Back to details
+        </a>
+
+        <h1 class="watch-title mt-3 mb-0">@Model?.Title</h1>
+        <p class="watch-subtitle mb-4">
+            @if (current != null)
+            {
+                @:Episode: @current.Title
+            }
+        </p>
+
+        <div class="row g-4">
+
+            <div class="col-lg-8">
+
+                @if (current != null && !string.IsNullOrWhiteSpace(current.VideoUrl))
+                {
+                    <div class="ratio ratio-16x9 watch-player">
+                        <iframe src="@current.VideoUrl"
+                                title="@current.Title player"
+                                frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen>
+                        </iframe>
+                    </div>
+
+                    <div class="d-flex flex-wrap align-items-center gap-3 mt-4">
+                        <a asp-controller="Series" asp-action="Download" asp-route-id="@Model?.Id" asp-route-episodeId="@current.Id"
+                           class="btn btn-outline-light">
+                            <i class="fas fa-download me-2"></i> Download this episode
+                        </a>
+                        <span class="badge bg-dark border px-3 py-2">
+                            <i class="fas fa-eye me-1"></i> @(current.ViewCount ?? 0) views
+                        </span>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-secondary" role="alert">
+                        <i class="fas fa-triangle-exclamation me-2"></i>
+                        This series has no episodes available yet.
+                    </div>
+                }
+
+            </div>
+
+            <div class="col-lg-4">
+
+                <h5 class="text-white mb-3">
+                    <i class="fas fa-list me-2 text-warning"></i> Episodes
+                </h5>
+
+                @if (episodes.Any())
+                {
+                    <div class="episode-list">
+                        @foreach (var episode in episodes)
+                        {
+                            <a asp-controller="Series" asp-action="View" asp-route-id="@Model?.Id" asp-route-episodeId="@episode.Id"
+                               class="episode-item @(current != null && episode.Id == current.Id ? "active" : "")">
+                                <span>
+                                    <i class="fas fa-play-circle me-2"></i> @episode.Title
+                                </span>
+                                <span class="episode-views">
+                                    <i class="fas fa-eye me-1"></i> @(episode.ViewCount ?? 0)
+                                </span>
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted fst-italic">No episodes have been added yet.</p>
+                }
+
+                <div class="mt-4">
+                    <img src="@posterUrl" class="img-fluid rounded-3" alt="@Model?.Title poster"
+                         onerror="this.onerror=null;this.src='/images/poster-placeholder.jpg';" />
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>

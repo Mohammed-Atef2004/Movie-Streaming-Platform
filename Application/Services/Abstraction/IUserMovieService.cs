@@ -1,21 +1,14 @@
-﻿using Core.Models;
-
-namespace Application.Services.Abstraction
+﻿namespace Application.Services.Abstraction
 {
     public interface IUserMovieService
     {
-        bool AddToWatchList(string userId, int movieId);
-
-        bool RemoveFromWatchList(string userId, int movieId);
-
-        bool AddToFavorites(string userId, int movieId);
-
-        bool RemoveFromFavorites(string userId, int movieId);
-
-        IEnumerable<UserMovie> GetWatchList(string userId);
-
-        bool IsFavorite(string userId, int movieId);
-        bool IsInWatchList(string userId, int movieId);
-        IEnumerable<UserMovie> GetFavorites(string userId);
+        Task<bool> AddToFavoritesAsync(string userId, int movieId);
+        Task<bool> RemoveFromFavoritesAsync(string userId, int movieId);
+        Task<bool> AddToWatchListAsync(string userId, int movieId);
+        Task<bool> RemoveFromWatchListAsync(string userId, int movieId);
+        Task<IEnumerable<Core.Models.UserMovie>> GetFavoritesAsync(string userId);
+        Task<IEnumerable<Core.Models.UserMovie>> GetWatchListAsync(string userId);
+        Task<bool> IsFavoriteAsync(string userId, int movieId);
+        Task<bool> IsInWatchListAsync(string userId, int movieId);
     }
 }

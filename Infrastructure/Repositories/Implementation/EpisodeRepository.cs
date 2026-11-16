@@ -1,28 +1,37 @@
-﻿using DAL.Models;
-using DAL.Repositories.Abstraction;
+using Core.Models;
+using Core.Repositories;
 using Infrastructure.Presistance.Database;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
-namespace DAL.Repositories.Implementation
+namespace Infrastructure.Repositories.Implementation
 {
     public class EpisodeRepository : GenericRepository<Episode>, IEpisodeRepository
     {
-        private readonly ApplicationDbContext _context;
         public EpisodeRepository(ApplicationDbContext context) : base(context)
         {
-            _context = context;
         }
 
-        public bool Update(Episode episode)
+        public async Task<IEnumerable<Episode>> GetBySeriesAsync(int seriesId, CancellationToken cancellationToken = default)
         {
-            // Fix: Removed double-fetch (same EF tracking conflict as MovieRepository)
-            _context.Episodes.Update(episode);
+            return await _context.Episodes
+                .AsNoTracking()
+                .Where(e => e.SeriesId == seriesId)
+                .OrderBy(e => e.Id)
+                .ToListAsync(cancellationToken);
+        }
 
-            return _context.SaveChanges() > 0;
+        public async Task IncrementViewsAsync(int episodeId, CancellationToken cancellationToken = default)
+        {
+            await _context.Episodes
+                .Where(e => e.Id == episodeId)
+                .ExecuteUpdateAsync(s => s.SetProperty(x => x.ViewCount, x => (x.ViewCount ?? 0) + 1), cancellationToken);
+        }
+
+        public async Task IncrementDownloadsAsync(int episodeId, CancellationToken cancellationToken = default)
+        {
+            await _context.Episodes
+                .Where(e => e.Id == episodeId)
+                .ExecuteUpdateAsync(s => s.SetProperty(x => x.DownloadCount, x => x.DownloadCount + 1), cancellationToken);
         }
     }
 }

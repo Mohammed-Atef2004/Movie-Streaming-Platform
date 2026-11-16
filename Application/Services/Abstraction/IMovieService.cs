@@ -1,20 +1,25 @@
 ﻿using BLL.ViewModels;
-using DAL.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Core.Models;
 
 namespace BLL.Services.Abstraction
 {
     public interface IMovieService
     {
-        (bool,string) CreateMovie(MovieVM movieVM);
-        (bool,string) UpdateMovie(MovieVM movieVM,int Id);
-        (bool, string) DeleteMovie(int id);
-        MovieVM GetMovieById(int id);
-        IEnumerable<MovieVM> GetAllMovies();
-        public IEnumerable<Movie> GetRecentMovies(int count);
+        Task<(bool Success, string Message)> CreateMovieAsync(MovieVM movieVM, string? actor = null);
+        Task<(bool Success, string Message)> UpdateMovieAsync(MovieVM movieVM, int id, string? actor = null);
+        Task<(bool Success, string Message)> DeleteMovieAsync(int id, string? actor = null);
+        Task<IEnumerable<MovieVM>> GetAllMoviesAsync();
+        Task<MovieVM?> GetMovieByIdAsync(int id);
+        Task<IEnumerable<Movie>> GetRecentMoviesAsync(int count);
+        Task<int> GetMoviesCountAsync();
+        Task<(IEnumerable<MovieVM> Movies, int TotalCount)> SearchMoviesAsync(
+            string? searchTerm = null,
+            int? categoryId = null,
+            string? sortBy = null,
+            int page = 1,
+            int pageSize = 12);
+        Task IncrementViewsAsync(int id);
+        Task IncrementDownloadsAsync(int id);
+        Task<bool> IsMovieFreeAsync(int id);
     }
 }

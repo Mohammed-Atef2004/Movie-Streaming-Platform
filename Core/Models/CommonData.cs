@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DAL.Models
+﻿namespace Core.Models
 {
     public abstract class CommonData
     {
@@ -15,12 +9,12 @@ namespace DAL.Models
         public string? CreatedBy { get; set; }
         public string? UpdatedBy { get; set; }
         public string? DeletedBy { get; set; }
+
         public void SoftDelete(string? deletedBy = null)
         {
             IsDeleted = true;
             DeletedAt = DateTime.UtcNow;
             DeletedBy = deletedBy;
         }
-       
     }
 }

@@ -6,13 +6,6 @@
 	var posterUrl = string.IsNullOrEmpty(Model?.ImageUrl)
 			? "/images/poster-placeholder.jpg"
 			: $"/images/{Model.ImageUrl}";
-	var trailerId = "dQw4w9WgXcQ";
-	// if (!string.IsNullOrEmpty(Model?.TrailerUrl))
-	// {
-	// 	var uri = new Uri(Model.TrailerUrl);
-	// 	var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
-	// 	trailerId = query["v"];
-	// }
 }
 
 <style>
@@ -87,21 +80,19 @@
 
 <section class="hero-section hero d-flex align-items-center position-relative">
 	<div class="hero-overlay position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.8));"></div>
-	<div class="video-background position-absolute top-0 start-0 w-100 h-100 overflow-hidden">
-		<iframe
-			src="https://www.youtube.com/embed/TJZVs2uguH0?autoplay=1&mute=1&loop=1&playlist=TJZVs2uguH0&controls=0&showinfo=0&rel=0&iv_load_policy=3"
-			frameborder="0"
-			allow="autoplay; encrypted-media"
-			allowfullscreen
-			class="youtube-video position-absolute"
-		></iframe>
-	</div>
 	<div class="container" data-aos="fade-up">
 		<h1 class="hero-title mb-3">@Model?.Title</h1>
 		<p class="hero-subtitle">@Model?.Category?.Name</p>
-		<div class="rating-badge mt-3">
-			<i class="fas fa-star text-warning"></i>
-			@* <span>@Model?.Rating?.ToString("F1")</span> *@
+		<div class="d-flex flex-wrap gap-2 mt-3">
+			<span class="badge @(Model?.IsFree == true ? "bg-success" : "bg-danger") px-3 py-2 fs-6">
+				@(Model?.IsFree == true ? "FREE" : "PREMIUM")
+			</span>
+			<span class="badge bg-dark border px-3 py-2 fs-6">
+				<i class="fas fa-eye me-1"></i> @(Model?.ViewCount ?? 0) views
+			</span>
+			<span class="badge bg-dark border px-3 py-2 fs-6">
+				<i class="fas fa-film me-1"></i> @(ViewBag.Episodes is IEnumerable<BLL.ViewModels.EpisodeVM> eps ? eps.Count() : 0) episodes
+			</span>
 		</div>
 	</div>
 </section>
@@ -116,23 +107,38 @@
 					<span class="badge bg-secondary me-2">
 						<i class="fas fa-tags me-1"></i> @(Model?.Category?.Name ?? "N/A")
 					</span>
-					@* <span class="badge bg-secondary me-2">
-						<i class="fas fa-calendar-alt me-1"></i> @(Model?.ReleaseDate?.Year ?? 0)
-					</span> *@
+					<span class="badge @(Model?.IsFree == true ? "bg-success" : "bg-danger") me-2">
+						@(Model?.IsFree == true ? "FREE" : "PREMIUM")
+					</span>
 				</div>
 				<h4 class="mb-2">Description</h4>
-				<p class="movie-desc">@(Model?.Description ?? "No description available for this movie.")</p>
-								<div class="mt-5">
-					<h4 class="mb-3">Watch Trailer</h4>
-					<div class="ratio ratio-16x9 shadow rounded-3 overflow-hidden">
-						<iframe
-							src="https://www.youtube.com/embed/@trailerId"
-							title="YouTube video player"
-							frameborder="0"
-							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-							allowfullscreen>
-						</iframe>
-					</div>
+				<p class="movie-desc">@(Model?.Description ?? "No description available for this series.")</p>
+
+				<div class="mt-5">
+					<h4 class="mb-3">Episodes</h4>
+
+					@if (ViewBag.Episodes is IEnumerable<BLL.ViewModels.EpisodeVM> episodes && episodes.Any())
+					{
+						<div class="list-group">
+							@foreach (var episode in episodes)
+							{
+								<a asp-controller="Series" asp-action="View" asp-route-id="@Model.Id" asp-route-episodeId="@episode.Id"
+								   class="list-group-item list-group-item-action bg-transparent text-white d-flex justify-content-between align-items-center">
+									<span>
+										<i class="fas fa-play-circle me-2 text-warning"></i>
+										@episode.Title
+									</span>
+									<span class="badge bg-dark border">
+										<i class="fas fa-eye me-1"></i> @(episode.ViewCount ?? 0)
+									</span>
+								</a>
+							}
+						</div>
+					}
+					else
+					{
+						<p class="text-muted fst-italic">No episodes have been added for this series yet.</p>
+					}
 				</div>
 			</div>
 		</div>
@@ -143,15 +149,33 @@
 					 onerror="this.onerror=null;this.src='/images/poster-placeholder.jpg';" />
 
 				<div class="movie-actions d-flex flex-column gap-3 mt-4">
-						<a href="/Series/View/@(Model.Id)" class="btn btn-watch w-100 py-3">
+						<a asp-controller="Series" asp-action="View" asp-route-id="@Model.Id" class="btn btn-watch w-100 py-3">
 						<i class="fas fa-play me-2"></i> Watch Now
 					</a>
-					<a href="/Series/Download/@(Model.Id)" class="btn btn-download w-100 py-3">
+					<a asp-controller="Series" asp-action="Download" asp-route-id="@Model.Id" class="btn btn-download w-100 py-3">
 						<i class="fas fa-download me-2"></i> Download
 					</a>
-					<a href="#" class="btn btn-bookmark w-100 py-3">
-						<i class="fas fa-bookmark me-2"></i> Bookmark
-					</a>
+
+					@if (User.Identity?.IsAuthenticated == true)
+					{
+						<form asp-controller="Series" asp-action="ToggleFavorite" method="post">
+							@Html.AntiForgeryToken()
+							<input type="hidden" name="seriesId" value="@Model.Id" />
+							<button type="submit" class="btn btn-bookmark w-100 py-3">
+								<i class="fas fa-heart me-2"></i>
+								@(ViewBag.IsFavorite == true ? "Remove from Favorites" : "Add to Favorites")
+							</button>
+						</form>
+
+						<form asp-controller="Series" asp-action="ToggleWatchList" method="post">
+							@Html.AntiForgeryToken()
+							<input type="hidden" name="seriesId" value="@Model.Id" />
+							<button type="submit" class="btn btn-bookmark w-100 py-3">
+								<i class="fas fa-bookmark me-2"></i>
+								@(ViewBag.IsInWatchList == true ? "Remove from Watchlist" : "Add to Watchlist")
+							</button>
+						</form>
+					}
 				</div>
 			</div>
 		</div>

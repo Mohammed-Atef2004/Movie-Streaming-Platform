@@ -1,7 +1,7 @@
-﻿using Application.Services.Abstraction;
+using Application.Services.Abstraction;
 using Core.Models;
 using Core.Repositories;
-using DAL.Repositories.Abstraction;
+using Core.Repositories;
 
 namespace Application.Services.Implementation
 {
@@ -14,10 +14,9 @@ namespace Application.Services.Implementation
             _userSeriesRepository = userSeriesRepository;
         }
 
-        public bool AddToFavorites(string userId, int seriesId)
+        public async Task<bool> AddToFavoritesAsync(string userId, int seriesId)
         {
-            var item = _userSeriesRepository.GetFirstOrDefault(
-                x => x.UserId == userId && x.SeriesId == seriesId);
+            var item = await _userSeriesRepository.GetByKeyAsync(userId, seriesId);
 
             if (item == null)
             {
@@ -28,17 +27,16 @@ namespace Application.Services.Implementation
                     IsFavorite = true
                 };
 
-                return _userSeriesRepository.Add(item);
+                return await _userSeriesRepository.AddAsync(item);
             }
 
             item.IsFavorite = true;
-            return _userSeriesRepository.Update(item);
+            return await _userSeriesRepository.UpdateAsync(item);
         }
 
-        public bool RemoveFromFavorites(string userId, int seriesId)
+        public async Task<bool> RemoveFromFavoritesAsync(string userId, int seriesId)
         {
-            var item = _userSeriesRepository.GetFirstOrDefault(
-                x => x.UserId == userId && x.SeriesId == seriesId);
+            var item = await _userSeriesRepository.GetByKeyAsync(userId, seriesId);
 
             if (item == null)
                 return false;
@@ -46,15 +44,14 @@ namespace Application.Services.Implementation
             item.IsFavorite = false;
 
             if (!item.IsInWatchList)
-                return _userSeriesRepository.Remove(item);
+                return await _userSeriesRepository.RemoveAsync(item);
 
-            return _userSeriesRepository.Update(item);
+            return await _userSeriesRepository.UpdateAsync(item);
         }
 
-        public bool AddToWatchList(string userId, int seriesId)
+        public async Task<bool> AddToWatchListAsync(string userId, int seriesId)
         {
-            var item = _userSeriesRepository.GetFirstOrDefault(
-                x => x.UserId == userId && x.SeriesId == seriesId);
+            var item = await _userSeriesRepository.GetByKeyAsync(userId, seriesId);
 
             if (item == null)
             {
@@ -65,17 +62,16 @@ namespace Application.Services.Implementation
                     IsInWatchList = true
                 };
 
-                return _userSeriesRepository.Add(item);
+                return await _userSeriesRepository.AddAsync(item);
             }
 
             item.IsInWatchList = true;
-            return _userSeriesRepository.Update(item);
+            return await _userSeriesRepository.UpdateAsync(item);
         }
 
-        public bool RemoveFromWatchList(string userId, int seriesId)
+        public async Task<bool> RemoveFromWatchListAsync(string userId, int seriesId)
         {
-            var item = _userSeriesRepository.GetFirstOrDefault(
-                x => x.UserId == userId && x.SeriesId == seriesId);
+            var item = await _userSeriesRepository.GetByKeyAsync(userId, seriesId);
 
             if (item == null)
                 return false;
@@ -83,23 +79,31 @@ namespace Application.Services.Implementation
             item.IsInWatchList = false;
 
             if (!item.IsFavorite)
-                return _userSeriesRepository.Remove(item);
+                return await _userSeriesRepository.RemoveAsync(item);
 
-            return _userSeriesRepository.Update(item);
+            return await _userSeriesRepository.UpdateAsync(item);
         }
 
-        public IEnumerable<UserSeries> GetFavorites(string userId)
+        public async Task<IEnumerable<UserSeries>> GetFavoritesAsync(string userId)
         {
-            return _userSeriesRepository.GetAll(
-                x => x.UserId == userId && x.IsFavorite,
-                "Series");
+            return await _userSeriesRepository.GetFavoritesAsync(userId);
         }
 
-        public IEnumerable<UserSeries> GetWatchList(string userId)
+        public async Task<IEnumerable<UserSeries>> GetWatchListAsync(string userId)
         {
-            return _userSeriesRepository.GetAll(
-                x => x.UserId == userId && x.IsInWatchList,
-                "Series");
+            return await _userSeriesRepository.GetWatchListAsync(userId);
+        }
+
+        public async Task<bool> IsFavoriteAsync(string userId, int seriesId)
+        {
+            return await _userSeriesRepository.ExistsAsync(
+                x => x.UserId == userId && x.SeriesId == seriesId && x.IsFavorite);
+        }
+
+        public async Task<bool> IsInWatchListAsync(string userId, int seriesId)
+        {
+            return await _userSeriesRepository.ExistsAsync(
+                x => x.UserId == userId && x.SeriesId == seriesId && x.IsInWatchList);
         }
     }
 }

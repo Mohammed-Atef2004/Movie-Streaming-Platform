@@ -1,28 +1,75 @@
-﻿using DAL.Models;
-using DAL.Repositories.Abstraction;
+using Core.Models;
+using Core.Repositories;
 using Infrastructure.Presistance.Database;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
-namespace DAL.Repositories.Implementation
+namespace Infrastructure.Repositories.Implementation
 {
     public class MovieRepository : GenericRepository<Movie>, IMovieRepository
     {
-        private readonly ApplicationDbContext _context;
         public MovieRepository(ApplicationDbContext context) : base(context)
         {
-            _context = context;
         }
 
-        public bool Update(Movie movie)
+        public async Task<(IEnumerable<Movie> Items, int TotalCount)> SearchAsync(
+            string? searchTerm = null,
+            int? categoryId = null,
+            string? sortBy = null,
+            int page = 1,
+            int pageSize = 12,
+            CancellationToken cancellationToken = default)
         {
-            _context.Movies.Attach(movie);
-            _context.Entry(movie).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            page = Math.Max(1, page);
+            pageSize = Math.Clamp(pageSize, 1, 100);
 
-            return _context.SaveChanges() > 0;
+            var query = _context.Movies.AsNoTracking().AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+                query = query.Where(m => m.Title!.ToLower().Contains(searchTerm.Trim().ToLower()));
+
+            if (categoryId.HasValue)
+                query = query.Where(m => m.CategoryId == categoryId.Value);
+
+            query = sortBy?.ToLowerInvariant() switch
+            {
+                "views" => query.OrderByDescending(m => m.Views),
+                "downloads" => query.OrderByDescending(m => m.Downloads),
+                "rating" => query.OrderByDescending(m => m.Rating),
+                "newest" => query.OrderByDescending(m => m.CreatedAt),
+                _ => query.OrderByDescending(m => m.CreatedAt),
+            };
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var items = await query
+                .Include(m => m.Category)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken);
+
+            return (items, totalCount);
+        }
+
+        public async Task IncrementViewsAsync(int movieId, CancellationToken cancellationToken = default)
+        {
+            await _context.Movies
+                .Where(m => m.Id == movieId)
+                .ExecuteUpdateAsync(s => s.SetProperty(m => m.Views, m => m.Views + 1), cancellationToken);
+        }
+
+        public async Task IncrementDownloadsAsync(int movieId, CancellationToken cancellationToken = default)
+        {
+            await _context.Movies
+                .Where(m => m.Id == movieId)
+                .ExecuteUpdateAsync(s => s.SetProperty(m => m.Downloads, m => m.Downloads + 1), cancellationToken);
+        }
+
+        public async Task UpdateRatingAsync(int movieId, double rating, CancellationToken cancellationToken = default)
+        {
+            await _context.Movies
+                .Where(m => m.Id == movieId)
+                .ExecuteUpdateAsync(s => s.SetProperty(m => m.Rating, rating), cancellationToken);
         }
     }
 }

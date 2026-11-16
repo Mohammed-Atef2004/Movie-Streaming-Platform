@@ -1,14 +1,9 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BLL.Services.Abstraction;
 using BLL.ViewModels;
-using DAL.Models;
+using Core.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace BLL.Services.Implementation
 {
@@ -17,46 +12,67 @@ namespace BLL.Services.Implementation
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IMapper _mapper;
+        private readonly ILogger<AccountService> _logger;
 
         public AccountService(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            IMapper mapper)
+            IMapper mapper,
+            ILogger<AccountService> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _mapper = mapper;
+            _logger = logger;
         }
 
-        public async Task<bool> Login(LoginUserVM loginUserVM)
+        public async Task<bool> LoginAsync(LoginUserVM loginUserVM)
         {
-            var user=_mapper.Map<ApplicationUser>(loginUserVM);
-            var result=await _signInManager.PasswordSignInAsync(user.UserName,loginUserVM.Password,loginUserVM.RememberMe,false);
+            var result = await _signInManager.PasswordSignInAsync(
+                loginUserVM.UserName,
+                loginUserVM.Password,
+                loginUserVM.RememberMe,
+                lockoutOnFailure: false);
+
             return result.Succeeded;
-
         }
 
-        public async Task<ApplicationUser> Register(RegisterUserVM registerUserVM)
+        public async Task<(ApplicationUser? User, string? Error)> RegisterAsync(RegisterUserVM registerUserVM)
         {
-            if (registerUserVM.Image != null)
+            try
             {
-                var url = Helpers.Load.UploadFile("Images", registerUserVM.Image);
-                registerUserVM.ImageURL = url;
+                if (registerUserVM.Image != null)
+                {
+                    registerUserVM.ImageURL = BLL.Helpers.Load.UploadImage(registerUserVM.Image);
+                }
+
+                var user = _mapper.Map<ApplicationUser>(registerUserVM);
+                user.EmailConfirmed = true;
+
+                var result = await _userManager.CreateAsync(user, registerUserVM.Password);
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(user, "User");
+                    return (user, null);
+                }
+
+                // Bug fix: Identity errors used to be swallowed silently.
+                return (null, string.Join(" ", result.Errors.Select(e => e.Description)));
             }
-            var user=_mapper.Map<ApplicationUser>(registerUserVM);
-            user.EmailConfirmed = true;
-            var result= await _userManager.CreateAsync(user,registerUserVM.Password);
-            if(result.Succeeded)
+            catch (InvalidDataException ex)
             {
-                await _userManager.AddToRoleAsync(user, "User");
-                return user;
+                return (null, ex.Message);
             }
-            return null;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to register user {UserName}", registerUserVM.UserName);
+                return (null, "An unexpected error occurred while creating your account. Please try again.");
+            }
         }
-        public async Task<bool> Logout(LoginUserVM loginUserVM)
+
+        public async Task LogoutAsync()
         {
-           await _signInManager.SignOutAsync();
-            return true;
+            await _signInManager.SignOutAsync();
         }
     }
 }

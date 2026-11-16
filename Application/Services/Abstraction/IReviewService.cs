@@ -1,21 +1,11 @@
-﻿using Core.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Application.Services.Abstraction
+﻿namespace Application.Services.Abstraction
 {
     public interface IReviewService
     {
-        (bool, string) CreateReview(string userId, int movieId, string comment);
-        (bool, string) UpdateReview(string userId, int movieId, string comment);
-        (bool,string) DeleteReview(string userId, int movieId);
-         IEnumerable<Review> GetUserReviews(string userId);
-        IEnumerable<Review> GetFilmReviews(int movieId);
-
-
-
+        Task<(bool Success, string Message)> CreateReviewAsync(string userId, int movieId, string comment, int rating = 5);
+        Task<(bool Success, string Message)> DeleteReviewAsync(string userId, int movieId);
+        Task<(bool Success, string Message)> UpdateReviewAsync(string userId, int movieId, string comment, int rating = 5);
+        Task<IEnumerable<Core.Models.Review>> GetUserReviewsAsync(string userId);
+        Task<IEnumerable<Core.Models.Review>> GetFilmReviewsAsync(int movieId);
     }
 }

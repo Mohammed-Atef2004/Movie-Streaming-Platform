@@ -1,17 +1,12 @@
-﻿using BLL.ViewModels;
-using DAL.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using BLL.ViewModels;
+using Core.Models;
 
 namespace BLL.Services.Abstraction
 {
     public interface IAccountService
     {
-        Task<ApplicationUser> Register(RegisterUserVM registerUserVM);
-        Task<bool> Login(LoginUserVM loginUserVM);
-        Task<bool> Logout(LoginUserVM loginUserVM);
+        Task<(ApplicationUser? User, string? Error)> RegisterAsync(RegisterUserVM registerUserVM);
+        Task<bool> LoginAsync(LoginUserVM loginUserVM);
+        Task LogoutAsync();
     }
 }

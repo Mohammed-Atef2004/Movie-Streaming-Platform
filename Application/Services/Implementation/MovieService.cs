@@ -1,13 +1,9 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BLL.Services.Abstraction;
 using BLL.ViewModels;
-using DAL.Models;
-using DAL.Repositories.Abstraction;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Core.Models;
+using Core.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace BLL.Services.Implementation
 {
@@ -15,93 +11,193 @@ namespace BLL.Services.Implementation
     {
         private readonly IMapper _mapper;
         private readonly IMovieRepository _movieRepository;
-        public MovieService(IMapper mapper, IMovieRepository movieRepository)
+        private readonly ILogger<MovieService> _logger;
+
+        public MovieService(IMapper mapper, IMovieRepository movieRepository, ILogger<MovieService> logger)
         {
             _mapper = mapper;
             _movieRepository = movieRepository;
+            _logger = logger;
         }
 
-        public (bool, string) CreateMovie(MovieVM movieVM)
+        public async Task<(bool Success, string Message)> CreateMovieAsync(MovieVM movieVM, string? actor = null)
         {
-            if (movieVM.Image!=null)
+            try
             {
-                var result = Helpers.Load.UploadFile("Images", movieVM.Image);
-                movieVM.ImageUrl = result;
-            }
+                if (movieVM.Image != null)
+                {
+                    movieVM.ImageUrl = BLL.Helpers.Load.UploadImage(movieVM.Image);
+                }
 
-            var movie = _mapper.Map<Movie>(movieVM);
-            if (_movieRepository.Add(movie))
-            {
-                return (true, "Movie Created Successfully");
+                var movie = _mapper.Map<Movie>(movieVM);
+                movie.Create(
+                    movieVM.Title,
+                    movieVM.Description,
+                    movieVM.ImageUrl,
+                    movieVM.IsFree,
+                    movieVM.CategoryId,
+                    movieVM.TrailerUrl,
+                    movieVM.MovieUrl,
+                    movieVM.Rating,
+                    movieVM.Year,
+                    creator: actor);
+
+                if (await _movieRepository.AddAsync(movie))
+                {
+                    return (true, "Movie Created Successfully");
+                }
+                return (false, "Failed to Create Movie");
             }
-            return (false, "Failed to Create Movie");
+            catch (InvalidDataException ex)
+            {
+                return (false, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to create movie {Title}", movieVM.Title);
+                return (false, "An unexpected error occurred while creating the movie. Please check the category exists and try again.");
+            }
         }
 
-        public (bool, string) DeleteMovie(int id)
+        public async Task<(bool Success, string Message)> DeleteMovieAsync(int id, string? actor = null)
         {
-            var movie = _movieRepository.GetFirstOrDefault(x => x.Id == id, includeword: "Category");
-            if (movie == null)
+            try
             {
-                return (false, "Movie Not Found");
+                var movie = await _movieRepository.GetFirstOrDefaultAsync(x => x.Id == id);
+                if (movie == null)
+                {
+                    return (false, "Movie Not Found");
+                }
+
+                // Bug fix: remove the DB row first (soft delete) and only then the image file.
+                if (await _movieRepository.RemoveAsync(movie))
+                {
+                    if (!string.IsNullOrEmpty(movie.ImageUrl))
+                    {
+                        BLL.Helpers.Load.RemoveFile("Images", movie.ImageUrl);
+                    }
+                    return (true, "Movie Deleted Successfully");
+                }
+                return (false, "Failed to Delete Movie");
             }
-            if (!string.IsNullOrEmpty(movie.ImageUrl))
+            catch (Exception ex)
             {
-                Helpers.Load.RemoveFile("Images", movie.ImageUrl);
+                _logger.LogError(ex, "Failed to delete movie {MovieId}", id);
+                return (false, "An unexpected error occurred while deleting the movie.");
             }
-            if (_movieRepository.Remove(movie))
-            {
-                return (true, "Movie Deleted Successfully");
-            }
-            return (false, "Failed to Delete Movie");
         }
 
-        public IEnumerable<MovieVM> GetAllMovies()
+        public async Task<IEnumerable<MovieVM>> GetAllMoviesAsync()
         {
-            var movies = _movieRepository.GetAll(includeword: "Category");
+            var movies = await _movieRepository.GetAllAsync(includeWords: "Category", orderBy: q => q.OrderByDescending(m => m.CreatedAt));
             return _mapper.Map<IEnumerable<MovieVM>>(movies);
         }
 
-        public MovieVM GetMovieById(int id)
+        public async Task<MovieVM?> GetMovieByIdAsync(int id)
         {
-            var movie = _movieRepository.GetFirstOrDefault(x => x.Id == id, includeword: "Category");
-            return _mapper.Map<MovieVM>(movie);
+            var movie = await _movieRepository.GetFirstOrDefaultAsync(x => x.Id == id, includeWords: "Category");
+            return movie == null ? null : _mapper.Map<MovieVM>(movie);
         }
 
-        public IEnumerable<Movie> GetRecentMovies(int count)
+        public async Task<IEnumerable<Movie>> GetRecentMoviesAsync(int count)
         {
-            return _movieRepository.GetAll(includeword: "Category")
-                                   .OrderByDescending(m => m.CreatedAt)
-                                   .Take(count)
-                                   .ToList();
+            return await _movieRepository.GetAllAsync(
+                orderBy: q => q.OrderByDescending(m => m.CreatedAt),
+                includeWords: "Category")
+                .ContinueWith(t => t.Result.Take(count).ToList());
         }
 
-        public (bool, string) UpdateMovie(MovieVM movieVM, int Id)
+        public async Task<int> GetMoviesCountAsync()
         {
-            var movie = _movieRepository.GetFirstOrDefault(x => x.Id == Id);
+            return await _movieRepository.CountAsync();
+        }
 
-            if (movie == null)
-                return (false, "Movie Not Found");
+        public async Task<(IEnumerable<MovieVM> Movies, int TotalCount)> SearchMoviesAsync(
+            string? searchTerm = null,
+            int? categoryId = null,
+            string? sortBy = null,
+            int page = 1,
+            int pageSize = 12)
+        {
+            var (items, totalCount) = await _movieRepository.SearchAsync(searchTerm, categoryId, sortBy, page, pageSize);
+            return (_mapper.Map<IEnumerable<MovieVM>>(items), totalCount);
+        }
 
-            if (movieVM.Image!=null)
+        public async Task IncrementViewsAsync(int id)
+        {
+            await _movieRepository.IncrementViewsAsync(id);
+        }
+
+        public async Task IncrementDownloadsAsync(int id)
+        {
+            await _movieRepository.IncrementDownloadsAsync(id);
+        }
+
+        public async Task<bool> IsMovieFreeAsync(int id)
+        {
+            var movie = await _movieRepository.GetFirstOrDefaultAsync(x => x.Id == id);
+            return movie?.IsFree ?? false;
+        }
+
+        public async Task<(bool Success, string Message)> UpdateMovieAsync(MovieVM movieVM, int id, string? actor = null)
+        {
+            try
             {
-                if (!string.IsNullOrEmpty(movie.ImageUrl))
-                    Helpers.Load.RemoveFile("Images", movie.ImageUrl);
+                var movie = await _movieRepository.GetFirstOrDefaultAsync(x => x.Id == id);
+                if (movie == null)
+                {
+                    return (false, "Movie Not Found");
+                }
 
-                movie.ImageUrl = Helpers.Load.UploadFile("Images", movieVM.Image);
+                if (movieVM.Image != null)
+                {
+                    var oldImage = movie.ImageUrl;
+                    var newImage = BLL.Helpers.Load.UploadImage(movieVM.Image);
+                    movie.ImageUrl = newImage;
+
+                    if (await _movieRepository.UpdateAsync(movie) && !string.IsNullOrEmpty(oldImage))
+                    {
+                        BLL.Helpers.Load.RemoveFile("Images", oldImage);
+                    }
+                }
+                else
+                {
+                    // Preserve the existing image when the form doesn't carry one.
+                    movieVM.ImageUrl = movie.ImageUrl;
+                }
+
+                // Bug fix: the old implementation never updated TrailerUrl, MovieUrl,
+                // Rating or Year. Views/Downloads are preserved (they are incremented
+                // by watch/download actions, never edited from the admin form).
+                movie.Update(
+                    movieVM.Title,
+                    movieVM.Description,
+                    movie.ImageUrl,
+                    movieVM.IsFree,
+                    movieVM.CategoryId,
+                    movieVM.TrailerUrl,
+                    movieVM.MovieUrl,
+                    movieVM.Rating,
+                    movieVM.Year,
+                    views: movie.Views,
+                    downloads: movie.Downloads,
+                    updater: actor);
+
+                var result = await _movieRepository.UpdateAsync(movie);
+
+                return result
+                    ? (true, "Movie Updated Successfully")
+                    : (false, "Failed to Update Movie");
             }
-
-            movie.Title = movieVM.Title;
-            movie.Description = movieVM.Description;
-            movie.Views = movieVM.Views;
-            movie.Downloads = movieVM.Downloads;
-            movie.CategoryId = movieVM.CategoryId;
-            movie.IsFree = movieVM.IsFree;
-
-            var result = _movieRepository.Update(movie);
-
-            return result
-                ? (true, "Movie Updated Successfully")
-                : (false, "Failed to Update Movie");
+            catch (InvalidDataException ex)
+            {
+                return (false, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to update movie {MovieId}", id);
+                return (false, "An unexpected error occurred while updating the movie.");
+            }
         }
     }
 }

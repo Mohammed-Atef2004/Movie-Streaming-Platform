@@ -1,36 +1,66 @@
-﻿using DAL.Models;
-using DAL.Repositories.Abstraction;
+using Core.Models;
+using Core.Repositories;
 using Infrastructure.Presistance.Database;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
-namespace DAL.Repositories.Implementation
+namespace Infrastructure.Repositories.Implementation
 {
-    public class SeriesRepository:GenericRepository<Series>, ISeriesRepository
+    public class SeriesRepository : GenericRepository<Series>, ISeriesRepository
     {
-        private readonly ApplicationDbContext _context;
-        public SeriesRepository(ApplicationDbContext context):base(context)
+        public SeriesRepository(ApplicationDbContext context) : base(context)
         {
-            _context= context;
         }
-        public bool Update(Series series)
-        { 
-            var SerieswFromDb = _context.Series.FirstOrDefault(u => u.Id == series.Id);
-            if(SerieswFromDb != null)
-            {
-                SerieswFromDb.Update(series.Title,series.ViewCount,series.DownloadCount,series.CategoryId, series.Description,series.IsFree, series.ImageUrl);
-                _context.Series.Update(SerieswFromDb);
 
-                if (_context.SaveChanges() > 0)
-                {
-                    return true;
-                }
-                else return false;
-            }
-            return false;
+        public async Task<(IEnumerable<Series> Items, int TotalCount)> SearchAsync(
+            string? searchTerm = null,
+            int? categoryId = null,
+            string? sortBy = null,
+            int page = 1,
+            int pageSize = 12,
+            CancellationToken cancellationToken = default)
+        {
+            page = Math.Max(1, page);
+            pageSize = Math.Clamp(pageSize, 1, 100);
+
+            var query = _context.Series.AsNoTracking().AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+                query = query.Where(s => s.Title.ToLower().Contains(searchTerm.Trim().ToLower()));
+
+            if (categoryId.HasValue)
+                query = query.Where(s => s.CategoryId == categoryId.Value);
+
+            query = sortBy?.ToLowerInvariant() switch
+            {
+                "views" => query.OrderByDescending(s => s.ViewCount),
+                "downloads" => query.OrderByDescending(s => s.DownloadCount),
+                "newest" => query.OrderByDescending(s => s.CreatedAt),
+                _ => query.OrderByDescending(s => s.CreatedAt),
+            };
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var items = await query
+                .Include(s => s.Category)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken);
+
+            return (items, totalCount);
+        }
+
+        public async Task IncrementViewsAsync(int seriesId, CancellationToken cancellationToken = default)
+        {
+            await _context.Series
+                .Where(s => s.Id == seriesId)
+                .ExecuteUpdateAsync(s => s.SetProperty(x => x.ViewCount, x => x.ViewCount + 1), cancellationToken);
+        }
+
+        public async Task IncrementDownloadsAsync(int seriesId, CancellationToken cancellationToken = default)
+        {
+            await _context.Series
+                .Where(s => s.Id == seriesId)
+                .ExecuteUpdateAsync(s => s.SetProperty(x => x.DownloadCount, x => x.DownloadCount + 1), cancellationToken);
         }
     }
 }

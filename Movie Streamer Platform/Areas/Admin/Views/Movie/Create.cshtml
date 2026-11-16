@@ -1,4 +1,4 @@
-﻿@using BLL.ViewModels
+@using BLL.ViewModels
 @model MovieVM
 @{
     ViewBag.PageTitle = "Movie Management";
@@ -75,9 +75,9 @@
                         <span asp-validation-for="Description" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
-                        <label asp-for="TrailerURL" class="form-label fw-bold"></label>
-                        <textarea asp-for="TrailerURL" class="form-control" rows="3" placeholder="Enter movie description..."></textarea>
-                        <span asp-validation-for="TrailerURL" class="text-danger"></span>
+                        <label asp-for="TrailerUrl" class="form-label fw-bold"></label>
+                        <textarea asp-for="TrailerUrl" class="form-control" rows="3" placeholder="Enter movie description..."></textarea>
+                        <span asp-validation-for="TrailerUrl" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
                         <label asp-for="MovieUrl" class="form-label fw-bold"></label>
@@ -141,8 +141,8 @@
                     </div>
 
                     <div class="d-flex justify-content-between">
-                        <a asp-action="Index" class="btn btn-outline-secondary">⬅ Back to List</a>
-                        <input type="submit" value="🎬 Create Movie" class="btn btn-danger" />
+                        <a asp-action="Index" class="btn btn-outline-secondary">? Back to List</a>
+                        <input type="submit" value="?? Create Movie" class="btn btn-danger" />
                     </div>
                 </form>
             </div>

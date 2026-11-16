@@ -1,12 +1,13 @@
-﻿using BLL.Services.Abstraction;
+using BLL.Services.Abstraction;
 using BLL.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Movie_Streamer_Platform.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [System.Web.Mvc.Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
 
     public class MovieController : Controller
     {
@@ -18,88 +19,74 @@ namespace Movie_Streamer_Platform.Areas.Admin.Controllers
             _categoryService = categoryService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var movies = _movieService.GetAllMovies();
+            var movies = await _movieService.GetAllMoviesAsync();
             return View(movies);
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            MovieVM movieVM = new MovieVM();
-            movieVM.CategoryList = _categoryService.GetAllCategories().Select(i => new SelectListItem
-            {
-                Text = i.Name,
-                Value = i.Id.ToString()
-            });
+            MovieVM movieVM = new();
+            movieVM.CategoryList = await BuildCategoryListAsync();
             return View(movieVM);
         }
 
         [HttpPost]
-        public IActionResult Create(MovieVM movieVM, IFormFile file)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(MovieVM movieVM, IFormFile file)
         {
             if (ModelState.IsValid)
             {
                 movieVM.Image = file;
-                var (isSuccess, message) = _movieService.CreateMovie(movieVM);
+                var (isSuccess, message) = await _movieService.CreateMovieAsync(movieVM, actor: User.Identity?.Name);
                 if (isSuccess)
                 {
                     return RedirectToAction("Index");
                 }
                 else
                 {
-                    movieVM.CategoryList = _categoryService.GetAllCategories().Select(i => new SelectListItem
-                    {
-                        Text = i.Name,
-                        Value = i.Id.ToString()
-                    });
+                    movieVM.CategoryList = await BuildCategoryListAsync(movieVM.CategoryId);
                     ModelState.AddModelError("", message);
                     return View(movieVM);
                 }
             }
-            movieVM.CategoryList = _categoryService.GetAllCategories().Select(i => new SelectListItem
-            {
-                Text = i.Name,
-                Value = i.Id.ToString()
-            });
+            movieVM.CategoryList = await BuildCategoryListAsync(movieVM.CategoryId);
             return View(movieVM);
         }
 
-        public IActionResult Delete(int Id)
+        // Bug fix: deletion used to be a plain GET link - one accidental URL visit
+        // (or a prefetching browser) could destroy content. Now it is a POST with
+        // an anti-forgery token and a confirmation dialog in the view.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
         {
-            _movieService.DeleteMovie(Id);
+            var (_, message) = await _movieService.DeleteMovieAsync(id, actor: User.Identity?.Name);
+            TempData["Message"] = message;
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public IActionResult Edit(int Id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var movie = _movieService.GetMovieById(Id);
+            var movie = await _movieService.GetMovieByIdAsync(id);
             if (movie != null)
             {
-                movie.CategoryList = _categoryService.GetAllCategories().Select(i => new SelectListItem
-                {
-                    Text = i.Name,
-                    Value = i.Id.ToString(),
-                });
+                movie.CategoryList = await BuildCategoryListAsync(movie.CategoryId);
                 return View(movie);
             }
             return NotFound();
         }
 
         [HttpPost]
-        public IActionResult Edit(MovieVM movieVM, IFormFile file)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(MovieVM movieVM, IFormFile file)
         {
-            // Bug #2 Fix: Return early if ModelState is invalid instead of continuing to UpdateMovie
             if (!ModelState.IsValid)
             {
-                movieVM.CategoryList = _categoryService.GetAllCategories().Select(i => new SelectListItem
-                {
-                    Text = i.Name,
-                    Value = i.Id.ToString(),
-                    Selected = i.Id == movieVM.CategoryId
-                });
+                movieVM.CategoryList = await BuildCategoryListAsync(movieVM.CategoryId);
                 return View(movieVM);
             }
 
@@ -107,32 +94,29 @@ namespace Movie_Streamer_Platform.Areas.Admin.Controllers
             {
                 movieVM.Image = file;
             }
-            else
-            {
-                // Bug Fix: ImageUrl doesn't get posted from the form if there's no hidden input in the View
-                // So we fetch the existing ImageUrl from DB to preserve it
-                var existing = _movieService.GetMovieById(movieVM.Id);
-                if (existing != null)
-                {
-                    movieVM.ImageUrl = existing.ImageUrl;
-                }
-            }
 
-            var (isSuccess, message) = _movieService.UpdateMovie(movieVM, movieVM.Id);
+            var (isSuccess, message) = await _movieService.UpdateMovieAsync(movieVM, movieVM.Id, actor: User.Identity?.Name);
             if (isSuccess)
             {
+                TempData["Message"] = message;
                 return RedirectToAction("Index");
             }
 
-            ViewBag.Error = message;
-            movieVM.CategoryList = _categoryService.GetAllCategories().Select(i => new SelectListItem
+            ModelState.AddModelError("", message);
+            movieVM.CategoryList = await BuildCategoryListAsync(movieVM.CategoryId);
+
+            return View(movieVM);
+        }
+
+        private async Task<IEnumerable<SelectListItem>> BuildCategoryListAsync(int? selectedId = null)
+        {
+            var categories = await _categoryService.GetAllCategoriesAsync();
+            return categories.Select(i => new SelectListItem
             {
                 Text = i.Name,
                 Value = i.Id.ToString(),
-                Selected = i.Id == movieVM.CategoryId
+                Selected = selectedId.HasValue && i.Id == selectedId.Value
             });
-
-            return View(movieVM);
         }
     }
 }

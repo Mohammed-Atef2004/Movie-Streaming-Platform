@@ -1,14 +1,10 @@
-﻿using AutoMapper;
 using BLL.Services.Abstraction;
-using BLL.Services.Implementation;
 using BLL.ViewModels;
-using DAL.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace Series_Streamer_Platform.Areas.Admin.Controllers
+namespace Movie_Streamer_Platform.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Authorize(Roles = "Admin")]
@@ -24,88 +20,71 @@ namespace Series_Streamer_Platform.Areas.Admin.Controllers
             _categoryService = categoryService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var series = _seriesService.GetAllSeries();
+            var series = await _seriesService.GetAllSeriesAsync();
             return View(series);
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            SeriesVM seriesVM = new SeriesVM();
-            seriesVM.CategoryList = _categoryService.GetAllCategories().Select(i => new SelectListItem
-            {
-                Text = i.Name,
-                Value = i.Id.ToString()
-            });
+            SeriesVM seriesVM = new();
+            seriesVM.CategoryList = await BuildCategoryListAsync();
             return View(seriesVM);
         }
 
         [HttpPost]
-        public IActionResult Create(SeriesVM seriesVM, IFormFile file)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(SeriesVM seriesVM, IFormFile file)
         {
             if (ModelState.IsValid)
             {
                 seriesVM.Image = file;
-                var (isSuccess, message) = _seriesService.CreateSeries(seriesVM);
+                var (isSuccess, message) = await _seriesService.CreateSeriesAsync(seriesVM, actor: User.Identity?.Name);
                 if (isSuccess)
                 {
                     return RedirectToAction("Index");
                 }
                 else
                 {
-                    seriesVM.CategoryList = _categoryService.GetAllCategories().Select(i => new SelectListItem
-                    {
-                        Text = i.Name,
-                        Value = i.Id.ToString()
-                    });
+                    seriesVM.CategoryList = await BuildCategoryListAsync(seriesVM.CategoryId);
                     ModelState.AddModelError("", message);
                     return View(seriesVM);
                 }
             }
-            seriesVM.CategoryList = _categoryService.GetAllCategories().Select(i => new SelectListItem
-            {
-                Text = i.Name,
-                Value = i.Id.ToString()
-            });
+            seriesVM.CategoryList = await BuildCategoryListAsync(seriesVM.CategoryId);
             return View(seriesVM);
         }
 
-        public IActionResult Delete(int Id)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
         {
-            _seriesService.DeleteSeries(Id);
+            var (_, message) = await _seriesService.DeleteSeriesAsync(id, actor: User.Identity?.Name);
+            TempData["Message"] = message;
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public IActionResult Edit(int Id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var series = _seriesService.GetSeriesById(Id);
+            var series = await _seriesService.GetSeriesByIdAsync(id);
             if (series != null)
             {
-                series.CategoryList = _categoryService.GetAllCategories().Select(i => new SelectListItem
-                {
-                    Text = i.Name,
-                    Value = i.Id.ToString()
-                });
+                series.CategoryList = await BuildCategoryListAsync(series.CategoryId);
                 return View(series);
             }
             return NotFound();
         }
 
         [HttpPost]
-        public IActionResult Edit(SeriesVM seriesVM, IFormFile file)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(SeriesVM seriesVM, IFormFile file)
         {
-            // Bug #2 Fix: Return early if ModelState is invalid instead of continuing to UpdateSeries
             if (!ModelState.IsValid)
             {
-                seriesVM.CategoryList = _categoryService.GetAllCategories().Select(i => new SelectListItem
-                {
-                    Text = i.Name,
-                    Value = i.Id.ToString(),
-                    Selected = i.Id == seriesVM.CategoryId
-                });
+                seriesVM.CategoryList = await BuildCategoryListAsync(seriesVM.CategoryId);
                 return View(seriesVM);
             }
 
@@ -113,32 +92,29 @@ namespace Series_Streamer_Platform.Areas.Admin.Controllers
             {
                 seriesVM.Image = file;
             }
-            else
-            {
-                // Bug Fix: ImageUrl doesn't get posted from the form if there's no hidden input in the View
-                // So we fetch the existing ImageUrl from DB to preserve it
-                var existing = _seriesService.GetSeriesById(seriesVM.Id);
-                if (existing != null)
-                {
-                    seriesVM.ImageUrl = existing.ImageUrl;
-                }
-            }
 
-            var (isSuccess, message) = _seriesService.UpdateSeries(seriesVM, seriesVM.Id);
+            var (isSuccess, message) = await _seriesService.UpdateSeriesAsync(seriesVM, seriesVM.Id, actor: User.Identity?.Name);
             if (isSuccess)
             {
+                TempData["Message"] = message;
                 return RedirectToAction("Index");
             }
 
-            ViewBag.Error = message;
-            seriesVM.CategoryList = _categoryService.GetAllCategories().Select(i => new SelectListItem
+            ModelState.AddModelError("", message);
+            seriesVM.CategoryList = await BuildCategoryListAsync(seriesVM.CategoryId);
+
+            return View(seriesVM);
+        }
+
+        private async Task<IEnumerable<SelectListItem>> BuildCategoryListAsync(int? selectedId = null)
+        {
+            var categories = await _categoryService.GetAllCategoriesAsync();
+            return categories.Select(i => new SelectListItem
             {
                 Text = i.Name,
                 Value = i.Id.ToString(),
-                Selected = i.Id == seriesVM.CategoryId
+                Selected = selectedId.HasValue && i.Id == selectedId.Value
             });
-
-            return View(seriesVM);
         }
     }
 }

@@ -1,12 +1,6 @@
-﻿using Core.Models;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DAL.Models
+namespace Core.Models
 {
     public class Movie : CommonData
     {
@@ -17,32 +11,33 @@ namespace DAL.Models
         public int Views { get; set; }
         public int Downloads { get; set; }
         public bool IsFree { get; set; } = true;
-        [ForeignKey("Category")]
+        [ForeignKey(nameof(Category))]
         public int CategoryId { get; set; }
-        public Category Category { get; set; }
-        [ForeignKey("ApplicationUser")]
-        public string TrailerUrl { get; set; }
-        public string MovieUrl { get; set; }
+        public Category? Category { get; set; }
+
+        // Bug fix: removed the bogus [ForeignKey("ApplicationUser")] that was here -
+        // these are plain URL strings, not foreign keys.
+        public string? TrailerUrl { get; set; }
+        public string? MovieUrl { get; set; }
         public double Rating { get; set; } = 5;
-        public int year { get; set; }
+        public int Year { get; set; }
+
         public virtual ICollection<UserMovie> UserMovies { get; set; }
             = new HashSet<UserMovie>();
         public virtual ICollection<Review> UserReviews { get; set; }
             = new HashSet<Review>();
-       
-
 
         public void Create(
-     string title,
-     string? description,
-     string? imageUrl,
-     bool isFree,
-     int categoryId,
-     string? trailerUrl,
-     string? movieUrl,
-     double rating,
-     int year,
-     string? creator = null)
+            string title,
+            string? description,
+            string? imageUrl,
+            bool isFree,
+            int categoryId,
+            string? trailerUrl,
+            string? movieUrl,
+            double rating,
+            int year,
+            string? creator = null)
         {
             Title = title;
             Description = description;
@@ -52,7 +47,7 @@ namespace DAL.Models
             TrailerUrl = trailerUrl;
             MovieUrl = movieUrl;
             Rating = rating;
-            this.year = year;
+            Year = year;
 
             Views = 0;
             Downloads = 0;
@@ -60,19 +55,20 @@ namespace DAL.Models
             CreatedAt = DateTime.UtcNow;
             CreatedBy = creator;
         }
+
         public void Update(
-     string title,
-     string? description,
-     string? imageUrl,
-     bool isFree,
-     int categoryId,
-     string? trailerUrl,
-     string? movieUrl,
-     double rating,
-     int year,
-     int views,
-     int downloads,
-     string? updater = null)
+            string title,
+            string? description,
+            string? imageUrl,
+            bool isFree,
+            int categoryId,
+            string? trailerUrl,
+            string? movieUrl,
+            double rating,
+            int year,
+            int views,
+            int downloads,
+            string? updater = null)
         {
             Title = title;
             Description = description;
@@ -82,7 +78,7 @@ namespace DAL.Models
             TrailerUrl = trailerUrl;
             MovieUrl = movieUrl;
             Rating = rating;
-            this.year = year;
+            Year = year;
 
             Views = views;
             Downloads = downloads;
@@ -90,5 +86,9 @@ namespace DAL.Models
             UpdatedAt = DateTime.UtcNow;
             UpdatedBy = updater;
         }
+
+        public void IncrementViews() => Views++;
+
+        public void IncrementDownloads() => Downloads++;
     }
-    }
+}

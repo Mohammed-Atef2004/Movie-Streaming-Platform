@@ -9,23 +9,23 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace DAL.Migrations
+namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260618162822_adduserprofileVM")]
-    partial class adduserprofileVM
+    [Migration("20261116133347_CleanBaseline")]
+    partial class CleanBaseline
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.9")
+                .HasAnnotation("ProductVersion", "10.0.15")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("DAL.Models.ApplicationUser", b =>
+            modelBuilder.Entity("Core.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -45,7 +45,6 @@ namespace DAL.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("ImageURL")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
@@ -94,7 +93,7 @@ namespace DAL.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("DAL.Models.Category", b =>
+            modelBuilder.Entity("Core.Models.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -135,7 +134,7 @@ namespace DAL.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("DAL.Models.Episode", b =>
+            modelBuilder.Entity("Core.Models.Episode", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -190,19 +189,13 @@ namespace DAL.Migrations
                     b.ToTable("Episodes");
                 });
 
-            modelBuilder.Entity("DAL.Models.Movie", b =>
+            modelBuilder.Entity("Core.Models.Movie", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ApplicationUserId1")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
@@ -235,7 +228,6 @@ namespace DAL.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("MovieUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("Rating")
@@ -245,7 +237,6 @@ namespace DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TrailerUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -257,33 +248,69 @@ namespace DAL.Migrations
                     b.Property<int>("Views")
                         .HasColumnType("int");
 
-                    b.Property<int>("year")
+                    b.Property<int>("Year")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId");
-
-                    b.HasIndex("ApplicationUserId1");
 
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Movies");
                 });
 
-            modelBuilder.Entity("DAL.Models.Series", b =>
+            modelBuilder.Entity("Core.Models.Review", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("MovieId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("AddedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId", "MovieId");
+
+                    b.HasIndex("MovieId");
+
+                    b.ToTable("Reviews");
+                });
+
+            modelBuilder.Entity("Core.Models.Series", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ApplicationUserId1")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
@@ -330,13 +357,57 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserId");
-
-                    b.HasIndex("ApplicationUserId1");
-
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Series");
+                });
+
+            modelBuilder.Entity("Core.Models.UserMovie", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("MovieId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("AddedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsFavorite")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsInWatchList")
+                        .HasColumnType("bit");
+
+                    b.HasKey("UserId", "MovieId");
+
+                    b.HasIndex("MovieId");
+
+                    b.ToTable("UserMovies");
+                });
+
+            modelBuilder.Entity("Core.Models.UserSeries", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("SeriesId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("AddedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsFavorite")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsInWatchList")
+                        .HasColumnType("bit");
+
+                    b.HasKey("UserId", "SeriesId");
+
+                    b.HasIndex("SeriesId");
+
+                    b.ToTable("UserSeries");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -472,10 +543,10 @@ namespace DAL.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("DAL.Models.Episode", b =>
+            modelBuilder.Entity("Core.Models.Episode", b =>
                 {
-                    b.HasOne("DAL.Models.Series", "Series")
-                        .WithMany()
+                    b.HasOne("Core.Models.Series", "Series")
+                        .WithMany("Episodes")
                         .HasForeignKey("SeriesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -483,17 +554,9 @@ namespace DAL.Migrations
                     b.Navigation("Series");
                 });
 
-            modelBuilder.Entity("DAL.Models.Movie", b =>
+            modelBuilder.Entity("Core.Models.Movie", b =>
                 {
-                    b.HasOne("DAL.Models.ApplicationUser", null)
-                        .WithMany("FavouriteMovies")
-                        .HasForeignKey("ApplicationUserId");
-
-                    b.HasOne("DAL.Models.ApplicationUser", null)
-                        .WithMany("WatchedMovies")
-                        .HasForeignKey("ApplicationUserId1");
-
-                    b.HasOne("DAL.Models.Category", "Category")
+                    b.HasOne("Core.Models.Category", "Category")
                         .WithMany("Movies")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -502,23 +565,72 @@ namespace DAL.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("DAL.Models.Series", b =>
+            modelBuilder.Entity("Core.Models.Review", b =>
                 {
-                    b.HasOne("DAL.Models.ApplicationUser", null)
-                        .WithMany("FavouriteSeries")
-                        .HasForeignKey("ApplicationUserId");
+                    b.HasOne("Core.Models.Movie", "Movie")
+                        .WithMany("UserReviews")
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("DAL.Models.ApplicationUser", null)
-                        .WithMany("WatchedSeries")
-                        .HasForeignKey("ApplicationUserId1");
+                    b.HasOne("Core.Models.ApplicationUser", "User")
+                        .WithMany("Reviews")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("DAL.Models.Category", "Category")
+                    b.Navigation("Movie");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Core.Models.Series", b =>
+                {
+                    b.HasOne("Core.Models.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("Core.Models.UserMovie", b =>
+                {
+                    b.HasOne("Core.Models.Movie", "Movie")
+                        .WithMany("UserMovies")
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Core.Models.ApplicationUser", "User")
+                        .WithMany("UserMovies")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Movie");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Core.Models.UserSeries", b =>
+                {
+                    b.HasOne("Core.Models.Series", "Series")
+                        .WithMany("UserSeries")
+                        .HasForeignKey("SeriesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Core.Models.ApplicationUser", "User")
+                        .WithMany("UserSeries")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Series");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -532,7 +644,7 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("DAL.Models.ApplicationUser", null)
+                    b.HasOne("Core.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -541,7 +653,7 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("DAL.Models.ApplicationUser", null)
+                    b.HasOne("Core.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -556,7 +668,7 @@ namespace DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DAL.Models.ApplicationUser", null)
+                    b.HasOne("Core.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -565,27 +677,39 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("DAL.Models.ApplicationUser", null)
+                    b.HasOne("Core.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("DAL.Models.ApplicationUser", b =>
+            modelBuilder.Entity("Core.Models.ApplicationUser", b =>
                 {
-                    b.Navigation("FavouriteMovies");
+                    b.Navigation("Reviews");
 
-                    b.Navigation("FavouriteSeries");
+                    b.Navigation("UserMovies");
 
-                    b.Navigation("WatchedMovies");
-
-                    b.Navigation("WatchedSeries");
+                    b.Navigation("UserSeries");
                 });
 
-            modelBuilder.Entity("DAL.Models.Category", b =>
+            modelBuilder.Entity("Core.Models.Category", b =>
                 {
                     b.Navigation("Movies");
+                });
+
+            modelBuilder.Entity("Core.Models.Movie", b =>
+                {
+                    b.Navigation("UserMovies");
+
+                    b.Navigation("UserReviews");
+                });
+
+            modelBuilder.Entity("Core.Models.Series", b =>
+                {
+                    b.Navigation("Episodes");
+
+                    b.Navigation("UserSeries");
                 });
 #pragma warning restore 612, 618
         }

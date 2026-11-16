@@ -1,4 +1,4 @@
-﻿@using Application.ViewModels
+@using Application.ViewModels
 @model ProfileVM
 
 @{
@@ -21,7 +21,7 @@
 
 <style>
 
-    /* ── Reset & Base ─────────────────────────────── */
+    /* -- Reset & Base ------------------------------- */
 
     *, *::before, *::after {
         box-sizing: border-box;
@@ -36,7 +36,7 @@
         overflow-x: hidden;
     }
 
-    /* ── Hero ─────────────────────────────────────── */
+    /* -- Hero --------------------------------------- */
 
     .profile-hero {
         position: relative;
@@ -54,7 +54,7 @@
             pointer-events: none;
         }
 
-    /* ── Layout ───────────────────────────────────── */
+    /* -- Layout ------------------------------------- */
 
     .profile-content {
         margin-top: -140px;
@@ -63,7 +63,7 @@
         padding-bottom: 6rem;
     }
 
-    /* ── Profile Card ─────────────────────────────── */
+    /* -- Profile Card ------------------------------- */
 
     .profile-card {
         background: rgba(30,30,30,.75);
@@ -75,7 +75,7 @@
         box-shadow: 0 8px 40px rgba(0,0,0,.5);
     }
 
-    /* ── Avatar ───────────────────────────────────── */
+    /* -- Avatar ------------------------------------- */
 
     .avatar-wrapper {
         position: relative;
@@ -121,7 +121,7 @@
         box-shadow: 0 0 0 1px rgba(229,9,20,.2), 0 8px 30px rgba(0,0,0,.6);
     }
 
-    /* ── Typography ───────────────────────────────── */
+    /* -- Typography --------------------------------- */
 
     .username {
         font-size: 2.6rem;
@@ -137,7 +137,7 @@
         margin-top: .3rem;
     }
 
-    /* ── Badges ───────────────────────────────────── */
+    /* -- Badges ------------------------------------- */
 
     .badge-custom {
         display: inline-flex;
@@ -162,7 +162,7 @@
             font-size: .75rem;
         }
 
-    /* ── Button ───────────────────────────────────── */
+    /* -- Button ------------------------------------- */
 
     .btn-netflix {
         display: inline-flex;
@@ -184,7 +184,7 @@
             transform: scale(1.02);
         }
 
-    /* ── Stat Cards ───────────────────────────────── */
+    /* -- Stat Cards --------------------------------- */
 
     .stats-row {
         display: grid;
@@ -247,7 +247,7 @@
         letter-spacing: .1em;
     }
 
-    /* ── Info Cards ───────────────────────────────── */
+    /* -- Info Cards --------------------------------- */
 
     .info-card {
         background: #1a1a1a;
@@ -271,7 +271,7 @@
             color: #e50914;
         }
 
-    /* ── Info Rows ────────────────────────────────── */
+    /* -- Info Rows ---------------------------------- */
 
     .info-row {
         display: flex;
@@ -307,7 +307,7 @@
         text-transform: uppercase;
     }
 
-    /* ── Movie/Series Card Grid ───────────────────── */
+    /* -- Movie/Series Card Grid --------------------- */
 
     .content-section {
         margin-top: 2.5rem;
@@ -341,7 +341,7 @@
         gap: .8rem;
     }
 
-    /* ── Individual Poster Card ───────────────────── */
+    /* -- Individual Poster Card --------------------- */
 
     .poster-card {
         position: relative;
@@ -427,7 +427,7 @@
             color: #000;
         }
 
-    /* ── Rank Badge on Poster ─────────────────────── */
+    /* -- Rank Badge on Poster ----------------------- */
 
     .poster-rank {
         position: absolute;
@@ -453,7 +453,7 @@
         opacity: 1;
     }
 
-    /* ── Empty State ──────────────────────────────── */
+    /* -- Empty State -------------------------------- */
 
     .empty-state {
         text-align: center;
@@ -473,7 +473,7 @@
         color: #555;
     }
 
-    /* ── Section Divider ──────────────────────────── */
+    /* -- Section Divider ---------------------------- */
 
     .section-divider {
         height: 1px;
@@ -481,7 +481,7 @@
         margin: 2rem 0 0;
     }
 
-    /* ── Responsive ───────────────────────────────── */
+    /* -- Responsive --------------------------------- */
 
     @@media (max-width: 991px) {
         .profile-hero
@@ -560,7 +560,7 @@
 
 <div class="container profile-content">
 
-    <!-- ─── Profile Header ─── -->
+    <!-- --- Profile Header --- -->
 
     <div class="profile-card">
         <div class="row align-items-center g-4">
@@ -576,13 +576,13 @@
                 <p class="email mb-3">@Model.User.Email</p>
                 <div class="d-flex flex-wrap gap-2 mb-4 badge-wrap">
                     <span class="badge-custom">
-                        <span class="badge-icon">🎬</span> Movie Enthusiast
+                        <span class="badge-icon">??</span> Movie Enthusiast
                     </span>
                     <span class="badge-custom">
-                        <span class="badge-icon">❤️</span> @totalFavorites Favorites
+                        <span class="badge-icon">??</span> @totalFavorites Favorites
                     </span>
                     <span class="badge-custom">
-                        <span class="badge-icon">📌</span> @totalWatchList in WatchList
+                        <span class="badge-icon">??</span> @totalWatchList in WatchList
                     </span>
                 </div>
                 <a asp-action="EditProfile" class="btn-netflix">
@@ -593,37 +593,37 @@
         </div>
     </div>
 
-    <!-- ─── Stats ─── -->
+    <!-- --- Stats --- -->
 
     <div class="stats-row mt-4">
         <div class="stat-card">
-            <div class="stat-icon">🎬</div>
+            <div class="stat-icon">??</div>
             <div class="stat-value">@watchListMoviesCount</div>
             <div class="stat-title">WatchList Movies</div>
         </div>
         <div class="stat-card">
-            <div class="stat-icon">📺</div>
+            <div class="stat-icon">??</div>
             <div class="stat-value">@watchListSeriesCount</div>
             <div class="stat-title">WatchList Series</div>
         </div>
         <div class="stat-card">
-            <div class="stat-icon">❤️</div>
+            <div class="stat-icon">??</div>
             <div class="stat-value">@favoriteMoviesCount</div>
             <div class="stat-title">Favorite Movies</div>
         </div>
         <div class="stat-card">
-            <div class="stat-icon">🔥</div>
+            <div class="stat-icon">??</div>
             <div class="stat-value">@favoriteSeriesCount</div>
             <div class="stat-title">Favorite Series</div>
         </div>
     </div>
 
-    <!-- ─── Account Info ─── -->
+    <!-- --- Account Info --- -->
 
     <div class="row mt-4 g-3">
         <div class="col-lg-6">
             <div class="info-card">
-                <h4 class="section-title">📋 Account Information</h4>
+                <h4 class="section-title">?? Account Information</h4>
                 <div class="info-row">
                     <span class="info-row-label">Total WatchList</span>
                     <span class="info-row-value">@totalWatchList</span>
@@ -640,7 +640,7 @@
         </div>
         <div class="col-lg-6">
             <div class="info-card">
-                <h4 class="section-title">📊 Activity Summary</h4>
+                <h4 class="section-title">?? Activity Summary</h4>
                 <div class="info-row">
                     <span class="info-row-label">Total Watched</span>
                     @* <span class="info-row-value">@totalWatched</span> *@
@@ -659,12 +659,12 @@
 
     <div class="section-divider"></div>
 
-    <!-- ─── Favorite Movies ─── -->
+    <!-- --- Favorite Movies --- -->
 
     <div class="content-section">
         <div class="content-section-header">
             <h3 class="content-section-title">
-                <span class="title-accent">❤️</span> Favorite Movies
+                <span class="title-accent">??</span> Favorite Movies
                 <span class="content-count">(@favoriteMoviesCount)</span>
             </h3>
         </div>
@@ -684,8 +684,8 @@
                             <img src="/Images/@item.Movie.ImageUrl" alt="@item.Movie.Title" loading="lazy" />
                             <div class="poster-overlay">
                                 <div class="poster-title">@item.Movie.Title</div>
-                                <div class="poster-year">@item.Movie.year</div>
-                                <div class="poster-btn">▶ View Details</div>
+                                <div class="poster-year">@item.Movie.Year</div>
+                                <div class="poster-btn">? View Details</div>
                             </div>
                         </div>
                     </a>
@@ -695,18 +695,18 @@
         else
         {
             <div class="empty-state">
-                <div class="empty-state-icon">🎬</div>
+                <div class="empty-state-icon">??</div>
                 <div class="empty-state-text">No favorite movies yet.</div>
             </div>
         }
     </div>
 
-    <!-- ─── WatchList Movies ─── -->
+    <!-- --- WatchList Movies --- -->
 
     <div class="content-section">
         <div class="content-section-header">
             <h3 class="content-section-title">
-                <span style="color:#f5c518;">🎬</span> WatchList Movies
+                <span style="color:#f5c518;">??</span> WatchList Movies
                 <span class="content-count">(@watchListMoviesCount)</span>
             </h3>
         </div>
@@ -726,8 +726,8 @@
                             <img src="/Images/@item.Movie.ImageUrl" alt="@item.Movie.Title" loading="lazy" />
                             <div class="poster-overlay">
                                 <div class="poster-title">@item.Movie.Title</div>
-                                <div class="poster-year">@item.Movie.year</div>
-                                <div class="poster-btn">▶ View Details</div>
+                                <div class="poster-year">@item.Movie.Year</div>
+                                <div class="poster-btn">? View Details</div>
                             </div>
                         </div>
                     </a>
@@ -737,18 +737,18 @@
         else
         {
             <div class="empty-state">
-                <div class="empty-state-icon">📌</div>
+                <div class="empty-state-icon">??</div>
                 <div class="empty-state-text">Your WatchList is empty.</div>
             </div>
         }
     </div>
 
-    <!-- ─── Favorite Series ─── -->
+    <!-- --- Favorite Series --- -->
 
     <div class="content-section">
         <div class="content-section-header">
             <h3 class="content-section-title">
-                <span class="title-accent">❤️</span> Favorite Series
+                <span class="title-accent">??</span> Favorite Series
                 <span class="content-count">(@favoriteSeriesCount)</span>
             </h3>
         </div>
@@ -769,7 +769,7 @@
                             <div class="poster-overlay">
                                 <div class="poster-title">@item.Series.Title</div>
                                 @* <div class="poster-year">@item.Series.Year</div> *@
-                                <div class="poster-btn">▶ View Details</div>
+                                <div class="poster-btn">? View Details</div>
                             </div>
                         </div>
                     </a>
@@ -779,18 +779,18 @@
         else
         {
             <div class="empty-state">
-                <div class="empty-state-icon">📺</div>
+                <div class="empty-state-icon">??</div>
                 <div class="empty-state-text">No favorite series yet.</div>
             </div>
         }
     </div>
 
-    <!-- ─── WatchList Series ─── -->
+    <!-- --- WatchList Series --- -->
 
     <div class="content-section">
         <div class="content-section-header">
             <h3 class="content-section-title">
-                <span style="color:#f5c518;">📺</span> WatchList Series
+                <span style="color:#f5c518;">??</span> WatchList Series
                 <span class="content-count">(@watchListSeriesCount)</span>
             </h3>
         </div>
@@ -811,7 +811,7 @@
                             <div class="poster-overlay">
                                 <div class="poster-title">@item.Series.Title</div>
                                 @* <div class="poster-year">@item.Series.Year</div> *@
-                                <div class="poster-btn">▶ View Details</div>
+                                <div class="poster-btn">? View Details</div>
                             </div>
                         </div>
                     </a>
@@ -821,7 +821,7 @@
         else
         {
             <div class="empty-state">
-                <div class="empty-state-icon">📌</div>
+                <div class="empty-state-icon">??</div>
                 <div class="empty-state-text">Your WatchList is empty.</div>
             </div>
         }

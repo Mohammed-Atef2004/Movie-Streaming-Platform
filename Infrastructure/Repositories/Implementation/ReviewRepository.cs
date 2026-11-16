@@ -1,30 +1,32 @@
-﻿using Core.Models;
+using Core.Models;
 using Core.Repositories;
-using DAL.Repositories.Implementation;
+using Infrastructure.Repositories.Implementation;
 using Infrastructure.Presistance.Database;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories.Implementation
 {
     public class ReviewRepository : GenericRepository<Review>, IReviewRepository
     {
-        private readonly ApplicationDbContext _context;
-
         public ReviewRepository(ApplicationDbContext context) : base(context)
         {
-            _context = context;
         }
-        public IEnumerable<Review> GetMovieReviewsWithUsers(int movieId)
+
+        public async Task<IEnumerable<Review>> GetMovieReviewsWithUsersAsync(int movieId, CancellationToken cancellationToken = default)
         {
-            return _context.Reviews
+            return await _context.Reviews
+                .AsNoTracking()
                 .Include(r => r.User)
                 .Where(r => r.MovieId == movieId)
-                .ToList();
+                .OrderByDescending(r => r.AddedAt)
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task<double?> GetMovieAverageRatingAsync(int movieId, CancellationToken cancellationToken = default)
+        {
+            return await _context.Reviews
+                .Where(r => r.MovieId == movieId)
+                .AverageAsync(r => (double?)r.Rating, cancellationToken);
         }
     }
 }

@@ -16,35 +16,40 @@ namespace Movie_Streamer_Platform.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(int movieId, string comment)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(int movieId, string comment, int rating = 5)
         {
+            if (string.IsNullOrWhiteSpace(comment))
+                return BadRequest("Review cannot be empty.");
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var result = _reviewService.CreateReview(userId, movieId, comment);
+            // Rating is clamped to 1..5 by the review entity itself.
+            var result = await _reviewService.CreateReviewAsync(userId, movieId, comment, rating);
 
-            if (!result.Item1)
-                return BadRequest(result.Item2);
+            if (!result.Success)
+                return BadRequest(result.Message);
 
             return Json(new
             {
                 success = true,
                 comment = comment,
-                user = User.Identity.Name
+                rating = Math.Clamp(rating, 1, 5),
+                user = User.Identity?.Name ?? "User"
             });
         }
 
         [HttpGet]
-        public IActionResult GetMovieReviews(int movieId)
+        public async Task<IActionResult> GetMovieReviews(int movieId)
         {
-            var reviews = _reviewService.GetFilmReviews(movieId)
-                .Select(r => new
-                {
-                    user = r.User.UserName,
-                    comment = r.Comment,
-                    createdAt = r.CreatedAt
-                });
-
-            return Json(reviews);
+            var reviews = await _reviewService.GetFilmReviewsAsync(movieId);
+            return Json(reviews.Select(r => new
+            {
+                user = r.User?.UserName ?? "Unknown User",
+                comment = r.Comment,
+                rating = r.Rating,
+                createdAt = r.CreatedAt
+            }));
         }
     }
 }

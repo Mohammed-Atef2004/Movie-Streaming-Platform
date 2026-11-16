@@ -1,14 +1,10 @@
-﻿using DAL.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Core.Models;
 
-namespace DAL.Repositories.Abstraction
+namespace Core.Repositories
 {
     public interface ICategoryRepository : IGenericRepository<Category>
     {
-        bool Update(Category category);
+        /// <summary>True when at least one (non-deleted) movie references the category.</summary>
+        Task<bool> HasMoviesAsync(int categoryId, CancellationToken cancellationToken = default);
     }
 }

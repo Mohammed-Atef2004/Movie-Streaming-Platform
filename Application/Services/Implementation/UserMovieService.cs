@@ -1,7 +1,7 @@
-﻿using Application.Services.Abstraction;
+using Application.Services.Abstraction;
 using Core.Models;
 using Core.Repositories;
-using DAL.Repositories.Abstraction;
+using Core.Repositories;
 
 namespace Application.Services.Implementation
 {
@@ -14,10 +14,9 @@ namespace Application.Services.Implementation
             _userMovieRepository = userMovieRepository;
         }
 
-        public bool AddToFavorites(string userId, int movieId)
+        public async Task<bool> AddToFavoritesAsync(string userId, int movieId)
         {
-            var item = _userMovieRepository.GetFirstOrDefault(
-                x => x.UserId == userId && x.MovieId == movieId);
+            var item = await _userMovieRepository.GetByKeyAsync(userId, movieId);
 
             if (item == null)
             {
@@ -28,17 +27,16 @@ namespace Application.Services.Implementation
                     IsFavorite = true
                 };
 
-                return _userMovieRepository.Add(item);
+                return await _userMovieRepository.AddAsync(item);
             }
 
             item.IsFavorite = true;
-            return _userMovieRepository.Update(item);
+            return await _userMovieRepository.UpdateAsync(item);
         }
 
-        public bool RemoveFromFavorites(string userId, int movieId)
+        public async Task<bool> RemoveFromFavoritesAsync(string userId, int movieId)
         {
-            var item = _userMovieRepository.GetFirstOrDefault(
-                x => x.UserId == userId && x.MovieId == movieId);
+            var item = await _userMovieRepository.GetByKeyAsync(userId, movieId);
 
             if (item == null)
                 return false;
@@ -46,15 +44,14 @@ namespace Application.Services.Implementation
             item.IsFavorite = false;
 
             if (!item.IsInWatchList)
-                return _userMovieRepository.Remove(item);
+                return await _userMovieRepository.RemoveAsync(item);
 
-            return _userMovieRepository.Update(item);
+            return await _userMovieRepository.UpdateAsync(item);
         }
 
-        public bool AddToWatchList(string userId, int movieId)
+        public async Task<bool> AddToWatchListAsync(string userId, int movieId)
         {
-            var item = _userMovieRepository.GetFirstOrDefault(
-                x => x.UserId == userId && x.MovieId == movieId);
+            var item = await _userMovieRepository.GetByKeyAsync(userId, movieId);
 
             if (item == null)
             {
@@ -65,17 +62,16 @@ namespace Application.Services.Implementation
                     IsInWatchList = true
                 };
 
-                return _userMovieRepository.Add(item);
+                return await _userMovieRepository.AddAsync(item);
             }
 
             item.IsInWatchList = true;
-            return _userMovieRepository.Update(item);
+            return await _userMovieRepository.UpdateAsync(item);
         }
 
-        public bool RemoveFromWatchList(string userId, int movieId)
+        public async Task<bool> RemoveFromWatchListAsync(string userId, int movieId)
         {
-            var item = _userMovieRepository.GetFirstOrDefault(
-                x => x.UserId == userId && x.MovieId == movieId);
+            var item = await _userMovieRepository.GetByKeyAsync(userId, movieId);
 
             if (item == null)
                 return false;
@@ -83,37 +79,31 @@ namespace Application.Services.Implementation
             item.IsInWatchList = false;
 
             if (!item.IsFavorite)
-                return _userMovieRepository.Remove(item);
+                return await _userMovieRepository.RemoveAsync(item);
 
-            return _userMovieRepository.Update(item);
-        }
-
-        public IEnumerable<UserMovie> GetFavorites(string userId)
-        {
-            return _userMovieRepository.GetAll(
-                x => x.UserId == userId && x.IsFavorite,
-                "Movie");
+            return await _userMovieRepository.UpdateAsync(item);
         }
 
-        public IEnumerable<UserMovie> GetWatchList(string userId)
+        public async Task<IEnumerable<UserMovie>> GetFavoritesAsync(string userId)
         {
-            return _userMovieRepository.GetAll(
-                x => x.UserId == userId && x.IsInWatchList,
-                "Movie");
+            return await _userMovieRepository.GetFavoritesAsync(userId);
         }
-        public bool IsFavorite(string userId, int movieId)
+
+        public async Task<IEnumerable<UserMovie>> GetWatchListAsync(string userId)
         {
-            return _userMovieRepository.GetFirstOrDefault(
-            x => x.UserId == userId &&
-         x.MovieId == movieId &&
-         x.IsFavorite) != null;
+            return await _userMovieRepository.GetWatchListAsync(userId);
         }
-        public bool IsInWatchList(string userId, int movieId)
+
+        public async Task<bool> IsFavoriteAsync(string userId, int movieId)
         {
-            return _userMovieRepository.GetFirstOrDefault(
-           x => x.UserId == userId &&
-         x.MovieId == movieId &&
-         x.IsInWatchList) != null;
+            return await _userMovieRepository.ExistsAsync(
+                x => x.UserId == userId && x.MovieId == movieId && x.IsFavorite);
+        }
+
+        public async Task<bool> IsInWatchListAsync(string userId, int movieId)
+        {
+            return await _userMovieRepository.ExistsAsync(
+                x => x.UserId == userId && x.MovieId == movieId && x.IsInWatchList);
         }
     }
 }

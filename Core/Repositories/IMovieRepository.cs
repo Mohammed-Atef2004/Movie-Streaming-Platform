@@ -1,14 +1,25 @@
-﻿using DAL.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Core.Models;
 
-namespace DAL.Repositories.Abstraction
+namespace Core.Repositories
 {
-    public interface IMovieRepository: IGenericRepository<Movie>
+    public interface IMovieRepository : IGenericRepository<Movie>
     {
-        public bool Update(Movie movie);
+        /// <summary>Paged, server-side search over movies (title search + category filter + sorting).</summary>
+        Task<(IEnumerable<Movie> Items, int TotalCount)> SearchAsync(
+            string? searchTerm = null,
+            int? categoryId = null,
+            string? sortBy = null,
+            int page = 1,
+            int pageSize = 12,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>Atomically increments the Views counter in the database.</summary>
+        Task IncrementViewsAsync(int movieId, CancellationToken cancellationToken = default);
+
+        /// <summary>Atomically increments the Downloads counter in the database.</summary>
+        Task IncrementDownloadsAsync(int movieId, CancellationToken cancellationToken = default);
+
+        /// <summary>Sets the aggregated rating of a movie (from its reviews).</summary>
+        Task UpdateRatingAsync(int movieId, double rating, CancellationToken cancellationToken = default);
     }
 }
