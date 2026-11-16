@@ -681,7 +681,7 @@
                     <a asp-controller="Movies" asp-action="Details" asp-route-id="@item.MovieId" style="text-decoration:none;color:inherit;">
                         <div class="poster-card">
                             <span class="poster-rank">@fmIndex</span>
-                            <img src="/Images/@item.Movie.ImageUrl" alt="@item.Movie.Title" loading="lazy" />
+                            <img src="@ImageUrlHelper.ForDisplay(item.Movie.ImageUrl)" alt="@item.Movie.Title" loading="lazy" decoding="async" />
                             <div class="poster-overlay">
                                 <div class="poster-title">@item.Movie.Title</div>
                                 <div class="poster-year">@item.Movie.Year</div>
@@ -723,7 +723,7 @@
                     <a asp-controller="Movies" asp-action="Details" asp-route-id="@item.MovieId" style="text-decoration:none;color:inherit;">
                         <div class="poster-card">
                             <span class="poster-rank">@wlmIndex</span>
-                            <img src="/Images/@item.Movie.ImageUrl" alt="@item.Movie.Title" loading="lazy" />
+                            <img src="@ImageUrlHelper.ForDisplay(item.Movie.ImageUrl)" alt="@item.Movie.Title" loading="lazy" decoding="async" />
                             <div class="poster-overlay">
                                 <div class="poster-title">@item.Movie.Title</div>
                                 <div class="poster-year">@item.Movie.Year</div>
@@ -765,7 +765,7 @@
                     <a asp-controller="Series" asp-action="Details" asp-route-id="@item.SeriesId" style="text-decoration:none;color:inherit;">
                         <div class="poster-card">
                             <span class="poster-rank">@fsIndex</span>
-                            <img src="/Images/@item.Series.ImageUrl" alt="@item.Series.Title" loading="lazy" />
+                            <img src="@ImageUrlHelper.ForDisplay(item.Series.ImageUrl)" alt="@item.Series.Title" loading="lazy" decoding="async" />
                             <div class="poster-overlay">
                                 <div class="poster-title">@item.Series.Title</div>
                                 @* <div class="poster-year">@item.Series.Year</div> *@
@@ -807,7 +807,7 @@
                     <a asp-controller="Series" asp-action="Details" asp-route-id="@item.SeriesId" style="text-decoration:none;color:inherit;">
                         <div class="poster-card">
                             <span class="poster-rank">@wlsIndex</span>
-                            <img src="/Images/@item.Series.ImageUrl" alt="@item.Series.Title" loading="lazy" />
+                            <img src="@ImageUrlHelper.ForDisplay(item.Series.ImageUrl)" alt="@item.Series.Title" loading="lazy" decoding="async" />
                             <div class="poster-overlay">
                                 <div class="poster-title">@item.Series.Title</div>
                                 @* <div class="poster-year">@item.Series.Year</div> *@

@@ -4,9 +4,7 @@
 @{
     ViewBag.PageTitle = $"{Model?.Title} - Details";
 
-    var posterUrl = string.IsNullOrEmpty(Model?.ImageUrl)
-        ? "/images/poster-placeholder.jpg"
-        : $"/images/{Model.ImageUrl}";
+    var posterUrl = ImageUrlHelper.ForDisplay(Model?.ImageUrl);
 }
 
 <!-- Hidden SVG Gradient Defs -->
@@ -38,7 +36,7 @@
         align-items: center;
         padding: 5rem 0;
         color: white;
-        background: url('@posterUrl') center center/cover no-repeat;
+        background: var(--movie-backdrop) center center/cover no-repeat;
         overflow: hidden;
     }
 
@@ -541,7 +539,7 @@
     }
 </style>
 
-<section class="cinema-hero">
+<section class="cinema-hero" style="--movie-backdrop: url('@posterUrl')">
 
     <div class="cinema-overlay"></div>
 

@@ -82,6 +82,19 @@
                         <span asp-validation-for="VideoUrl" class="text-danger"></span>
                     </div>
 
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="SeasonNumber" class="form-label fw-bold"></label>
+                            <input asp-for="SeasonNumber" class="form-control" min="1" />
+                            <span asp-validation-for="SeasonNumber" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="EpisodeNumber" class="form-label fw-bold"></label>
+                            <input asp-for="EpisodeNumber" class="form-control" min="1" />
+                            <span asp-validation-for="EpisodeNumber" class="text-danger"></span>
+                        </div>
+                    </div>
+
                     <div class="mb-4">
                         <label asp-for="SeriesId" class="form-label fw-bold">Series</label>
                         <select asp-for="SeriesId" class="form-select" asp-items="Model.SeriesList">

@@ -1,195 +1,93 @@
+@using BLL.ViewModels
+@model IEnumerable<MovieVM>
+
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Discover";
 }
 
-<!-- Hero Section -->
-<section id="hero" class="hero section dark-background">
-    <header id="header" >
-    </header>
-
-  <div class="hero-container">
-    <video autoplay muted loop playsinline class="video-background">
-      <source src="~/assets/img/education/video-2.mp4" type="video/mp4">
-    </video>
-    <div class="overlay"></div>
-    <div class="container">
-      <div class="row align-items-center">
-        <!-- ???? ??????? -->
-        <div class="col-lg-7" data-aos="zoom-out" data-aos-delay="100">
-          <div class="hero-content text-white">
-            <h1>Unlimited Movies & Series</h1>
-            <p>Watch anywhere. Cancel anytime. Join millions of users enjoying blockbusters, originals, and timeless classics.</p>
-            <div class="cta-buttons mt-4">
-                <a asp-controller="Subscriptions" asp-action="Index" class="btn btn-primary me-2">Subscribe Now</a>
-                <a href="/Movies" class="btn btn-outline-light">Browse Library</a>
+<section class="stream-hero">
+    <div class="stream-hero__scrim"></div>
+    <div class="container stream-hero__content">
+        <div class="stream-hero__copy" data-aos="fade-up">
+            <span class="stream-eyebrow"><i class="bi bi-stars"></i> THE OPEN MOVIE COLLECTION</span>
+            <h1>Stories worth<br><span>staying in for.</span></h1>
+            <p>Discover beautifully made films, unforgettable series, and independent stories from creators around the world.</p>
+            <div class="stream-hero__actions">
+                <a asp-controller="Movies" asp-action="Index" class="btn btn-stream-primary">
+                    Explore movies <i class="bi bi-arrow-up-right"></i>
+                </a>
+                <a asp-controller="Series" asp-action="Index" class="btn btn-stream-secondary">
+                    Browse series
+                </a>
             </div>
-          </div>
+            <div class="stream-hero__note">
+                <span class="stream-hero__note-icon"><i class="bi bi-play-fill"></i></span>
+                <span>Independent films. A bigger screen for every story.</span>
+            </div>
         </div>
-
-        <!-- ?????? / ???????? -->
-        <div class="col-lg-5" data-aos="zoom-out" data-aos-delay="200">
-          <div class="stats-card bg-dark text-white p-4 rounded shadow">
-            <div class="stats-header mb-3">
-              <h3 class="mb-0">Why Stream With Us?</h3>
-              <div class="decoration-line bg-primary mt-2" style="height:3px; width:50px;"></div>
-            </div>
-            <div class="stats-grid row g-3">
-              <div class="col-6 stat-item d-flex align-items-center">
-                <i class="bi bi-film fs-2 me-3 text-primary"></i>
-                <div>
-                  <h4 class="mb-0">10k+</h4>
-                  <p class="mb-0 small">Movies & Series</p>
-                </div>
-              </div>
-              <div class="col-6 stat-item d-flex align-items-center">
-                <i class="bi bi-tv fs-2 me-3 text-danger"></i>
-                <div>
-                  <h4 class="mb-0">HD/4K</h4>
-                  <p class="mb-0 small">Quality</p>
-                </div>
-              </div>
-              <div class="col-6 stat-item d-flex align-items-center">
-                <i class="bi bi-phone fs-2 me-3 text-success"></i>
-                <div>
-                  <h4 class="mb-0">Anytime</h4>
-                  <p class="mb-0 small">Any Device</p>
-                </div>
-              </div>
-              <div class="col-6 stat-item d-flex align-items-center">
-                <i class="bi bi-people fs-2 me-3 text-warning"></i>
-                <div>
-                  <h4 class="mb-0">Profiles</h4>
-                  <p class="mb-0 small">For Family</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
     </div>
-  </div>
-
-  <!-- ???? ?????? / ?????? ?????? -->
-  <div class="event-ticker bg-dark text-white py-3 mt-4">
-    <div class="container">
-      <div class="row gy-3 text-center">
-        <div class="col-md-4 col-12 ticker-item">
-          <span class="fw-bold">?? New Release:</span>  
-          <span class="ms-1">Blockbuster Premieres Every Week</span>
-        </div>
-        <div class="col-md-4 col-12 ticker-item">
-          <span class="fw-bold">?? Originals:</span>  
-          <span class="ms-1">Exclusive Series You Can’t Miss</span>
-        </div>
-        <div class="col-md-4 col-12 ticker-item">
-          <span class="fw-bold">?? Subscription:</span>  
-          <span class="ms-1">Plans Starting at $9.99</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
+    <a class="stream-hero__scroll" href="#featured" aria-label="Scroll to featured movies">
+        <span>Explore the collection</span>
+        <i class="bi bi-arrow-down"></i>
+    </a>
 </section>
-<!-- /Hero Section -->
 
+<section id="featured" class="home-featured section">
+    <div class="container">
+        <div class="stream-section-heading">
+            <div>
+                <span class="stream-eyebrow">HANDPICKED FOR YOU</span>
+                <h2>Find your next favorite</h2>
+                <p>A few good stories to get your watchlist started.</p>
+            </div>
+            <a asp-controller="Movies" asp-action="Index" class="stream-text-link">
+                View all movies <i class="bi bi-arrow-up-right"></i>
+            </a>
+        </div>
 
-
-
-          @using Microsoft.AspNetCore.Identity
-@using Core.Models
-@inject SignInManager<ApplicationUser> SignInManager
-@inject UserManager<ApplicationUser> UserManager
-
-@{
-    ViewData["Title"] = "Home Page";
-}
-
-<style>
-    /* === Hero Section Styling === */
-
-
-
-    .cta-buttons .btn {
-        border-radius: 30px;
-        padding: 0.75rem 1.5rem;
-        font-weight: 600;
-        transition: all 0.3s ease;
-    }
-
-    .cta-buttons .btn-primary {
-        background: linear-gradient(45deg, #ff416c, #ff4b2b);
-        border: none;
-    }
-
-    .cta-buttons .btn-primary:hover {
-        transform: scale(1.05);
-        box-shadow: 0px 5px 20px rgba(255, 75, 43, 0.6);
-    }
-
-    .cta-buttons .btn-outline-light {
-        border: 2px solid #fff;
-        color: #fff;
-    }
-
-    .cta-buttons .btn-outline-light:hover {
-        background: #fff;
-        color: #000;
-        transform: scale(1.05);
-    }
-
-
-    /* Stats Card */
-    .stats-card {
-        background: rgba(20, 20, 20, 0.9);
-        border-radius: 20px;
-        animation: fadeIn 2s ease;
-    }
-
-    .stats-card h3 {
-        font-weight: 600;
-    }
-
-    /* Welcome Section */
-    .welcome-section {
-        background: #111;
-        padding: 3rem 0;
-        text-align: center;
-        color: #fff;
-    }
-
-    .welcome-section h2 {
-        font-weight: 700;
-        font-size: 2rem;
-        background: linear-gradient(90deg, #ff416c, #ff4b2b);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-    .welcome-section p {
-        color: #bbb;
-    }
-</style>
-
-
-
-
-
-<!-- Welcome Section (?? ?????? ???? ????) -->
-@if (SignInManager.IsSignedIn(User))
-{
-            <section class="welcome-section">
-                <div class="container">
-                    <h2>Welcome, @UserManager.GetUserName(User) </h2>
-                    <p>We’re glad to have you back! Start exploring the latest movies & series curated just for you.</p>
-                    <div class="cta-buttons mt-4">
-                        @* <a asp-controller="Subscriptions" asp-action="Index" class="btn btn-primary me-2">Subscribe Now</a> *@
-                        <a href="/Movies" class="btn btn-outline-light">Continue Watching</a>
+        @if (Model?.Any() == true)
+        {
+            <div class="row g-4">
+                @foreach (var movie in Model)
+                {
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <a asp-controller="Movies" asp-action="Details" asp-route-id="@movie.Id" class="movie-card-link">
+                            <article class="movie-card">
+                                <div class="movie-img-wrapper">
+                                    <img src="@ImageUrlHelper.ForDisplay(movie.ImageUrl)"
+                                         class="movie-poster"
+                                         alt="@movie.Title poster"
+                                         loading="lazy"
+                                         decoding="async"
+                                         onerror="this.onerror=null;this.src='/Images/placeholder.png';" />
+                                    <span class="movie-card__tag">@(movie.IsFree ? "FREE TO WATCH" : "MEMBERS PICK")</span>
+                                </div>
+                                <div class="movie-content">
+                                    <div class="movie-card__meta">
+                                        <span>@movie.Category?.Name</span>
+                                        <span><i class="bi bi-star-fill"></i> @movie.Rating.ToString("0.0")</span>
+                                    </div>
+                                    <h3 class="movie-title">@movie.Title</h3>
+                                    <p class="movie-desc">
+                                        @(string.IsNullOrWhiteSpace(movie.Description)
+                                            ? "A story waiting to be discovered."
+                                            : movie.Description)
+                                    </p>
+                                    <span class="movie-card__link">Discover film <i class="bi bi-arrow-right"></i></span>
+                                </div>
+                            </article>
+                        </a>
                     </div>
-                </div>
-            </section>
-}
-
-<link rel="stylesheet" href="~/css/movies.css" />
-
-
+                }
+            </div>
+        }
+        else
+        {
+            <div class="stream-empty-state">
+                <i class="bi bi-film"></i>
+                <h3>Your next favorite is on its way.</h3>
+                <p>Check back soon for new films in the collection.</p>
+            </div>
+        }
+    </div>
+</section>

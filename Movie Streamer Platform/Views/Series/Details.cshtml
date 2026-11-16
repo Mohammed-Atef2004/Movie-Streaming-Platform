@@ -1,186 +1,152 @@
-﻿@using BLL.ViewModels
+@using BLL.ViewModels
 @model SeriesVM
 
 @{
-	ViewBag.PageTitle = $"{Model?.Title} - Details";
-	var posterUrl = string.IsNullOrEmpty(Model?.ImageUrl)
-			? "/images/poster-placeholder.jpg"
-			: $"/images/{Model.ImageUrl}";
+    ViewData["Title"] = $"{Model.Title} - Series";
+    var posterUrl = ImageUrlHelper.ForDisplay(Model.ImageUrl);
+    var episodes = ViewBag.Episodes as IEnumerable<EpisodeVM> ?? Enumerable.Empty<EpisodeVM>();
+    var seasons = episodes
+        .GroupBy(episode => episode.SeasonNumber < 1 ? 1 : episode.SeasonNumber)
+        .OrderBy(group => group.Key)
+        .Select(group => new
+        {
+            Number = group.Key,
+            Episodes = group.OrderBy(episode => episode.EpisodeNumber < 1 ? int.MaxValue : episode.EpisodeNumber)
+                .ThenBy(episode => episode.Id)
+                .ToList()
+        })
+        .ToList();
+    var firstEpisode = seasons.SelectMany(season => season.Episodes).FirstOrDefault();
+    var episodeCount = seasons.Sum(season => season.Episodes.Count);
 }
 
-<style>
-	/* Page-specific styles */
-	.hero-section {
-		background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)), url('@posterUrl') center/cover no-repeat;
-		min-height: 50vh;
-		display: flex;
-		align-items: center;
-	}
-
-	.hero-title {
-		font-size: 3.2rem;
-		font-weight: 800;
-		color: var(--contrast-color);
-	}
-
-	.hero-subtitle {
-		font-size: 1.4rem;
-		color: var(--default-color);
-	}
-
-	.rating-badge {
-		font-size: 1.4rem;
-		font-weight: bold;
-	}
-
-	.movie-details-section {
-		background-color: var(--background-color);
-		color: var(--default-color);
-		font-size: 1.15rem;
-	}
-
-	.movie-card-details img {
-		width: 100%;
-		border-radius: 0.6rem;
-	}
-
-	.btn-watch {
-		background: var(--accent-color);
-		border: none;
-		color: var(--contrast-color);
-		font-size: 1.1rem;
-		font-weight: 600;
-		transition: all 0.3s ease;
-	}
-
-	.btn-watch:hover {
-		background: color-mix(in srgb, var(--accent-color), black 15%);
-		transform: translateY(-3px);
-	}
-
-	.btn-download, .btn-bookmark {
-		background: color-mix(in srgb, var(--default-color), transparent 85%);
-		border: none;
-		color: var(--heading-color);
-		font-size: 1.1rem;
-		font-weight: 600;
-		transition: all 0.3s ease;
-	}
-
-	.btn-download:hover, .btn-bookmark:hover {
-		background: color-mix(in srgb, var(--default-color), transparent 75%);
-		transform: translateY(-3px);
-	}
-
-	.movie-desc {
-		font-size: 1.1rem;
-		line-height: 1.8;
-	}
-</style>
-
-<section class="hero-section hero d-flex align-items-center position-relative">
-	<div class="hero-overlay position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.8));"></div>
-	<div class="container" data-aos="fade-up">
-		<h1 class="hero-title mb-3">@Model?.Title</h1>
-		<p class="hero-subtitle">@Model?.Category?.Name</p>
-		<div class="d-flex flex-wrap gap-2 mt-3">
-			<span class="badge @(Model?.IsFree == true ? "bg-success" : "bg-danger") px-3 py-2 fs-6">
-				@(Model?.IsFree == true ? "FREE" : "PREMIUM")
-			</span>
-			<span class="badge bg-dark border px-3 py-2 fs-6">
-				<i class="fas fa-eye me-1"></i> @(Model?.ViewCount ?? 0) views
-			</span>
-			<span class="badge bg-dark border px-3 py-2 fs-6">
-				<i class="fas fa-film me-1"></i> @(ViewBag.Episodes is IEnumerable<BLL.ViewModels.EpisodeVM> eps ? eps.Count() : 0) episodes
-			</span>
-		</div>
-	</div>
+<section class="series-hero" style="--series-art: url('@posterUrl')">
+    <div class="container series-hero__content">
+        <a asp-controller="Series" asp-action="Index" class="series-back-link">
+            <i class="bi bi-arrow-left"></i> All series
+        </a>
+        <span class="stream-eyebrow">SERIES SPOTLIGHT</span>
+        <h1>@Model.Title</h1>
+        <div class="series-hero__meta">
+            <span>@Model.Category?.Name</span>
+            <span>@seasons.Count season@(seasons.Count == 1 ? "" : "s")</span>
+            <span>@episodeCount episodes</span>
+            <span class="series-access-badge">@(Model.IsFree == true ? "FREE TO WATCH" : "MEMBERS PICK")</span>
+        </div>
+        <p class="series-hero__description">
+            @(string.IsNullOrWhiteSpace(Model.Description)
+                ? "A new world is waiting in every episode."
+                : Model.Description)
+        </p>
+        <div class="series-hero__actions">
+            @if (firstEpisode != null)
+            {
+                <a asp-controller="Series" asp-action="View" asp-route-id="@Model.Id" asp-route-episodeId="@firstEpisode.Id"
+                   class="btn btn-stream-primary">
+                    <i class="bi bi-play-fill"></i> Play series
+                </a>
+            }
+            else
+            {
+                <span class="btn btn-stream-primary disabled" aria-disabled="true">
+                    <i class="bi bi-hourglass-split"></i> Episodes coming soon
+                </span>
+            }
+            <span class="series-hero__views"><i class="bi bi-eye"></i> @Model.ViewCount views</span>
+        </div>
+    </div>
 </section>
 
-<section id="poster" class=" section">
-<div class="container py-5 movie-details-section">
-	<div class="row g-5">
-				<div class="col-lg-8 col-md-7">
-			<div class="details-content">
-				<h2 class="fw-bold mb-3" style="font-size:2rem;">@Model?.Title</h2>
-				<div class="movie-info mb-4">
-					<span class="badge bg-secondary me-2">
-						<i class="fas fa-tags me-1"></i> @(Model?.Category?.Name ?? "N/A")
-					</span>
-					<span class="badge @(Model?.IsFree == true ? "bg-success" : "bg-danger") me-2">
-						@(Model?.IsFree == true ? "FREE" : "PREMIUM")
-					</span>
-				</div>
-				<h4 class="mb-2">Description</h4>
-				<p class="movie-desc">@(Model?.Description ?? "No description available for this series.")</p>
+<section class="series-details-section">
+    <div class="container">
+        <div class="series-details-layout">
+            <section class="series-seasons" aria-label="Seasons and episodes">
+                <div class="series-section-heading">
+                    <div>
+                        <span class="stream-eyebrow">THE EPISODE GUIDE</span>
+                        <h2>Seasons &amp; episodes</h2>
+                    </div>
+                    @if (seasons.Count > 0)
+                    {
+                        <span class="series-total-episodes">@episodeCount episodes</span>
+                    }
+                </div>
 
-				<div class="mt-5">
-					<h4 class="mb-3">Episodes</h4>
+                @if (seasons.Count == 0)
+                {
+                    <div class="stream-empty-state">
+                        <i class="bi bi-collection-play"></i>
+                        <h3>Episodes are on their way</h3>
+                        <p>There aren't any episodes available for this series yet.</p>
+                    </div>
+                }
+                else
+                {
+                    @foreach (var season in seasons)
+                    {
+                        <details class="season-panel" open="@(season.Number == seasons[0].Number ? "open" : null)">
+                            <summary class="season-panel__summary">
+                                <span>
+                                    <strong>Season @season.Number</strong>
+                                    <small>@season.Episodes.Count episode@(season.Episodes.Count == 1 ? "" : "s")</small>
+                                </span>
+                                <i class="bi bi-chevron-down"></i>
+                            </summary>
+                            <div class="season-episodes">
+                                @for (var index = 0; index < season.Episodes.Count; index++)
+                                {
+                                    var episode = season.Episodes[index];
+                                    var episodeNumber = episode.EpisodeNumber > 0 ? episode.EpisodeNumber : index + 1;
+                                    <a asp-controller="Series" asp-action="View" asp-route-id="@Model.Id" asp-route-episodeId="@episode.Id"
+                                       class="season-episode">
+                                        <span class="season-episode__play"><i class="bi bi-play-fill"></i></span>
+                                        <span class="season-episode__number">S@season.Number:E@episodeNumber</span>
+                                        <span class="season-episode__copy">
+                                            <strong>@episode.Title</strong>
+                                            <small>@(string.IsNullOrWhiteSpace(episode.Description) ? "Play episode" : episode.Description)</small>
+                                        </span>
+                                        <span class="season-episode__views"><i class="bi bi-eye"></i> @(episode.ViewCount ?? 0)</span>
+                                    </a>
+                                }
+                            </div>
+                        </details>
+                    }
+                }
+            </section>
 
-					@if (ViewBag.Episodes is IEnumerable<BLL.ViewModels.EpisodeVM> episodes && episodes.Any())
-					{
-						<div class="list-group">
-							@foreach (var episode in episodes)
-							{
-								<a asp-controller="Series" asp-action="View" asp-route-id="@Model.Id" asp-route-episodeId="@episode.Id"
-								   class="list-group-item list-group-item-action bg-transparent text-white d-flex justify-content-between align-items-center">
-									<span>
-										<i class="fas fa-play-circle me-2 text-warning"></i>
-										@episode.Title
-									</span>
-									<span class="badge bg-dark border">
-										<i class="fas fa-eye me-1"></i> @(episode.ViewCount ?? 0)
-									</span>
-								</a>
-							}
-						</div>
-					}
-					else
-					{
-						<p class="text-muted fst-italic">No episodes have been added for this series yet.</p>
-					}
-				</div>
-			</div>
-		</div>
-				<div class="col-lg-4 col-md-5 mb-4">
-			<div class="movie-card-details">
-				<img src="@posterUrl" class="img-fluid shadow-lg"
-					 alt="@Model?.Title Poster"
-					 onerror="this.onerror=null;this.src='/images/poster-placeholder.jpg';" />
+            <aside class="series-sidebar">
+                <div class="series-poster-card">
+                    <img src="@posterUrl" alt="@Model.Title poster" loading="lazy" decoding="async"
+                         onerror="this.onerror=null;this.src='/Images/placeholder.png';" />
+                    <div>
+                        <span class="stream-eyebrow">NOW STREAMING</span>
+                        <h3>@Model.Title</h3>
+                        <p>@(Model.IsFree == true ? "Available to watch for free." : "A members pick from the collection.")</p>
+                    </div>
+                </div>
 
-				<div class="movie-actions d-flex flex-column gap-3 mt-4">
-						<a asp-controller="Series" asp-action="View" asp-route-id="@Model.Id" class="btn btn-watch w-100 py-3">
-						<i class="fas fa-play me-2"></i> Watch Now
-					</a>
-					<a asp-controller="Series" asp-action="Download" asp-route-id="@Model.Id" class="btn btn-download w-100 py-3">
-						<i class="fas fa-download me-2"></i> Download
-					</a>
-
-					@if (User.Identity?.IsAuthenticated == true)
-					{
-						<form asp-controller="Series" asp-action="ToggleFavorite" method="post">
-							@Html.AntiForgeryToken()
-							<input type="hidden" name="seriesId" value="@Model.Id" />
-							<button type="submit" class="btn btn-bookmark w-100 py-3">
-								<i class="fas fa-heart me-2"></i>
-								@(ViewBag.IsFavorite == true ? "Remove from Favorites" : "Add to Favorites")
-							</button>
-						</form>
-
-						<form asp-controller="Series" asp-action="ToggleWatchList" method="post">
-							@Html.AntiForgeryToken()
-							<input type="hidden" name="seriesId" value="@Model.Id" />
-							<button type="submit" class="btn btn-bookmark w-100 py-3">
-								<i class="fas fa-bookmark me-2"></i>
-								@(ViewBag.IsInWatchList == true ? "Remove from Watchlist" : "Add to Watchlist")
-							</button>
-						</form>
-					}
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-		</section>
-
-<link rel="stylesheet" href="~/css/movies.css" />
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <div class="series-list-actions">
+                        <form asp-controller="Series" asp-action="ToggleFavorite" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="seriesId" value="@Model.Id" />
+                            <button type="submit" class="series-action-button">
+                                <i class="bi bi-heart"></i>
+                                @(ViewBag.IsFavorite == true ? "Remove from favorites" : "Add to favorites")
+                            </button>
+                        </form>
+                        <form asp-controller="Series" asp-action="ToggleWatchList" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="seriesId" value="@Model.Id" />
+                            <button type="submit" class="series-action-button">
+                                <i class="bi bi-bookmark-plus"></i>
+                                @(ViewBag.IsInWatchList == true ? "Remove from My List" : "Add to My List")
+                            </button>
+                        </form>
+                    </div>
+                }
+            </aside>
+        </div>
+    </div>
+</section>

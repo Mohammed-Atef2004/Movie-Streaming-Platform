@@ -1,38 +1,39 @@
-﻿@using BLL.ViewModels
-    @{
-        ViewBag.PageTitle = "Movies";
-        ViewBag.CardTitle = "Browse Movies";
-        var isAdmin = User.IsInRole("Admin");
-        var totalPages = (int)(ViewBag.TotalPages ?? 0);
-        var currentPage = (int)(ViewBag.Page ?? 1);
-        var totalCount = (int)(ViewBag.TotalCount ?? 0);
-    }
+@using BLL.ViewModels
 @model IEnumerable<MovieVM>
-<section id="movies" class="movies-section section">
-    <section id="movies-filters">
-    <div class="container" data-aos="fade-up" data-aos-delay="100">
-        <form method="get" asp-action="Index" class="filter-form d-flex align-items-center gap-3 flex-wrap">
 
-            <!-- Search -->
-            <div class="input-group flex-grow-1" style="max-width: 280px;">
-                <span class="input-group-text">
-                    <i class="fas fa-search"></i>
-                </span>
+@{
+    ViewData["Title"] = "Movies";
+    var totalPages = (int)(ViewBag.TotalPages ?? 0);
+    var currentPage = (int)(ViewBag.Page ?? 1);
+    var totalCount = (int)(ViewBag.TotalCount ?? 0);
+}
+
+<section class="catalog-hero catalog-hero--movies">
+    <div class="container">
+        <span class="stream-eyebrow">THE MOVIE COLLECTION</span>
+        <h1>Make tonight<br><span>a movie night.</span></h1>
+        <p>Find a new favorite from stories made to stay with you.</p>
+    </div>
+</section>
+
+<section id="movies" class="movies-section section catalog-section">
+    <div id="movies-filters" class="container catalog-filters">
+        <form method="get" asp-action="Index" class="filter-form">
+            <label class="input-group filter-search">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
                 <input type="text"
                        name="search"
                        class="form-control filter-input"
                        placeholder="Search movies..."
-                       value="@ViewBag.Search" />
-            </div>
+                       value="@ViewBag.Search"
+                       aria-label="Search movies" />
+            </label>
 
-            <!-- Category -->
-            <div class="input-group" style="max-width: 220px;">
-                <span class="input-group-text">
-                    <i class="fas fa-tags"></i>
-                </span>
-                <select name="categoryId" class="form-select filter-select">
-                    <option value="">All Categories</option>
-                    @if (ViewBag.Categories is IEnumerable<BLL.ViewModels.CategoryVM> categories)
+            <label class="input-group filter-category">
+                <span class="input-group-text"><i class="bi bi-grid"></i></span>
+                <select name="categoryId" class="form-select filter-select" aria-label="Filter by category">
+                    <option value="">All categories</option>
+                    @if (ViewBag.Categories is IEnumerable<CategoryVM> categories)
                     {
                         foreach (var category in categories)
                         {
@@ -42,74 +43,78 @@
                         }
                     }
                 </select>
-            </div>
+            </label>
 
-            <!-- Sort -->
-            <div class="input-group" style="max-width: 200px;">
-                <span class="input-group-text">
-                    <i class="fas fa-sort"></i>
-                </span>
-                <select name="sortBy" class="form-select filter-select">
-                    <option value="">Sort By</option>
-                    <option value="views" selected="@(ViewBag.SortBy as string == "views")">Most Viewed</option>
-                    <option value="rating" selected="@(ViewBag.SortBy as string == "rating")">Top Rated</option>
-                    <option value="downloads" selected="@(ViewBag.SortBy as string == "downloads")">Most Downloaded</option>
+            <label class="input-group filter-sort">
+                <span class="input-group-text"><i class="bi bi-sort-down"></i></span>
+                <select name="sortBy" class="form-select filter-select" aria-label="Sort movies">
+                    <option value="">Recommended</option>
+                    <option value="views" selected="@(ViewBag.SortBy as string == "views")">Most viewed</option>
+                    <option value="rating" selected="@(ViewBag.SortBy as string == "rating")">Top rated</option>
+                    <option value="downloads" selected="@(ViewBag.SortBy as string == "downloads")">Most downloaded</option>
                 </select>
-            </div>
+            </label>
 
-            <!-- Button -->
             <button type="submit" class="btn btn-filter">
-                <i class="fas fa-filter"></i> Apply
+                <i class="bi bi-sliders2"></i> Apply filters
             </button>
         </form>
     </div>
-</section>
+
     <div class="container" data-aos="fade-up" data-aos-delay="100">
-        <p class="text-white-50 mb-4">@totalCount movie(s) found</p>
-        <div class="row g-4">
+        <div class="catalog-results">
+            <p class="catalog-count">@totalCount films</p>
+        </div>
+
+        @if (Model.Any())
+        {
+            <div class="row g-4">
                 @foreach (var item in Model)
                 {
                     <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                         <a asp-area="" asp-controller="Movies" asp-action="Details" asp-route-id="@item.Id" class="movie-card-link">
-                            <div class="movie-card">
+                            <article class="movie-card">
                                 <div class="movie-img-wrapper">
-                                    <img src="~/Images/@item.ImageUrl"
+                                    <img src="@ImageUrlHelper.ForDisplay(item.ImageUrl)"
                                          class="movie-poster"
-                                         alt="@item.Title"
-                                         onerror="this.onerror=null; this.src='/Images/placeholder.png';" />
+                                         alt="@item.Title poster"
+                                         loading="lazy"
+                                         decoding="async"
+                                         onerror="this.onerror=null;this.src='/Images/placeholder.png';" />
                                     <div class="movie-overlay">
-                                        <span class="movie-category-badge">
-                                            @(item.Category != null ? item.Category.Name : "No Category")
-                                        </span>
+                                        <span class="movie-category-badge">@(item.Category?.Name ?? "Featured")</span>
                                     </div>
                                 </div>
 
                                 <div class="movie-content">
-                                    <h4 class="movie-title">@item.Title</h4>
-
-                                    <p class="movie-desc">@(string.IsNullOrEmpty(item.Description) ? "No description available" : (item.Description.Length > 100 ? item.Description.Substring(0, 100) + "..." : item.Description))</p>
-
-                                    <div class="movie-meta d-flex flex-wrap gap-2 mb-2">
-                                        <span class="badge @(item.IsFree == true ? "bg-success" : "bg-danger") px-2 py-1">
-                                            @(item.IsFree == true ? "FREE" : "PREMIUM")
-                                        </span>
-                                        <span class="badge bg-warning text-dark px-2 py-1">
-                                            <i class="fas fa-star"></i> @item.Rating.ToString("0.0")
-                                        </span>
-                                        <span class="badge bg-dark border px-2 py-1">
-                                            <i class="fas fa-eye"></i> @item.Views
-                                        </span>
+                                    <div class="movie-card__meta">
+                                        <span>@item.Year</span>
+                                        <span><i class="bi bi-star-fill"></i> @item.Rating.ToString("0.0")</span>
                                     </div>
-
-                                    <div class="movie-actions">
-                                        <span class="btn btn-watch">Watch Now</span>
-                                    </div>
+                                    <h2 class="movie-title">@item.Title</h2>
+                                    <p class="movie-desc">
+                                        @(string.IsNullOrWhiteSpace(item.Description)
+                                            ? "A story waiting to be discovered."
+                                            : (item.Description.Length > 120
+                                                ? item.Description.Substring(0, 120) + "..."
+                                                : item.Description))
+                                    </p>
+                                    <span class="movie-card__link">View details <i class="bi bi-arrow-right"></i></span>
                                 </div>
-                            </div>
+                            </article>
                         </a>
                     </div>
                 }
-        </div>
+            </div>
+        }
+        else
+        {
+            <div class="stream-empty-state">
+                <i class="bi bi-search"></i>
+                <h3>No movies found</h3>
+                <p>Try a different title or clear one of the filters.</p>
+            </div>
+        }
 
         @if (totalPages > 1)
         {
@@ -118,10 +123,10 @@
                     <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
                         <a class="page-link" asp-action="Index" asp-route-search="@ViewBag.Search" asp-route-categoryId="@ViewBag.CategoryId" asp-route-sortBy="@ViewBag.SortBy" asp-route-page="@(currentPage - 1)">Previous</a>
                     </li>
-                    @for (int p = 1; p <= totalPages; p++)
+                    @for (int pageNumber = 1; pageNumber <= totalPages; pageNumber++)
                     {
-                        <li class="page-item @(p == currentPage ? "active" : "")">
-                            <a class="page-link" asp-action="Index" asp-route-search="@ViewBag.Search" asp-route-categoryId="@ViewBag.CategoryId" asp-route-sortBy="@ViewBag.SortBy" asp-route-page="@p">@p</a>
+                        <li class="page-item @(pageNumber == currentPage ? "active" : "")">
+                            <a class="page-link" asp-action="Index" asp-route-search="@ViewBag.Search" asp-route-categoryId="@ViewBag.CategoryId" asp-route-sortBy="@ViewBag.SortBy" asp-route-page="@pageNumber">@pageNumber</a>
                         </li>
                     }
                     <li class="page-item @(currentPage >= totalPages ? "disabled" : "")">
@@ -132,5 +137,3 @@
         }
     </div>
 </section>
-
-<link rel="stylesheet" href="~/css/movies.css" />

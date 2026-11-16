@@ -1,4 +1,3 @@
-﻿using BLL.Services.Abstraction;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Movie_Streamer_Platform.Areas.Customer.Controllers
@@ -6,16 +5,9 @@ namespace Movie_Streamer_Platform.Areas.Customer.Controllers
     [Area("Customer")]
     public class HomeController : Controller
     {
-        private readonly IMovieService _movieService;
-        private readonly ISeriesService _seriesService;
-        public HomeController(IMovieService movieService, ISeriesService seriesService)
-        {
-            _movieService = movieService;
-            _seriesService = seriesService;
-        }
         public IActionResult Index()
         {
-            return View();
+            return RedirectToAction("Index", "Home", new { area = "" });
         }
 
         // Bug fix: these actions used to render views that did not exist in the
@@ -23,10 +15,9 @@ namespace Movie_Streamer_Platform.Areas.Customer.Controllers
         // the public browse pages with weaker features. They now delegate to the
         // real, searchable/paged pages under /Movies and /Series.
 
-        public async Task<IActionResult> Movies()
+        public IActionResult Movies()
         {
-            var movies = await _movieService.GetAllMoviesAsync();
-            return View(movies);
+            return RedirectToAction("Index", "Movies", new { area = "" });
         }
 
         public IActionResult Series()

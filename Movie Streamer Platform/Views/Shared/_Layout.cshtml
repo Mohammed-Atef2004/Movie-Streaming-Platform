@@ -5,17 +5,14 @@
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>@ViewData["Title"] - Movie_Streamer_Platform</title>
-    <meta name="description" content="">
+    <meta name="description" content="Discover and stream your next favorite movie or series on Streamify.">
     <meta name="keywords" content="">
 
     <link href="~/assets/img/favicon.png" rel="icon">
     <link href="~/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLp3eYhW9o9R1fGqG2+8E11HhL01dF1J5mGz1J98q9y2f6n9JvN6/a8W/0o8jW1R+0h9Gg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
     <link href="https://fonts.googleapis.com" rel="preconnect">
     <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLp3eYhW9o9R1fGqG2+8E11HhL01dF1J5mGz1J98q9y2f6n9JvN6/a8W/0o8jW1R+0h9Gg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <link href="~/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="~/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
@@ -24,18 +21,12 @@
     <link href="~/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
 
     <link href="~/assets/css/main.css" rel="stylesheet">
-    <style>
-         .dark-background {
-        background-color: #141414 !important;
-    }
-
-    .movie-card {
-            background-color: #181818;
-    }</style>
+    <link href="~/css/movies.css" rel="stylesheet">
+    <link href="~/css/streamify.css" rel="stylesheet">
 
 </head>
 
-<body class="index-page">
+<body class="index-page streamify-app">
 
     @{
         var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
@@ -52,7 +43,7 @@
             </a>
 
             <nav id="navmenu" class="navmenu">
-                <ul>
+                <ul id="navmenu-links">
                     <li><a asp-controller="Home" asp-action="Index"
                            class="@(currentController=="Home" && currentAction=="Index" ? "active" : "")">Home</a></li>
 
@@ -69,7 +60,7 @@
                     {
                         @if (User.IsInRole("Admin"))
                         {
-                                    <li><a asp-controller="Admin" asp-action="" class="@(currentController=="Admin" ? "active" : "")">Admin Dashboard</a></li>
+                                    <li><a asp-area="Admin" asp-controller="Home" asp-action="Index" class="@(currentController=="Home" && ViewContext.RouteData.Values["area"]?.ToString()=="Admin" ? "active" : "")">Admin Dashboard</a></li>
                         }
                         else
                         {
@@ -99,11 +90,15 @@
                     }
                     else
                     {
-                        <li><a asp-area=""asp-controller="Account" asp-action="Login">Login</a></li>
+                        <li><a asp-area="" asp-controller="Account" asp-action="Login">Login</a></li>
                         <li><a asp-area="" asp-controller="Account" asp-action="Register">Register</a></li>
                     }
                 </ul>
-                <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+                <button type="button"
+                        class="mobile-nav-toggle d-xl-none bi bi-list"
+                        aria-label="Open navigation menu"
+                        aria-controls="navmenu-links"
+                        aria-expanded="false"></button>
             </nav>
         </div>
     </header>
@@ -140,7 +135,7 @@
                         <li><a asp-controller="Home" asp-action="Index">Home</a></li>
                         <li><a asp-controller="Movies" asp-action="Index">Movies</a></li>
                         <li><a asp-controller="Series" asp-action="Index">TV Series</a></li>
-                        <li><a asp-controller="Subscription" asp-action="Index">Plans & Pricing</a></li>
+                        <li><a asp-controller="Subscriptions" asp-action="Index">Plans & Pricing</a></li>
                         <li><a asp-controller="Account" asp-action="Profile">My Account</a></li>
                     </ul>
                 </div>
@@ -191,10 +186,9 @@
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 
     @await RenderSectionAsync("ValidationScripts", required: false)
+    @await RenderSectionAsync("Scripts", required: false)
 
 </body>
 
 </html>
-
-@await RenderSectionAsync("Scripts", required: false)
 

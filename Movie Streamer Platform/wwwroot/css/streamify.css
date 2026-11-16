@@ -1,0 +1,1241 @@
+:root {
+    --stream-bg: #0b0d10;
+    --stream-surface: #14171c;
+    --stream-surface-raised: #1b1f26;
+    --stream-border: rgba(255, 255, 255, 0.09);
+    --stream-text: #f5f5f2;
+    --stream-muted: #a4a8af;
+    --stream-accent: #f2b35e;
+    --stream-accent-strong: #ffce85;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body.streamify-app {
+    background: var(--stream-bg);
+    color: var(--stream-text);
+    font-family: "Roboto", system-ui, sans-serif;
+}
+
+.streamify-app .dark-background {
+    --background-color: var(--stream-bg);
+    --surface-color: var(--stream-surface);
+    --default-color: var(--stream-text);
+    --heading-color: var(--stream-text);
+    background-color: var(--stream-bg) !important;
+}
+
+#header.header {
+    padding: 12px 0;
+    background: rgba(9, 11, 14, 0.78);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+#header .container-xl {
+    max-width: 1320px;
+}
+
+#header .logo {
+    text-decoration: none;
+}
+
+#header .logo .sitename {
+    color: var(--stream-text);
+    font-size: 1.3rem;
+    letter-spacing: -0.04em;
+}
+
+#header .logo i {
+    color: var(--stream-accent) !important;
+}
+
+#header .navmenu a,
+#header .navmenu a:focus {
+    color: rgba(245, 245, 242, 0.76);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+#header .navmenu a:hover,
+#header .navmenu .active,
+#header .navmenu .active:focus {
+    color: var(--stream-accent-strong);
+}
+
+#header .dropdown-menu {
+    background: #171a20;
+    border: 1px solid var(--stream-border);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.4);
+}
+
+#header .dropdown-item {
+    color: var(--stream-text);
+}
+
+#header .mobile-nav-toggle {
+    display: grid;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--stream-text);
+}
+
+.streamify-app main.inner-page {
+    padding-top: 82px;
+}
+
+.stream-hero {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    min-height: min(790px, 92vh);
+    align-items: center;
+    overflow: hidden;
+    padding: 140px 0 100px;
+    background: #101318 url("https://images.unsplash.com/photo-1440404653325-ab127d49abc1?auto=format&fit=crop&w=2200&q=90") center 42% / cover no-repeat;
+}
+
+.stream-hero::before,
+.stream-hero__scrim {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    content: "";
+}
+
+.stream-hero::before {
+    background:
+        linear-gradient(90deg, rgba(7, 9, 12, 0.97) 0%, rgba(7, 9, 12, 0.84) 36%, rgba(7, 9, 12, 0.2) 100%),
+        linear-gradient(0deg, var(--stream-bg) 0%, transparent 36%);
+}
+
+.stream-hero__content {
+    position: relative;
+    z-index: 1;
+}
+
+.stream-hero__copy {
+    max-width: 680px;
+}
+
+.stream-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    color: var(--stream-accent);
+    font-family: "Poppins", sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+.stream-hero h1,
+.catalog-hero h1 {
+    margin: 20px 0 18px;
+    color: var(--stream-text);
+    font-family: "Raleway", sans-serif;
+    font-size: clamp(3.2rem, 7vw, 6.3rem);
+    font-weight: 800;
+    letter-spacing: -0.07em;
+    line-height: 0.98;
+}
+
+.stream-hero h1 span,
+.catalog-hero h1 span {
+    color: var(--stream-accent-strong);
+}
+
+.stream-hero__copy > p {
+    max-width: 540px;
+    margin: 0;
+    color: rgba(245, 245, 242, 0.76);
+    font-size: 1.08rem;
+    line-height: 1.8;
+}
+
+.stream-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 32px;
+}
+
+.btn-stream-primary,
+.btn-stream-secondary {
+    display: inline-flex;
+    min-height: 50px;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 0 22px;
+    border-radius: 8px;
+    font-weight: 700;
+    transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-stream-primary {
+    border: 1px solid var(--stream-accent);
+    background: var(--stream-accent);
+    color: #1a1712;
+}
+
+.btn-stream-primary:hover {
+    transform: translateY(-2px);
+    border-color: var(--stream-accent-strong);
+    background: var(--stream-accent-strong);
+    color: #1a1712;
+}
+
+.btn-stream-secondary {
+    border: 1px solid rgba(255, 255, 255, 0.32);
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--stream-text);
+}
+
+.btn-stream-secondary:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.65);
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--stream-text);
+}
+
+.stream-hero__note {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 54px;
+    color: rgba(245, 245, 242, 0.68);
+    font-size: 0.85rem;
+}
+
+.stream-hero__note-icon {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border: 1px solid rgba(242, 179, 94, 0.45);
+    border-radius: 50%;
+    color: var(--stream-accent);
+    font-size: 1.1rem;
+}
+
+.stream-hero__scroll {
+    position: absolute;
+    right: max(24px, calc((100vw - 1320px) / 2));
+    bottom: 42px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: rgba(245, 245, 242, 0.68);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+.stream-hero__scroll i {
+    color: var(--stream-accent);
+    font-size: 1rem;
+}
+
+.home-featured,
+.catalog-section {
+    padding: 76px 0 100px;
+    background: var(--stream-bg);
+}
+
+.stream-section-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.stream-section-heading h2 {
+    margin: 10px 0 8px;
+    color: var(--stream-text);
+    font-family: "Raleway", sans-serif;
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-weight: 750;
+    letter-spacing: -0.05em;
+}
+
+.stream-section-heading p {
+    margin: 0;
+    color: var(--stream-muted);
+}
+
+.stream-text-link,
+.movie-card__link {
+    color: var(--stream-accent);
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.stream-text-link i,
+.movie-card__link i {
+    margin-left: 5px;
+    transition: transform 0.2s ease;
+}
+
+.stream-text-link:hover,
+.movie-card__link:hover {
+    color: var(--stream-accent-strong);
+}
+
+.stream-text-link:hover i,
+.movie-card-link:hover .movie-card__link i {
+    transform: translateX(4px);
+}
+
+.movie-card-link {
+    display: block;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+}
+
+.streamify-app .movie-card {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    border: 1px solid var(--stream-border);
+    border-radius: 12px;
+    background: var(--stream-surface);
+    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.16);
+    transition: transform 0.24s ease, border-color 0.24s ease, box-shadow 0.24s ease;
+}
+
+.streamify-app .movie-card-link:hover .movie-card {
+    transform: translateY(-6px);
+    border-color: rgba(242, 179, 94, 0.38);
+    box-shadow: 0 22px 50px rgba(0, 0, 0, 0.34);
+}
+
+.streamify-app .movie-img-wrapper {
+    position: relative;
+    height: auto;
+    aspect-ratio: 2 / 2.65;
+    overflow: hidden;
+    background: #20242b;
+}
+
+.streamify-app .movie-poster {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.55s cubic-bezier(0.2, 0.65, 0.3, 1);
+}
+
+.streamify-app .movie-card-link:hover .movie-poster {
+    transform: scale(1.045);
+}
+
+.movie-card__tag {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    padding: 7px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    background: rgba(9, 11, 14, 0.72);
+    color: var(--stream-text);
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+}
+
+.streamify-app .movie-overlay {
+    padding: 28px 16px 14px;
+    background: linear-gradient(0deg, rgba(8, 10, 12, 0.88), transparent);
+}
+
+.streamify-app .movie-category-badge {
+    padding: 6px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    background: rgba(10, 12, 15, 0.72);
+    color: var(--stream-text);
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+}
+
+.streamify-app .movie-content {
+    display: flex;
+    min-height: 205px;
+    flex-direction: column;
+    padding: 18px 18px 20px;
+}
+
+.movie-card__meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 11px;
+    color: var(--stream-muted);
+    font-size: 0.73rem;
+}
+
+.movie-card__meta i {
+    color: var(--stream-accent);
+}
+
+.streamify-app .movie-title {
+    margin: 0 0 9px;
+    color: var(--stream-text);
+    font-family: "Raleway", sans-serif;
+    font-size: 1.16rem;
+    font-weight: 750;
+    white-space: normal;
+}
+
+.streamify-app .movie-desc {
+    margin: 0 0 16px;
+    color: var(--stream-muted);
+    font-size: 0.85rem;
+    line-height: 1.55;
+    -webkit-line-clamp: 2;
+}
+
+.movie-card__link {
+    margin-top: auto;
+    font-size: 0.78rem;
+}
+
+.catalog-hero {
+    position: relative;
+    display: flex;
+    min-height: 350px;
+    align-items: end;
+    overflow: hidden;
+    padding: 130px 0 54px;
+    isolation: isolate;
+    background-color: #111419;
+    background-position: center 38%;
+    background-size: cover;
+}
+
+.catalog-hero::before {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(90deg, rgba(8, 10, 12, 0.95), rgba(8, 10, 12, 0.58) 58%, rgba(8, 10, 12, 0.25)),
+                linear-gradient(0deg, var(--stream-bg), transparent 68%);
+    content: "";
+}
+
+.catalog-hero--movies {
+    background-image: url("https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=2000&q=85");
+}
+
+.catalog-hero--series {
+    background-image: url("https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=2000&q=85");
+}
+
+.catalog-hero h1 {
+    margin: 12px 0;
+    font-size: clamp(2.7rem, 5vw, 4.7rem);
+}
+
+.catalog-hero p {
+    max-width: 560px;
+    margin: 0;
+    color: rgba(245, 245, 242, 0.75);
+    font-size: 1rem;
+}
+
+.catalog-filters {
+    position: relative;
+    z-index: 2;
+    margin-top: -26px;
+    margin-bottom: 34px;
+}
+
+.streamify-app .filter-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    border: 1px solid var(--stream-border);
+    border-radius: 12px;
+    background: rgba(20, 23, 28, 0.96);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.25);
+}
+
+.filter-search {
+    flex: 1 1 260px;
+    min-width: 240px;
+}
+
+.filter-category,
+.filter-sort {
+    flex: 1 1 170px;
+    min-width: 165px;
+}
+
+.filter-form .btn-filter {
+    flex: 0 0 auto;
+}
+
+.streamify-app .filter-form .input-group-text,
+.streamify-app .filter-form .filter-input,
+.streamify-app .filter-form .filter-select {
+    min-height: 46px;
+    border-color: rgba(255, 255, 255, 0.1);
+    background-color: #101317;
+    color: var(--stream-text);
+}
+
+.streamify-app .filter-form .input-group-text {
+    border-right: 0;
+    color: var(--stream-muted);
+}
+
+.streamify-app .filter-form .filter-input,
+.streamify-app .filter-form .filter-select {
+    border-left: 0;
+    font-size: 0.86rem;
+}
+
+.streamify-app .filter-form .filter-input::placeholder {
+    color: #777e88;
+}
+
+.streamify-app .filter-form .filter-input:focus,
+.streamify-app .filter-form .filter-select:focus {
+    border-color: rgba(242, 179, 94, 0.7);
+    box-shadow: 0 0 0 3px rgba(242, 179, 94, 0.12);
+}
+
+.streamify-app .btn-filter {
+    min-height: 46px;
+    padding: 0 16px;
+    border: 1px solid var(--stream-accent);
+    border-radius: 7px;
+    background: var(--stream-accent);
+    color: #1a1712;
+    font-size: 0.82rem;
+    font-weight: 750;
+    white-space: nowrap;
+}
+
+.streamify-app .btn-filter:hover {
+    border-color: var(--stream-accent-strong);
+    background: var(--stream-accent-strong);
+    color: #1a1712;
+}
+
+.catalog-results {
+    margin-bottom: 20px;
+}
+
+.catalog-count {
+    margin: 0;
+    color: var(--stream-muted);
+    font-size: 0.85rem;
+}
+
+.stream-empty-state {
+    padding: 64px 24px;
+    border: 1px dashed rgba(255, 255, 255, 0.13);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    text-align: center;
+}
+
+.stream-empty-state > i {
+    color: var(--stream-accent);
+    font-size: 2rem;
+}
+
+.stream-empty-state h3 {
+    margin: 16px 0 6px;
+    color: var(--stream-text);
+    font-family: "Raleway", sans-serif;
+    font-weight: 700;
+}
+
+.stream-empty-state p {
+    margin: 0;
+    color: var(--stream-muted);
+}
+
+.streamify-app .pagination {
+    gap: 6px;
+}
+
+.streamify-app .pagination .page-link {
+    border: 1px solid var(--stream-border);
+    border-radius: 6px;
+    background: var(--stream-surface);
+    color: var(--stream-muted);
+}
+
+.streamify-app .pagination .active .page-link,
+.streamify-app .pagination .page-link:hover {
+    border-color: var(--stream-accent);
+    background: var(--stream-accent);
+    color: #1a1712;
+}
+
+.streamify-app .footer {
+    border-top: 1px solid var(--stream-border);
+    background: #080a0d;
+}
+
+.streamify-app .footer h4 {
+    color: var(--stream-text);
+}
+
+.streamify-app .footer p,
+.streamify-app .footer .footer-links a {
+    color: var(--stream-muted);
+}
+
+.streamify-app .footer .footer-links a:hover {
+    color: var(--stream-accent);
+}
+
+.streamify-app :focus-visible {
+    outline: 2px solid var(--stream-accent);
+    outline-offset: 3px;
+}
+
+.series-hero {
+    position: relative;
+    display: flex;
+    min-height: min(690px, 85vh);
+    align-items: end;
+    overflow: hidden;
+    isolation: isolate;
+    padding: 140px 0 76px;
+    background-color: #111419;
+    background-image: linear-gradient(90deg, rgba(7, 9, 12, 0.96) 0%, rgba(7, 9, 12, 0.78) 42%, rgba(7, 9, 12, 0.2) 100%),
+                      linear-gradient(0deg, var(--stream-bg), transparent 55%),
+                      var(--series-art);
+    background-position: center, center, center 35%;
+    background-size: cover;
+}
+
+.series-hero__content {
+    position: relative;
+    z-index: 1;
+    max-width: 1320px;
+}
+
+.series-back-link {
+    display: table;
+    margin-bottom: 28px;
+    color: rgba(245, 245, 242, 0.76);
+    font-size: 0.86rem;
+    text-decoration: none;
+}
+
+.series-back-link:hover {
+    color: var(--stream-accent-strong);
+}
+
+.series-hero h1 {
+    max-width: 850px;
+    margin: 14px 0 18px;
+    color: var(--stream-text);
+    font-family: "Raleway", sans-serif;
+    font-size: clamp(2.8rem, 6vw, 5.3rem);
+    font-weight: 800;
+    letter-spacing: -0.065em;
+    line-height: 1.02;
+}
+
+.series-hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 18px;
+    color: rgba(245, 245, 242, 0.8);
+    font-size: 0.84rem;
+}
+
+.series-access-badge {
+    padding: 5px 8px;
+    border: 1px solid rgba(242, 179, 94, 0.48);
+    border-radius: 4px;
+    color: var(--stream-accent-strong);
+    font-size: 0.63rem;
+    font-weight: 800;
+    letter-spacing: 0.09em;
+}
+
+.series-hero__description {
+    max-width: 620px;
+    margin: 18px 0 0;
+    color: rgba(245, 245, 242, 0.76);
+    font-size: 1rem;
+    line-height: 1.7;
+}
+
+.series-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px;
+    margin-top: 26px;
+}
+
+.series-hero__views {
+    color: rgba(245, 245, 242, 0.72);
+    font-size: 0.84rem;
+}
+
+.series-details-section {
+    padding: 58px 0 90px;
+    background: var(--stream-bg);
+}
+
+.series-details-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 310px);
+    align-items: start;
+    gap: clamp(28px, 5vw, 68px);
+}
+
+.series-section-heading,
+.watch-episodes__heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.series-section-heading h2,
+.watch-episodes__heading h2 {
+    margin: 8px 0 0;
+    color: var(--stream-text);
+    font-family: "Raleway", sans-serif;
+    font-size: clamp(1.6rem, 3vw, 2rem);
+    font-weight: 750;
+    letter-spacing: -0.045em;
+}
+
+.series-total-episodes,
+.watch-episodes__heading > span {
+    color: var(--stream-muted);
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.season-panel {
+    margin-bottom: 12px;
+    overflow: hidden;
+    border: 1px solid var(--stream-border);
+    border-radius: 10px;
+    background: var(--stream-surface);
+}
+
+.season-panel__summary {
+    display: flex;
+    min-height: 76px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 20px;
+    cursor: pointer;
+    list-style: none;
+}
+
+.season-panel__summary::-webkit-details-marker {
+    display: none;
+}
+
+.season-panel__summary > span {
+    display: grid;
+    gap: 4px;
+}
+
+.season-panel__summary strong {
+    color: var(--stream-text);
+    font-size: 0.98rem;
+}
+
+.season-panel__summary small {
+    color: var(--stream-muted);
+    font-size: 0.76rem;
+}
+
+.season-panel__summary > i {
+    color: var(--stream-muted);
+    transition: transform 0.2s ease;
+}
+
+.season-panel[open] .season-panel__summary > i {
+    transform: rotate(180deg);
+}
+
+.season-episodes {
+    padding: 0 12px 12px;
+}
+
+.season-episode {
+    display: grid;
+    grid-template-columns: 38px 75px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 14px;
+    min-height: 78px;
+    padding: 12px 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    color: inherit;
+    text-decoration: none;
+    transition: background 0.2s ease;
+}
+
+.season-episode:hover {
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.045);
+}
+
+.season-episode__play {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.17);
+    border-radius: 50%;
+    color: var(--stream-accent);
+    font-size: 1rem;
+}
+
+.season-episode__number {
+    color: var(--stream-muted);
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+
+.season-episode__copy {
+    display: grid;
+    min-width: 0;
+    gap: 5px;
+}
+
+.season-episode__copy strong {
+    overflow: hidden;
+    color: var(--stream-text);
+    font-size: 0.86rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.season-episode__copy small {
+    overflow: hidden;
+    color: var(--stream-muted);
+    font-size: 0.74rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.season-episode__views {
+    color: var(--stream-muted);
+    font-size: 0.73rem;
+    white-space: nowrap;
+}
+
+.series-sidebar {
+    display: grid;
+    gap: 14px;
+}
+
+.series-poster-card {
+    overflow: hidden;
+    border: 1px solid var(--stream-border);
+    border-radius: 10px;
+    background: var(--stream-surface);
+}
+
+.series-poster-card img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+}
+
+.series-poster-card > div {
+    padding: 18px;
+}
+
+.series-poster-card h3 {
+    margin: 8px 0;
+    color: var(--stream-text);
+    font-family: "Raleway", sans-serif;
+    font-size: 1.13rem;
+    font-weight: 700;
+}
+
+.series-poster-card p {
+    margin: 0;
+    color: var(--stream-muted);
+    font-size: 0.82rem;
+}
+
+.series-list-actions {
+    display: grid;
+    gap: 9px;
+}
+
+.series-action-button {
+    display: flex;
+    width: 100%;
+    min-height: 46px;
+    align-items: center;
+    gap: 10px;
+    padding: 0 14px;
+    border: 1px solid var(--stream-border);
+    border-radius: 7px;
+    background: var(--stream-surface);
+    color: var(--stream-text);
+    font-size: 0.82rem;
+    text-align: left;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.series-action-button:hover {
+    border-color: rgba(242, 179, 94, 0.42);
+    background: var(--stream-surface-raised);
+}
+
+.series-action-button i {
+    color: var(--stream-accent);
+}
+
+.watch-page {
+    min-height: 100vh;
+    padding: 116px 0 76px;
+    background: #080a0d;
+    color: var(--stream-text);
+}
+
+.watch-back {
+    display: inline-block;
+    margin-bottom: 26px;
+    color: var(--stream-muted);
+    font-size: 0.86rem;
+    text-decoration: none;
+}
+
+.watch-back:hover {
+    color: var(--stream-accent);
+}
+
+.watch-heading {
+    margin-bottom: 22px;
+}
+
+.watch-heading h1 {
+    margin: 7px 0;
+    font-family: "Raleway", sans-serif;
+    font-size: clamp(1.8rem, 4vw, 2.7rem);
+    font-weight: 750;
+}
+
+.watch-heading p {
+    margin: 0;
+    color: var(--stream-muted);
+    font-size: 0.9rem;
+}
+
+.watch-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.75fr) minmax(280px, 0.8fr);
+    align-items: start;
+    gap: 24px;
+}
+
+.watch-player {
+    overflow: hidden;
+    border: 1px solid var(--stream-border);
+    border-radius: 10px;
+    background: #000;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+}
+
+.watch-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.watch-controls p {
+    margin: 0;
+    color: var(--stream-muted);
+    font-size: 0.85rem;
+}
+
+.watch-download {
+    flex: 0 0 auto;
+    color: var(--stream-accent);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.watch-download:hover {
+    color: var(--stream-accent-strong);
+}
+
+.watch-episodes {
+    overflow: hidden;
+    border: 1px solid var(--stream-border);
+    border-radius: 10px;
+    background: var(--stream-surface);
+}
+
+.watch-episodes__heading {
+    align-items: center;
+    margin: 0;
+    padding: 16px;
+    border-bottom: 1px solid var(--stream-border);
+}
+
+.watch-episodes__heading h2 {
+    font-size: 1.25rem;
+}
+
+.watch-season-list {
+    max-height: 580px;
+    overflow-y: auto;
+}
+
+.watch-season h3 {
+    margin: 0;
+    padding: 15px 16px 8px;
+    color: var(--stream-accent);
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+}
+
+.watch-episode {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-left: 3px solid transparent;
+    color: inherit;
+    text-decoration: none;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.watch-episode:hover,
+.watch-episode.active {
+    border-left-color: var(--stream-accent);
+    background: rgba(255, 255, 255, 0.055);
+}
+
+.watch-episode__icon {
+    display: grid;
+    width: 32px;
+    height: 32px;
+    flex: 0 0 auto;
+    place-items: center;
+    border: 1px solid var(--stream-border);
+    border-radius: 50%;
+    color: var(--stream-accent);
+}
+
+.watch-episode__details {
+    display: grid;
+    min-width: 0;
+    gap: 4px;
+}
+
+.watch-episode__details strong,
+.watch-episode__details small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.watch-episode__details strong {
+    color: var(--stream-text);
+    font-size: 0.82rem;
+}
+
+.watch-episode__details small {
+    color: var(--stream-muted);
+    font-size: 0.72rem;
+}
+
+.watch-empty,
+.watch-unavailable {
+    padding: 28px 20px;
+    color: var(--stream-muted);
+    text-align: center;
+}
+
+.watch-unavailable {
+    display: grid;
+    min-height: 340px;
+    align-content: center;
+    justify-items: center;
+    border: 1px solid var(--stream-border);
+    border-radius: 10px;
+    background: var(--stream-surface);
+}
+
+.watch-unavailable > i {
+    color: var(--stream-accent);
+    font-size: 2rem;
+}
+
+.watch-unavailable h2 {
+    margin: 12px 0 5px;
+    color: var(--stream-text);
+    font-family: "Raleway", sans-serif;
+    font-size: 1.3rem;
+}
+
+.watch-unavailable p {
+    margin: 0;
+    font-size: 0.85rem;
+}
+
+@media (max-width: 767.98px) {
+    #header .container-xl {
+        padding-right: 20px;
+        padding-left: 20px;
+    }
+
+    .stream-hero {
+        min-height: 690px;
+        padding: 130px 0 90px;
+        background-position: 58% center;
+    }
+
+    .stream-hero::before {
+        background:
+            linear-gradient(90deg, rgba(7, 9, 12, 0.94), rgba(7, 9, 12, 0.5)),
+            linear-gradient(0deg, var(--stream-bg) 0%, transparent 55%);
+    }
+
+    .stream-hero h1 {
+        font-size: clamp(3rem, 13vw, 4.5rem);
+    }
+
+    .stream-hero__copy > p {
+        font-size: 0.98rem;
+    }
+
+    .stream-hero__scroll {
+        display: none;
+    }
+
+    .stream-section-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .home-featured,
+    .catalog-section {
+        padding: 56px 0 72px;
+    }
+
+    .catalog-hero {
+        min-height: 320px;
+        padding: 120px 0 54px;
+    }
+
+    .streamify-app .filter-form {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .filter-search,
+    .filter-category,
+    .filter-sort {
+        flex: 1 1 auto;
+        width: 100%;
+    }
+
+    .series-hero {
+        min-height: 600px;
+        padding: 124px 0 56px;
+        background-position: center, center, 60% center;
+    }
+
+    .series-hero__meta {
+        gap: 9px 12px;
+        font-size: 0.76rem;
+    }
+
+    .series-hero__description {
+        font-size: 0.9rem;
+    }
+
+    .series-details-layout,
+    .watch-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .series-sidebar {
+        grid-row: 1;
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .series-poster-card {
+        display: grid;
+        grid-template-columns: 110px minmax(0, 1fr);
+        align-items: center;
+    }
+
+    .series-poster-card img {
+        height: 100%;
+        aspect-ratio: 1 / 1;
+    }
+
+    .series-poster-card > div {
+        padding: 14px;
+    }
+
+    .season-episode {
+        grid-template-columns: 34px minmax(0, 1fr) auto;
+        gap: 10px;
+    }
+
+    .season-episode__number {
+        display: none;
+    }
+
+    .watch-layout {
+        gap: 20px;
+    }
+
+    .watch-controls {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}

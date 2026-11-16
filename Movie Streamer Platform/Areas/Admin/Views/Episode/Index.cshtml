@@ -109,6 +109,8 @@
                         <tr>
                             <th class="ps-4">Title</th>
                             <th>Series</th>
+                            <th>Season</th>
+                            <th>Episode</th>
                             <th>Views</th>
                             <th>Downloads</th>
                             <th class="text-end pe-4">Actions</th>
@@ -126,6 +128,8 @@
                                     }
                                 </td>
                                 <td>@(item.Series?.Title ?? $"Series #{item.SeriesId}")</td>
+                                <td>@item.SeasonNumber</td>
+                                <td>@item.EpisodeNumber</td>
                                 <td>@(item.ViewCount ?? 0)</td>
                                 <td>@item.DownloadCount</td>
                                 <td class="text-end pe-4">

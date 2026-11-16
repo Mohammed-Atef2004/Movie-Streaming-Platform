@@ -25,9 +25,11 @@
             {
                     <div class="col-md-3 col-sm-6">
                         <div class="card movie-card border-0 shadow-lg rounded-3 overflow-hidden">
-                            <img src="~/Images/@item.ImageUrl"
+                            <img src="@ImageUrlHelper.ForDisplay(item.ImageUrl)"
                                  class="card-img-top movie-poster"
                                  alt="@item.Title"
+                                 loading="lazy"
+                                 decoding="async"
                                  onerror="this.src='/Images/placeholder.jpg';" />
 
                             <div class="card-body p-3">
@@ -51,9 +53,11 @@
 
                             <!-- Poster -->
                             <div class="position-relative">
-                                <img src="~/Images/@item.ImageUrl"
+                                <img src="@ImageUrlHelper.ForDisplay(item.ImageUrl)"
                                      class="card-img-top movie-poster"
                                      alt="@item.Title"
+                                     loading="lazy"
+                                     decoding="async"
                                      onerror="this.src='/Images/placeholder.jpg';" />
 
                                 <div class="movie-overlay d-flex align-items-center justify-content-center">
